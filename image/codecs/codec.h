@@ -125,7 +125,7 @@ Codec *createBitmapCodec(uint32 tag, int width, int height, int bitsPerPixel);
 /**
  * Create a codec given a QuickTime compression tag.
  */
-Codec *createQuickTimeCodec(uint32 tag, int width, int height, int bitsPerPixel);
+Codec *createQuickTimeCodec(uint32 tag, int width, int height, int bitsPerPixel, Common::SeekableReadStream *extraData = 0);
 
 } // End of namespace Image
 

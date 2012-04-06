@@ -38,6 +38,7 @@
 #include "image/codecs/rpza.h"
 #include "image/codecs/smc.h"
 #include "image/codecs/svq1.h"
+#include "image/codecs/svq3.h"
 #include "image/codecs/truemotion1.h"
 
 #include "common/endian.h"
@@ -228,7 +229,7 @@ Codec *createBitmapCodec(uint32 tag, int width, int height, int bitsPerPixel) {
 	return 0;
 }
 
-Codec *createQuickTimeCodec(uint32 tag, int width, int height, int bitsPerPixel) {
+Codec *createQuickTimeCodec(uint32 tag, int width, int height, int bitsPerPixel, Common::SeekableReadStream *extraData) {
 	switch (tag) {
 	case MKTAG('c','v','i','d'):
 		// Cinepak: As used by most Myst and all Riven videos as well as some Myst ME videos. "The Chief" videos also use this.
@@ -247,8 +248,7 @@ Codec *createQuickTimeCodec(uint32 tag, int width, int height, int bitsPerPixel)
 		return new SVQ1Decoder(width, height);
 	case MKTAG('S','V','Q','3'):
 		// Sorenson Video 3: Used by some Myst ME videos.
-		warning("Sorenson Video 3 not yet supported");
-		break;
+		return new SVQ3Decoder(extraData);
 	case MKTAG('j','p','e','g'):
 		// JPEG: Used by some Myst ME 10th Anniversary videos.
 		return new JPEGDecoder();
