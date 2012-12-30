@@ -100,6 +100,7 @@ endif
 
 ifdef MACOSX
 MODULE_OBJS += \
+	audiocd/macosx/macosx-audiocd.o \
 	midi/coreaudio.o \
 	midi/coremidi.o \
 	updates/macosx/macosx-updates.o \

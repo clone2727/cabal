@@ -29,9 +29,10 @@
 
 #ifdef MACOSX
 
-#include "backends/platform/sdl/macosx/macosx.h"
+#include "backends/audiocd/macosx/macosx-audiocd.h"
 #include "backends/mixer/doublebuffersdl/doublebuffersdl-mixer.h"
 #include "backends/platform/sdl/macosx/appmenu_osx.h"
+#include "backends/platform/sdl/macosx/macosx.h"
 #include "backends/updates/macosx/macosx-updates.h"
 #include "backends/taskbar/macosx/macosx-taskbar.h"
 
@@ -170,6 +171,10 @@ Common::String OSystem_MacOSX::getSystemLanguage() const {
 #else // USE_DETECTLANG
 	return OSystem_POSIX::getSystemLanguage();
 #endif // USE_DETECTLANG
+}
+
+AudioCDManager *OSystem_MacOSX::createAudioCDManager() {
+	return createMacOSXAudioCDManager();
 }
 
 #endif

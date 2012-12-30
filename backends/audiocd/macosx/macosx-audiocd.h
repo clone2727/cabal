@@ -20,31 +20,20 @@
  *
  */
 
-// Based on the ScummVM (GPLv2+) file of the same name
+#ifndef BACKENDS_AUDIOCD_MACOSX_H
+#define BACKENDS_AUDIOCD_MACOSX_H
 
-#ifndef PLATFORM_SDL_MACOSX_H
-#define PLATFORM_SDL_MACOSX_H
+#include "common/scummsys.h"
 
-#include "backends/platform/sdl/posix/posix.h"
+#ifdef MACOSX
 
-class OSystem_MacOSX : public OSystem_POSIX {
-public:
-	OSystem_MacOSX();
+class AudioCDManager;
 
-	virtual bool hasFeature(Feature f);
-
-	virtual bool displayLogFile();
-
-	virtual Common::String getSystemLanguage() const;
-
-	virtual void init();
-	virtual void initBackend();
-	virtual void addSysArchivesToSearchSet(Common::SearchSet &s, int priority = 0);
-
-protected:
-	// Override createAudioCDManager() to get our Mac-specific
-	// version.
-	virtual AudioCDManager *createAudioCDManager();
-};
+/**
+ * Create an audio CD manager for Mac OS X
+ */
+AudioCDManager *createMacOSXAudioCDManager();
 
 #endif
+
+#endif // 
