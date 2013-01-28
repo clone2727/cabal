@@ -135,6 +135,7 @@ _faad=auto
 _fluidsynth=auto
 _opengl=auto
 _opengles=auto
+_openal=auto
 _readline=auto
 _freetype2=auto
 _taskbar=auto
@@ -953,6 +954,9 @@ Optional Libraries:
   --with-opengl-prefix=DIR Prefix where OpenGL (ES) is installed (optional)
   --disable-opengl         disable OpenGL (ES) support [autodetect]
 
+  --with-openal-prefix=DIR Prefix where OpenAL is installed (optional)
+  --disable-openal         disable OpenAL support [autodetect]
+
   --with-jpeg-prefix=DIR   Prefix where libjpeg is installed (optional)
   --disable-jpeg           disable JPEG decoder [autodetect]
 
@@ -1057,6 +1061,8 @@ for ac_option in $@; do
 	--disable-libunity)       _libunity=no    ;;
 	--enable-opengl)          _opengl=yes     ;;
 	--disable-opengl)         _opengl=no      ;;
+	--enable-openal)          _openal=yes     ;;
+	--disable-openal)         _openal=no      ;;
 	--enable-bink)            _bink=yes       ;;
 	--disable-bink)           _bink=no        ;;
 	--enable-verbose-build)   _verbose_build=yes ;;
@@ -1161,6 +1167,11 @@ for ac_option in $@; do
 		arg=`echo $ac_option | cut -d '=' -f 2`
 		OPENGL_CFLAGS="-I$arg/include"
 		OPENGL_LIBS="-L$arg/lib"
+		;;
+	--with-openal-prefix=*)
+		arg=`echo $ac_option | cut -d '=' -f 2`
+		OPENAL_CFLAGS="-I$arg/include"
+		OPENAL_LIBS="-L$arg/lib"
 		;;
 	--backend=*)
 		_backend=`echo $ac_option | cut -d '=' -f 2`
@@ -4111,6 +4122,66 @@ fi
 
 define_in_config_if_yes "$_opengl" "USE_OPENGL"
 define_in_config_if_yes "$_opengles" "USE_GLES"
+
+#
+# Check for OpenAL
+#
+echocheck "OpenAL"
+
+if test "$_openal" = auto ; then
+	_openal=no
+	if test "$_backend" = "sdl" ; then
+		# Try different header filenames
+		# 1) AL/al.h         This is usually used on POSIX and Windows systems
+		# 2) OpenAL/al.h     This is used on Mac OS X
+		for i in "AL/al.h" "OpenAL/al.h"; do
+			# Test the current header for OpenAL
+			cat > $TMPC << EOF
+#include <$i>
+#ifndef AL_VERSION_1_1
+#error No AL_VERSION_1_1 defined
+#else
+int main(void) { return AL_NONE; }
+#endif
+EOF
+			cc_check $DEFINES $OPENAL_CFLAGS $OPENAL_LIBS && _openal=yes && break
+		done
+	fi
+fi
+if test "$_openal" = yes ; then
+	# Our simple test case
+	cat > $TMPC << EOF
+int main(void) { return 0; }
+EOF
+
+	_openal=no
+	# Try different library names
+	# 1) -framework OpenAL  This is used on Mac OS X
+	# 2) openal             This is usually used on POSIX systems
+	#
+	# We try "-framework OpenAL" first here to assure it will always be
+	# picked up by the configure script on Mac OS X, even when a libopenal
+	# exists.
+	for lib in "-framework OpenAL" "-lopenal"; do
+		if cc_check_no_clean $DEFINES $OPENAL_CFLAGS $OPENAL_LIBS $lib
+			then
+			_openal=yes
+			OPENAL_LIBS="$OPENAL_LIBS $lib"
+			break
+		fi
+	done
+
+	cc_check_clean
+
+	if test "$_openal" = yes ; then
+		LIBS="$LIBS $OPENAL_LIBS"
+		INCLUDES="$INCLUDES $OPENAL_CFLAGS"
+	fi
+fi
+
+echo "$_openal"
+define_in_config_if_yes "$_openal" "USE_OPENAL"
+
 
 #
 # Check for nasm
