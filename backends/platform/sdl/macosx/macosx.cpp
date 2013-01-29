@@ -60,6 +60,7 @@ void OSystem_MacOSX::init() {
 }
 
 void OSystem_MacOSX::initBackend() {
+#ifndef USE_OPENAL
 	// Create the mixer manager
 	if (_mixer == 0) {
 		_mixerManager = new DoubleBufferSDLMixerManager();
@@ -67,6 +68,7 @@ void OSystem_MacOSX::initBackend() {
 		// Setup and start mixer
 		_mixerManager->init();
 	}
+#endif
 
 #ifdef USE_TRANSLATION
 	// We need to initialize the translataion manager here for the following

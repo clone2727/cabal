@@ -28,6 +28,7 @@
 #undef ARRAYSIZE // winnt.h defines ARRAYSIZE, but we want our own one...
 #endif
 
+#include "backends/mixer/openal/openal-mixer.h"
 #include "backends/platform/sdl/sdl.h"
 #include "common/config-manager.h"
 #include "common/taskbar.h"
@@ -221,14 +222,19 @@ void OSystem_SDL::initBackend() {
 	if (_savefileManager == 0)
 		_savefileManager = new DefaultSaveFileManager();
 
+	if (_timerManager == 0)
+		_timerManager = new SdlTimerManager();
+
 	if (_mixerManager == 0) {
+#ifdef USE_OPENAL
+		_mixerManager = createOpenALMixerManager();
+#else
 		_mixerManager = new SdlMixerManager();
+#endif
+
 		// Setup and start mixer
 		_mixerManager->init();
 	}
-
-	if (_timerManager == 0)
-		_timerManager = new SdlTimerManager();
 
 	if (_audiocdManager == 0) {
 		// Audio CD support was removed with SDL 2.0
