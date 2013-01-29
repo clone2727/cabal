@@ -224,7 +224,7 @@ uint32 OpenALMixerManager::getOpenALOutputRate() const {
 	ALint outputRate;
 	alcGetIntegerv(_dev, ALC_FREQUENCY, 1, &outputRate);
 
-	if (alGetError() == AL_NO_ERROR)
+	if (alcGetError(_dev) == ALC_NO_ERROR)
 		return outputRate;
 #endif
 
