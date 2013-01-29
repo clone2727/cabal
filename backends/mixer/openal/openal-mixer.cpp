@@ -27,6 +27,7 @@
 #ifdef MACOSX
 	#include <OpenAL/al.h>
 	#include <OpenAL/alc.h>
+	#include <OpenAL/MacOSX_OALExtensions.h>
 #else
 	#include <AL/al.h>
 	#include <AL/alc.h>
@@ -86,6 +87,8 @@ private:
 		OpenALMixerManager *mixerManager = (OpenALMixerManager *)refCon;
 		mixerManager->update();
 	}
+
+	uint32 getOpenALOutputRate() const;
 };
 
 OpenALMixerManager::OpenALMixerManager()
@@ -155,7 +158,7 @@ void OpenALMixerManager::init() {
 	for (uint i = 0; i < kBufferCount; i++)
 		_freeBuffers.push(_buffers[i]);
 
-	_mixer = new Audio::MixerImpl(g_system, 44100); // TODO: Get the device output rate
+	_mixer = new Audio::MixerImpl(g_system, getOpenALOutputRate());
 	_mixer->setReady(true);
 
 	// Queue a buffer to start us off
@@ -199,6 +202,34 @@ void OpenALMixerManager::update() {
 	alGetSourcei(_source, AL_SOURCE_STATE, &sourceState);
 	if (sourceState != AL_PLAYING)
 		alSourcePlay(_source);
+}
+
+uint32 OpenALMixerManager::getOpenALOutputRate() const {
+#ifdef MACOSX
+	// alcGetIntegerv on ALC_FREQUENCY seems not to work on OS X
+	// Use this method to get the frequency instead.
+
+	// Workaround C++ not liking assigning function pointers from void pointers
+	union {
+		void *voidPtr;
+		alcMacOSXGetMixerOutputRateProcPtr procPtr;
+	} temp;
+
+	temp.voidPtr = alcGetProcAddress(0, (const ALCchar *)"alcMacOSXGetMixerOutputRate");
+	alcMacOSXGetMixerOutputRateProcPtr proc = temp.procPtr;
+
+	if (proc)
+		return (uint32)proc();
+#else
+	ALint outputRate;
+	alcGetIntegerv(_dev, ALC_FREQUENCY, 1, &outputRate);
+
+	if (alGetError() == AL_NO_ERROR)
+		return outputRate;
+#endif
+
+	// Default (what most devices are probably outputting anyway)
+	return 44100;
 }
 
 MixerManager *createOpenALMixerManager() {
