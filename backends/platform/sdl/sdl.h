@@ -53,7 +53,7 @@ public:
 	 * that returns Audio::Mixer. The Mixer Manager is a SDL wrapper class
 	 * for the Audio::Mixer. Used by other managers.
 	 */
-	virtual SdlMixerManager *getMixerManager();
+	virtual MixerManager *getMixerManager();
 
 	// Override functions from ModularBackend and OSystem
 	virtual void initBackend();
@@ -85,7 +85,7 @@ protected:
 	 * Mixer manager that configures and setups SDL for
 	 * the wrapped Audio::Mixer, the true mixer.
 	 */
-	SdlMixerManager *_mixerManager;
+	MixerManager *_mixerManager;
 
 	/**
 	 * The event source we use for obtaining SDL events.

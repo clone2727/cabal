@@ -23,6 +23,7 @@
 #ifndef BACKENDS_MIXER_SDL_H
 #define BACKENDS_MIXER_SDL_H
 
+#include "backends/mixer/mixer_manager.h"
 #include "backends/platform/sdl/sdl-sys.h"
 #include "audio/mixer_intern.h"
 
@@ -32,7 +33,7 @@
  * the SDL audio subsystem and the callback for the
  * audio mixer implementation.
  */
-class SdlMixerManager {
+class SdlMixerManager : public MixerManager {
 public:
 	SdlMixerManager();
 	virtual ~SdlMixerManager();
@@ -45,7 +46,7 @@ public:
 	/**
 	 * Get the audio mixer implementation
 	 */
-	Audio::Mixer *getMixer() { return (Audio::Mixer *)_mixer; }
+	Audio::Mixer *getMixer() const { return (Audio::Mixer *)_mixer; }
 
 	// Used by LinuxMoto Port
 
