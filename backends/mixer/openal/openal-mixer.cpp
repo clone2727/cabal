@@ -193,6 +193,12 @@ void OpenALMixerManager::update() {
 
 	// Now, queue it
 	alSourceQueueBuffers(_source, 1, &alBuffer);
+
+	// Ensure we're still playing
+	ALint sourceState;
+	alGetSourcei(_source, AL_SOURCE_STATE, &sourceState);
+	if (sourceState != AL_PLAYING)
+		alSourcePlay(_source);
 }
 
 MixerManager *createOpenALMixerManager() {
