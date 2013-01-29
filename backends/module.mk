@@ -126,6 +126,11 @@ MODULE_OBJS += \
 	events/ps3sdl/ps3sdl-events.o
 endif
 
+ifdef USE_OPENAL
+MODULE_OBJS += \
+	mixer/openal/openal-mixer.o
+endif
+
 ifeq ($(BACKEND),tizen)
 MODULE_OBJS += \
 	timer/tizen/timer.o
