@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -19,6 +19,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
  */
+
+// Based on the ScummVM (GPLv2+) file of the same name
 
 #ifndef COMMON_WINEXE_NE_H
 #define COMMON_WINEXE_NE_H
@@ -85,6 +87,26 @@ public:
 
 	/** Return a stream to the specified resource (or 0 if non-existent). */
 	SeekableReadStream *getResource(const WinResourceID &type, const WinResourceID &id);
+
+	/** The structure of the version resource inside an NE EXE */
+	struct VersionInfo {
+		VersionInfo();
+
+		/** Is the version field valid? */
+		bool isValid() const;
+
+		uint16 fileVersion[4];
+		uint16 productVersion[4];
+		uint32 fileFlagsMask;
+		uint32 fileFlags;
+		uint32 fileOS;
+		uint32 fileType;
+		uint32 fileSubtype;
+		uint32 fileDate[2];		
+	};
+
+	/** Return the version of the EXE */
+	VersionInfo getVersionInfo();
 
 private:
 	/** A resource. */
