@@ -27,8 +27,12 @@
 #define BURIED_DATABASE_H
 
 namespace Common {
-	class NEResources;
-	class String;
+class NEResources;
+class String;
+}
+
+namespace Graphics {
+class WinCursorGroup;
 }
 
 namespace Buried {
@@ -47,6 +51,7 @@ public:
 
 	virtual Common::String loadString(uint32 stringID) = 0;
 	virtual Common::SeekableReadStream *getBitmapStream(uint32 bitmapID) = 0;
+	virtual Graphics::WinCursorGroup *getCursorGroup(uint32 cursorGroupID) = 0;
 };
 
 /**
@@ -62,6 +67,7 @@ public:
 
 	Common::String loadString(uint32 stringID);
 	Common::SeekableReadStream *getBitmapStream(uint32 bitmapID);
+	Graphics::WinCursorGroup *getCursorGroup(uint32 cursorGroupID);
 
 protected:
 	Common::NEResources *_exe;
