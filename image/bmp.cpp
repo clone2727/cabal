@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -19,6 +19,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
  */
+
+// Based on the ScummVM (GPLv2+) file of the same name
 
 #include "image/bmp.h"
 
@@ -57,16 +59,19 @@ void BitmapDecoder::destroy() {
 bool BitmapDecoder::loadStream(Common::SeekableReadStream &stream) {
 	destroy();
 
-	if (stream.readByte() != 'B')
-		return false;
+	uint16 fileType = stream.readUint16BE();
+	uint32 imageOffset = 0;
 
-	if (stream.readByte() != 'M')
-		return false;
-
-	/* uint32 fileSize = */ stream.readUint32LE();
-	/* uint16 res1 = */ stream.readUint16LE();
-	/* uint16 res2 = */ stream.readUint16LE();
-	uint32 imageOffset = stream.readUint32LE();
+	if (fileType == MKTAG16('B', 'M')) {
+		// The bitmap file header is present
+		/* uint32 fileSize = */ stream.readUint32LE();
+		/* uint16 res1 = */ stream.readUint16LE();
+		/* uint16 res2 = */ stream.readUint16LE();
+		imageOffset = stream.readUint32LE();
+	} else {
+		// Not present, let's try to parse as a headerless one
+		stream.seek(-2, SEEK_CUR);
+	}
 
 	uint32 infoSize = stream.readUint32LE();
 	if (infoSize != 40) {
@@ -118,6 +123,11 @@ bool BitmapDecoder::loadStream(Common::SeekableReadStream &stream) {
 	_codec = createBitmapCodec(compression, width, height, bitsPerPixel);
 	if (!_codec)
 		return false;
+
+	// If the image offset is zero (like in headerless ones), set it to the current
+	// position.
+	if (imageOffset == 0)
+		imageOffset = stream.pos();
 
 	// If the image size is zero, set it to the rest of the stream.
 	if (imageSize == 0)
