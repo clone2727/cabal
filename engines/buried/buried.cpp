@@ -33,6 +33,7 @@
 #include "buried/buried.h"
 #include "buried/database.h"
 #include "buried/graphics.h"
+#include "buried/sound.h"
 
 namespace Buried {
 
@@ -40,12 +41,14 @@ BuriedEngine::BuriedEngine(OSystem *syst, const BuriedGameDescription *gameDesc)
 	_gfx = 0;
 	_mainEXE = 0;
 	_library = 0;
+	_sound = 0;
 }
 
 BuriedEngine::~BuriedEngine() {
 	delete _gfx;
 	delete _mainEXE;
 	delete _library;
+	delete _sound;
 }
 
 Common::Error BuriedEngine::run() {
@@ -78,6 +81,7 @@ Common::Error BuriedEngine::run() {
 		error("Failed to load library DLL '%s'", getLibraryName().c_str());
 
 	_gfx = new GraphicsManager(this);
+	_sound = new SoundManager(this);
 
 	return Common::kNoError;
 }
