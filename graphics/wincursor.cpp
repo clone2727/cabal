@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -19,6 +19,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
  */
+
+// Based on the ScummVM (GPLv2+) file of the same name
 
 #include "common/ptr.h"
 #include "common/stream.h"
@@ -471,6 +473,70 @@ public:
 
 Cursor *makeDefaultWinCursor() {
 	return new DefaultWinCursor();
+}
+
+/**
+ * The Windows busy cursor
+ */
+class BusyWinCursor : public Cursor {
+public:
+	BusyWinCursor() {}
+	~BusyWinCursor() {}
+
+	uint16 getWidth() const { return 15; }
+	uint16 getHeight() const { return 27; }
+	uint16 getHotspotX() const { return 7; }
+	uint16 getHotspotY() const { return 13; }
+	byte getKeyColor() const { return 0; }
+
+	const byte *getSurface() const {
+		static const byte busyCursor[] = {
+			1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+			1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+			1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1,
+			0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0,
+			0, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 0,
+			0, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 0,
+			0, 1, 1, 2, 2, 2, 2, 2, 2, 1, 2, 2, 1, 1, 0,
+			0, 1, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 1, 0,
+			0, 1, 1, 2, 2, 1, 2, 1, 2, 1, 2, 2, 1, 1, 0,
+			0, 0, 1, 1, 2, 2, 1, 2, 1, 2, 2, 1, 1, 0, 0,
+			0, 0, 0, 1, 1, 2, 2, 1, 2, 2, 1, 1, 0, 0, 0,
+			0, 0, 0, 0, 1, 1, 2, 2, 2, 1, 1, 0, 0, 0, 0,
+			0, 0, 0, 0, 0, 1, 1, 2, 1, 1, 0, 0, 0, 0, 0,
+			0, 0, 0, 0, 0, 1, 1, 2, 1, 1, 0, 0, 0, 0, 0,
+			0, 0, 0, 0, 0, 1, 1, 2, 1, 1, 0, 0, 0, 0, 0,
+			0, 0, 0, 0, 1, 1, 2, 2, 2, 1, 1, 0, 0, 0, 0,
+			0, 0, 0, 1, 1, 2, 2, 2, 2, 2, 1, 1, 0, 0, 0,
+			0, 0, 1, 1, 2, 2, 2, 1, 2, 2, 2, 1, 1, 0, 0,
+			0, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 0,
+			0, 1, 1, 2, 2, 2, 2, 1, 2, 2, 2, 2, 1, 1, 0,
+			0, 1, 1, 2, 2, 2, 1, 2, 1, 2, 2, 2, 1, 1, 0,
+			0, 1, 1, 2, 2, 1, 2, 1, 2, 1, 2, 2, 1, 1, 0,
+			0, 1, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 1, 0,
+			0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0,
+			1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1,
+			1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+			1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
+		};
+
+		return busyCursor;
+	}
+
+	const byte *getPalette() const {
+		static const byte bwPalette[] = {
+			0x00, 0x00, 0x00,	// Black
+			0xFF, 0xFF, 0xFF	// White
+		};
+
+		return bwPalette;
+	}
+	byte getPaletteStartIndex() const { return 1; }
+	uint16 getPaletteCount() const { return 2; }
+};
+
+Cursor *makeBusyWinCursor() {
+	return new BusyWinCursor();
 }
 
 } // End of namespace Graphics
