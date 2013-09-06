@@ -50,6 +50,7 @@ BuriedEngine::BuriedEngine(OSystem *syst, const BuriedGameDescription *gameDesc)
 	_sound = 0;
 	_timerSeed = 0;
 	_mainWindow = 0;
+	_focusedWindow = 0;
 }
 
 BuriedEngine::~BuriedEngine() {
@@ -99,6 +100,7 @@ Common::Error BuriedEngine::run() {
 	_mainWindow = new Window(this, 0);
 	_mainWindow->setWindowPos(0, 0, 0, 640, 480, Window::kWindowPosNoZOrder);
 	TitleSequenceWindow *titleSeq = new TitleSequenceWindow(this, _mainWindow);
+	titleSeq->setFocus();
 	titleSeq->playTitleSequence();
 
 	while (!shouldQuit()) {
@@ -110,6 +112,16 @@ Common::Error BuriedEngine::run() {
 			switch (event.type) {
 			case Common::EVENT_MOUSEMOVE:
 				_gfx->markMouseMoved();
+				break;
+			case Common::EVENT_KEYUP:
+				// TODO: Key flags
+				if (_focusedWindow)
+					_focusedWindow->sendMessage(new KeyUpMessage(event.kbd, 0));
+				break;
+			case Common::EVENT_KEYDOWN:
+				// TODO: Key flags
+				if (_focusedWindow)
+					_focusedWindow->sendMessage(new KeyDownMessage(event.kbd, 0));
 				break;
 			default:
 				break;
