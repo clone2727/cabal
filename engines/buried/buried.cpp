@@ -26,12 +26,14 @@
 
 #include "common/scummsys.h"
 #include "common/error.h"
+#include "common/events.h"
 #include "common/system.h"
 #include "common/textconsole.h"
 #include "engines/util.h"
 
 #include "buried/buried.h"
 #include "buried/database.h"
+#include "buried/frame_window.h"
 #include "buried/graphics.h"
 #include "buried/message.h"
 #include "buried/sound.h"
@@ -40,7 +42,6 @@
 
 #include "buried/title_sequence.h"
 #include "buried/demo/demo_menu.h"
-#include "common/events.h"
 
 namespace Buried {
 
@@ -95,10 +96,7 @@ Common::Error BuriedEngine::run() {
 
 	_gfx = new GraphicsManager(this);
 	_sound = new SoundManager(this);
-
-	// HACK: Create a dummy main window
-	_mainWindow = new Window(this, 0);
-	_mainWindow->setWindowPos(0, 0, 0, 640, 480, Window::kWindowPosNoZOrder);
+	_mainWindow = new FrameWindow(this);
 
 	// HACK: Show a window
 	Window *tempWindow = 0;
