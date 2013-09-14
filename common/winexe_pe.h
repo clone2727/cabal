@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -19,6 +19,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
  */
+
+// Based on the ScummVM (GPLv2+) file of the same name
 
 #ifndef COMMON_WINEXE_PE_H
 #define COMMON_WINEXE_PE_H
@@ -88,6 +90,9 @@ public:
 
 	/** Return a stream to the specified resource (or 0 if non-existent). */
 	SeekableReadStream *getResource(const WinResourceID &type, const WinResourceID &name, const WinResourceID &lang);
+
+	/** Get a string from a string resource. */
+	String loadString(uint32 stringID);
 
 private:
 	struct Section {
