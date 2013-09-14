@@ -335,7 +335,6 @@ void BuriedEngine::pollForEvents() {
 			break;
 		}
 		case Common::EVENT_LBUTTONUP: {
-			// TODO: Double-click
 			Common::Point relativePos;
 			Window *window = _mainWindow->findWindowAtPoint(event.mouse, relativePos);
 			window->postMessage(new LButtonUpMessage(relativePos, 0));
