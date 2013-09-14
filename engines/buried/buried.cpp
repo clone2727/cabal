@@ -365,4 +365,14 @@ void BuriedEngine::pollForEvents() {
 	}
 }
 
+int BuriedEngine::getTransitionSpeed() {
+	assert(_mainWindow);
+	return ((FrameWindow *)_mainWindow)->getTransitionSpeed();
+}
+
+void BuriedEngine::setTransitionSpeed(int newSpeed) {
+	assert(_mainWindow);
+	((FrameWindow *)_mainWindow)->setTransitionSpeed(newSpeed);
+}
+
 } // End of namespace Buried
