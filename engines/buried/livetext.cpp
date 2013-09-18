@@ -28,6 +28,7 @@
 #include "graphics/surface.h"
 
 #include "buried/buried.h"
+#include "buried/gameui.h"
 #include "buried/graphics.h"
 #include "buried/livetext.h"
 #include "buried/resources.h"
@@ -62,7 +63,7 @@ bool LiveTextWindow::updateLiveText(const Common::String &text, bool notifyUser)
 		invalidateRect(Common::Rect(), false);
 		updateWindow();
 
-		// TODO: Set warning state to false
+		((GameUIWindow *)_parent)->setWarningState(false);
 		return true;
 	}
 
@@ -72,9 +73,8 @@ bool LiveTextWindow::updateLiveText(const Common::String &text, bool notifyUser)
 	invalidateRect(Common::Rect(), false);
 	updateWindow();
 
-	if (notifyUser) {
-		// TODO: Flash the warning light
-	}
+	if (notifyUser)
+		((GameUIWindow *)_parent)->flashWarningLight();
 
 	return true;
 }
@@ -86,7 +86,7 @@ bool LiveTextWindow::updateTranslationText(const Common::String &text, bool noti
 		invalidateRect(Common::Rect(), false);
 		updateWindow();
 
-		// TODO: Set warning state to false
+		((GameUIWindow *)_parent)->setWarningState(false);
 		return true;
 	}
 
@@ -99,7 +99,7 @@ bool LiveTextWindow::updateTranslationText(const Common::String &text, bool noti
 	invalidateRect(Common::Rect(), false);
 	updateWindow();
 
-	// TODO: Set warning state to false
+	((GameUIWindow *)_parent)->setWarningState(false);
 
 	return true;
 }
