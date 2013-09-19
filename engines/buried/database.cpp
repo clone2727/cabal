@@ -28,6 +28,7 @@
 #include "common/winexe_pe.h"
 #include "graphics/wincursor.h"
 
+#include "buried/buried.h"
 #include "buried/database.h"
 
 namespace Buried {
@@ -88,6 +89,11 @@ Common::SeekableReadStream *DatabaseNE::getResourceStream(const Common::String &
 	return _exe->getResource(resourceType, resourceID);
 }
 
+uint32 DatabaseNE::getVersion() {
+	Common::NEResources::VersionInfo versionInfo = _exe->getVersionInfo();
+	return MAKEVERSION(versionInfo.fileVersion[0], versionInfo.fileVersion[1], versionInfo.fileVersion[2], versionInfo.fileVersion[3]);
+}
+
 bool DatabaseNECompressed::load(const Common::String &fileName) {
 	return _exe->loadFromCompressedEXE(fileName);
 }
@@ -146,6 +152,11 @@ Graphics::WinCursorGroup *DatabasePE::getCursorGroup(uint32 cursorGroupID) {
 
 Common::SeekableReadStream *DatabasePE::getResourceStream(const Common::String &resourceType, uint32 resourceID) {
 	return _exe->getResource(resourceType, resourceID);
+}
+
+uint32 DatabasePE::getVersion() {
+	// Not really needed, it should only be 1.1
+	return MAKEVERSION(1, 1, 0, 0);
 }
 
 } // End of namespace Buried
