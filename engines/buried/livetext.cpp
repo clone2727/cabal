@@ -61,8 +61,7 @@ bool LiveTextWindow::updateLiveText(const Common::String &text, bool notifyUser)
 	if (text.empty()) {
 		_text.clear();
 
-		invalidateRect(Common::Rect(), false);
-		updateWindow();
+		invalidateWindow(false);
 
 		((GameUIWindow *)_parent)->setWarningState(false);
 		return true;
@@ -71,8 +70,7 @@ bool LiveTextWindow::updateLiveText(const Common::String &text, bool notifyUser)
 	_text = text;
 
 	// Redraw the window
-	invalidateRect(Common::Rect(), false);
-	updateWindow();
+	invalidateWindow(false);
 
 	if (notifyUser)
 		((GameUIWindow *)_parent)->flashWarningLight();
@@ -84,8 +82,7 @@ bool LiveTextWindow::updateTranslationText(const Common::String &text, bool noti
 	if (text.empty()) {
 		_text.clear();
 
-		invalidateRect(Common::Rect(), false);
-		updateWindow();
+		invalidateWindow(false);
 
 		((GameUIWindow *)_parent)->setWarningState(false);
 		return true;
@@ -97,8 +94,7 @@ bool LiveTextWindow::updateTranslationText(const Common::String &text, bool noti
 	_textTranslation = true;
 
 	// Redraw the window
-	invalidateRect(Common::Rect(), false);
-	updateWindow();
+	invalidateWindow(false);
 
 	((GameUIWindow *)_parent)->setWarningState(false);
 
