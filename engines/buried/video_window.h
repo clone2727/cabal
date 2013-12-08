@@ -42,6 +42,8 @@ public:
 
 	// Cabal-specific interface
 	void updateVideo();
+	void pauseVideo();
+	void resumeVideo();
 
 	// VFW interface
 	bool playVideo(); // MCIWndPlay
