@@ -465,4 +465,8 @@ bool BuriedEngine::runQuitDialog() {
 	return dialog.runModal() == GUI::kMessageOK;
 }
 
+bool BuriedEngine::isControlDown() const {
+	return _mainWindow && ((FrameWindow *)_mainWindow)->_controlDown;
+}
+
 } // End of namespace Buried
