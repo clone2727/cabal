@@ -8,6 +8,7 @@ MODULE_OBJS := \
 	mpegps_decoder.o \
 	psx_decoder.o \
 	qt_decoder.o \
+	qtvr.o \
 	smk_decoder.o \
 	video_decoder.o
 
