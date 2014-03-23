@@ -475,12 +475,26 @@ int QuickTimeParser::readHDLR(Atom atom) {
 	else if (ctype == 0)
 		debug(0, "MPEG-4 detected");
 
-	if (type == MKTAG('v', 'i', 'd', 'e'))
+	switch (type) {
+	case MKTAG('v', 'i', 'd', 'e'):
 		track->codecType = CODEC_TYPE_VIDEO;
-	else if (type == MKTAG('s', 'o', 'u', 'n'))
+		break;
+	case MKTAG('s', 'o', 'u', 'n'):
 		track->codecType = CODEC_TYPE_AUDIO;
-	else if (type == MKTAG('m', 'u', 's', 'i'))
+		break;
+	case MKTAG('m', 'u', 's', 'i'):
 		track->codecType = CODEC_TYPE_MIDI;
+		break;
+	case MKTAG('S', 'T', 'p', 'n'):
+		track->codecType = CODEC_TYPE_QTVR_V1;
+		break;
+	case MKTAG('q', 't', 'v', 'r'):
+		track->codecType = CODEC_TYPE_QTVR_V2;
+		break;
+	case MKTAG('p', 'a', 'n', 'o'):
+		track->codecType = CODEC_TYPE_PANO;
+		break;
+	}
 
 	_fd->readUint32BE(); // component manufacture
 	_fd->readUint32BE(); // component flags
