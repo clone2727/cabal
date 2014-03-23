@@ -130,6 +130,11 @@ protected:
 		CODEC_TYPE_PANO
 	};
 
+	struct TrackReference {
+		uint32 type;
+		Common::Array<uint32> trackIDs;
+ 	};
+
 	struct Track {
 		Track();
 		~Track();
@@ -162,6 +167,8 @@ protected:
 		uint32 startTime;
 		Rational scaleFactorX;
 		Rational scaleFactorY;
+
+		Common::Array<TrackReference> references;
 	};
 
 	virtual SampleDesc *readSampleDesc(Track *track, uint32 format, uint32 descSize) = 0;
@@ -222,6 +229,7 @@ private:
 	int readWAVE(Atom atom);
 	int readESDS(Atom atom);
 	int readSMI(Atom atom);
+	int readTREF(Atom atom);
 };
 
 } // End of namespace Common

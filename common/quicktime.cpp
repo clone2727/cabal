@@ -172,6 +172,7 @@ void QuickTimeParser::initParseTable() {
 	DECLARE_PARSER(readSMI,     MKTAG('S', 'M', 'I', ' '));
 	DECLARE_PARSER(readDefault, MKTAG('g', 'm', 'h', 'd'));
 	DECLARE_PARSER(readLeaf,    MKTAG('g', 'm', 'i', 'n'));
+	DECLARE_PARSER(readTREF,    MKTAG('t', 'r', 'e', 'f'));
 
 #undef DECLARE_PARSER
 }
@@ -810,6 +811,31 @@ int QuickTimeParser::readSMI(Atom atom) {
 
 	// This atom just contains SVQ3 extra data
 	sampleDesc->_extraData = _fd->readStream(atom.size);
+
+	return 0;
+}
+
+int QuickTimeParser::readTREF(Atom atom) {
+	if (_tracks.empty())
+		return 0;
+
+	Track *track = _tracks.back();
+
+	while ((uint32)_fd->pos() < atom.offset + atom.size) {
+		uint32 refPos = _fd->pos();
+		uint32 refSize = _fd->readUint32BE();
+
+		TrackReference ref;
+		ref.type = _fd->readUint32BE();
+		debug(0, "Track Reference: '%s'", tag2str(ref.type));
+
+		while ((uint32)_fd->pos() < refPos + refSize) {
+			ref.trackIDs.push_back(_fd->readUint32BE());
+			debug(1, "ID: %d", ref.trackIDs.back());
+		}
+
+		track->references.push_back(ref);
+	}
 
 	return 0;
 }
