@@ -258,6 +258,63 @@ int QuickTimeParser::readLeaf(Atom atom) {
 	return 0;
 }
 
+int QuickTimeParser::readAtomContainer(Atom atom) {
+	// Skip zeroes (reserved)
+	_fd->skip(12);
+	return readAtomContainerNode(atom);
+}
+
+int QuickTimeParser::readAtomContainerNode(Atom atom) {
+	uint32 startOffset = _fd->pos();
+	uint32 size = _fd->readUint32BE();
+	uint32 type = _fd->readUint32BE(); // root == 'sean'
+	_fd->readUint32BE(); // atom ID
+	_fd->readUint16BE(); // reserved
+	uint16 childCount = _fd->readUint16BE();
+	_fd->readUint32BE(); // reserved
+
+	if (childCount == 0) {
+		// Leaf container
+
+		Atom a;
+		a.offset = _fd->pos();
+		a.type = type;
+		a.size = size - (a.offset - startOffset);
+
+		uint32 i = 0;
+
+		for (; i < _parseTable.size() && _parseTable[i]->type != a.type; i++)
+			; // Empty
+
+		if (i >= _parseTable.size()) { // skip leaf atom data
+			debug(0, ">>> Skipped [%s]", tag2str(a.type));
+
+			_fd->seek(a.size, SEEK_CUR);
+		} else {
+			if ((*_parseTable[i]->parser)(a) < 0)
+				return -1;
+
+			uint32 left = a.size - _fd->pos() + a.offset;
+
+			if (left > 0) // skip garbage at atom end
+				_fd->seek(left, SEEK_CUR);
+		}
+
+		return 0;
+	} else {
+		debug(0, "Node parent: '%s'", tag2str(type));
+
+		for (uint16 i = 0; i < childCount; i++) {
+			Atom a = { 0, 0, 0 };
+
+			if (readAtomContainerNode(a) < 0)
+				return -1;
+		}
+	}
+
+	return 0;
+}
+
 int QuickTimeParser::readMOOV(Atom atom) {
 	if (readDefault(atom) < 0)
 		return -1;

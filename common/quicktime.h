@@ -200,6 +200,7 @@ protected:
 
 	int readDefault(Atom atom);
 	int readLeaf(Atom atom);
+	int readAtomContainer(Atom atom);
 
 	Common::Array<AtomParseEntry*> _parseTable;
 
@@ -211,6 +212,8 @@ private:
 	bool _foundMOOV;
 
 	void initParseTable();
+
+	int readAtomContainerNode(Atom atom);
 
 	int readELST(Atom atom);
 	int readHDLR(Atom atom);
