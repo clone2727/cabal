@@ -171,28 +171,37 @@ protected:
 
 	void init();
 
-private:
+protected:
 	struct Atom {
 		uint32 type;
 		uint32 offset;
 		uint32 size;
 	};
 
-	struct ParseTable {
-		int (QuickTimeParser::*func)(Atom atom);
+	typedef Common::Functor1<Atom, int> AtomParser;
+
+	struct AtomParseEntry {
+		AtomParseEntry(AtomParser *p, uint32 t) : parser(p), type(t) {}
+		~AtomParseEntry() { delete parser; }
+
+		AtomParser *parser;
 		uint32 type;
 	};
 
+	int readDefault(Atom atom);
+	int readLeaf(Atom atom);
+
+	Common::Array<AtomParseEntry*> _parseTable;
+
+private:
 	DisposeAfterUse::Flag _disposeFileHandle;
-	const ParseTable *_parseTable;
+
 	uint32 _beginOffset;
 	MacResManager *_resFork;
 	bool _foundMOOV;
 
 	void initParseTable();
 
-	int readDefault(Atom atom);
-	int readLeaf(Atom atom);
 	int readELST(Atom atom);
 	int readHDLR(Atom atom);
 	int readMDHD(Atom atom);

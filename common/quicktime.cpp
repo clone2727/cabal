@@ -57,6 +57,9 @@ QuickTimeParser::QuickTimeParser() {
 QuickTimeParser::~QuickTimeParser() {
 	close();
 	delete _resFork;
+
+	for (uint32 i = 0; i < _parseTable.size(); i++)
+		delete _parseTable[i];
 }
 
 bool QuickTimeParser::parseFile(const String &filename) {
@@ -137,40 +140,40 @@ void QuickTimeParser::init() {
 }
 
 void QuickTimeParser::initParseTable() {
-	static const ParseTable p[] = {
-		{ &QuickTimeParser::readDefault, MKTAG('d', 'i', 'n', 'f') },
-		{ &QuickTimeParser::readLeaf,    MKTAG('d', 'r', 'e', 'f') },
-		{ &QuickTimeParser::readDefault, MKTAG('e', 'd', 't', 's') },
-		{ &QuickTimeParser::readELST,    MKTAG('e', 'l', 's', 't') },
-		{ &QuickTimeParser::readHDLR,    MKTAG('h', 'd', 'l', 'r') },
-		{ &QuickTimeParser::readLeaf,    MKTAG('m', 'd', 'a', 't') },
-		{ &QuickTimeParser::readMDHD,    MKTAG('m', 'd', 'h', 'd') },
-		{ &QuickTimeParser::readDefault, MKTAG('m', 'd', 'i', 'a') },
-		{ &QuickTimeParser::readDefault, MKTAG('m', 'i', 'n', 'f') },
-		{ &QuickTimeParser::readMOOV,    MKTAG('m', 'o', 'o', 'v') },
-		{ &QuickTimeParser::readMVHD,    MKTAG('m', 'v', 'h', 'd') },
-		{ &QuickTimeParser::readLeaf,    MKTAG('s', 'm', 'h', 'd') },
-		{ &QuickTimeParser::readDefault, MKTAG('s', 't', 'b', 'l') },
-		{ &QuickTimeParser::readSTCO,    MKTAG('s', 't', 'c', 'o') },
-		{ &QuickTimeParser::readSTSC,    MKTAG('s', 't', 's', 'c') },
-		{ &QuickTimeParser::readSTSD,    MKTAG('s', 't', 's', 'd') },
-		{ &QuickTimeParser::readSTSS,    MKTAG('s', 't', 's', 's') },
-		{ &QuickTimeParser::readSTSZ,    MKTAG('s', 't', 's', 'z') },
-		{ &QuickTimeParser::readSTTS,    MKTAG('s', 't', 't', 's') },
-		{ &QuickTimeParser::readTKHD,    MKTAG('t', 'k', 'h', 'd') },
-		{ &QuickTimeParser::readTRAK,    MKTAG('t', 'r', 'a', 'k') },
-		{ &QuickTimeParser::readLeaf,    MKTAG('u', 'd', 't', 'a') },
-		{ &QuickTimeParser::readLeaf,    MKTAG('v', 'm', 'h', 'd') },
-		{ &QuickTimeParser::readCMOV,    MKTAG('c', 'm', 'o', 'v') },
-		{ &QuickTimeParser::readWAVE,    MKTAG('w', 'a', 'v', 'e') },
-		{ &QuickTimeParser::readESDS,    MKTAG('e', 's', 'd', 's') },
-		{ &QuickTimeParser::readSMI,     MKTAG('S', 'M', 'I', ' ') },
-		{ &QuickTimeParser::readDefault, MKTAG('g', 'm', 'h', 'd') },
-		{ &QuickTimeParser::readLeaf,    MKTAG('g', 'm', 'i', 'n') },
-		{ 0, 0 }
-	};
+#define DECLARE_PARSER(func, tag) \
+	_parseTable.push_back(new AtomParseEntry(new Common::Functor1Mem<Atom, int, QuickTimeParser>(this, &QuickTimeParser::func), tag))
 
-	_parseTable = p;
+	DECLARE_PARSER(readDefault, MKTAG('d', 'i', 'n', 'f'));
+	DECLARE_PARSER(readLeaf,    MKTAG('d', 'r', 'e', 'f'));
+	DECLARE_PARSER(readDefault, MKTAG('e', 'd', 't', 's'));
+	DECLARE_PARSER(readELST,    MKTAG('e', 'l', 's', 't'));
+	DECLARE_PARSER(readHDLR,    MKTAG('h', 'd', 'l', 'r'));
+	DECLARE_PARSER(readLeaf,    MKTAG('m', 'd', 'a', 't'));
+	DECLARE_PARSER(readMDHD,    MKTAG('m', 'd', 'h', 'd'));
+	DECLARE_PARSER(readDefault, MKTAG('m', 'd', 'i', 'a'));
+	DECLARE_PARSER(readDefault, MKTAG('m', 'i', 'n', 'f'));
+	DECLARE_PARSER(readMOOV,    MKTAG('m', 'o', 'o', 'v'));
+	DECLARE_PARSER(readMVHD,    MKTAG('m', 'v', 'h', 'd'));
+	DECLARE_PARSER(readLeaf,    MKTAG('s', 'm', 'h', 'd'));
+	DECLARE_PARSER(readDefault, MKTAG('s', 't', 'b', 'l'));
+	DECLARE_PARSER(readSTCO,    MKTAG('s', 't', 'c', 'o'));
+	DECLARE_PARSER(readSTSC,    MKTAG('s', 't', 's', 'c'));
+	DECLARE_PARSER(readSTSD,    MKTAG('s', 't', 's', 'd'));
+	DECLARE_PARSER(readSTSS,    MKTAG('s', 't', 's', 's'));
+	DECLARE_PARSER(readSTSZ,    MKTAG('s', 't', 's', 'z'));
+	DECLARE_PARSER(readSTTS,    MKTAG('s', 't', 't', 's'));
+	DECLARE_PARSER(readTKHD,    MKTAG('t', 'k', 'h', 'd'));
+	DECLARE_PARSER(readTRAK,    MKTAG('t', 'r', 'a', 'k'));
+	DECLARE_PARSER(readLeaf,    MKTAG('u', 'd', 't', 'a'));
+	DECLARE_PARSER(readLeaf,    MKTAG('v', 'm', 'h', 'd'));
+	DECLARE_PARSER(readCMOV,    MKTAG('c', 'm', 'o', 'v'));
+	DECLARE_PARSER(readWAVE,    MKTAG('w', 'a', 'v', 'e'));
+	DECLARE_PARSER(readESDS,    MKTAG('e', 's', 'd', 's'));
+	DECLARE_PARSER(readSMI,     MKTAG('S', 'M', 'I', ' '));
+	DECLARE_PARSER(readDefault, MKTAG('g', 'm', 'h', 'd'));
+	DECLARE_PARSER(readLeaf,    MKTAG('g', 'm', 'i', 'n'));
+
+#undef DECLARE_PARSER
 }
 
 int QuickTimeParser::readDefault(Atom atom) {
@@ -211,7 +214,7 @@ int QuickTimeParser::readDefault(Atom atom) {
 
 		uint32 i = 0;
 
-		for (; _parseTable[i].type != 0 && _parseTable[i].type != a.type; i++)
+		for (; i < _parseTable.size() && _parseTable[i]->type != a.type; i++)
 			; // Empty
 
 		if (a.size < 8)
@@ -223,13 +226,13 @@ int QuickTimeParser::readDefault(Atom atom) {
 			_fd->seek(_fd->size());
 			debug(0, "Skipping junk found at the end of the QuickTime file");
 			return 0;
-		} else if (_parseTable[i].type == 0) { // skip leaf atom data
+		} else if (i >= _parseTable.size()) { // skip leaf atom data
 			debug(0, ">>> Skipped [%s]", tag2str(a.type));
 
 			_fd->seek(a.size, SEEK_CUR);
 		} else {
 			uint32 start_pos = _fd->pos();
-			err = (this->*_parseTable[i].func)(a);
+			err = (*_parseTable[i]->parser)(a);
 
 			uint32 left = a.size - _fd->pos() + start_pos;
 
