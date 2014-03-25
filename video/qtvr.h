@@ -198,6 +198,7 @@ private:
 	Common::Array<PanoImaging> _panoImaging;
 
 	struct NodeLocation {
+		uint32 nodeID;
 		uint16 majorVersion;
 		uint16 minorVersion;
 		uint32 nodeType;

@@ -242,7 +242,11 @@ int QTVRDecoder::readIMPN(Atom atom) {
 }
 
 int QTVRDecoder::readNLOC(Atom atom) {
+	// We couldn't have gotten here except through a container
+	assert(atom.parent);
+
 	NodeLocation loc;
+	loc.nodeID = atom.parent->id;
 	loc.majorVersion = _fd->readUint16BE();
 	loc.minorVersion = _fd->readUint16BE();
 	loc.nodeType = _fd->readUint32BE();
