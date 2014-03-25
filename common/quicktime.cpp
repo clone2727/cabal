@@ -545,13 +545,13 @@ int QuickTimeParser::readHDLR(Atom atom) {
 		track->codecType = CODEC_TYPE_MIDI;
 		break;
 	case MKTAG('S', 'T', 'p', 'n'):
-		track->codecType = CODEC_TYPE_QTVR_V1;
+		track->codecType = CODEC_TYPE_PANO_V1;
 		break;
 	case MKTAG('q', 't', 'v', 'r'):
-		track->codecType = CODEC_TYPE_QTVR_V2;
+		track->codecType = CODEC_TYPE_QTVR;
 		break;
 	case MKTAG('p', 'a', 'n', 'o'):
-		track->codecType = CODEC_TYPE_PANO;
+		track->codecType = CODEC_TYPE_PANO_V2;
 		break;
 	}
 

@@ -62,12 +62,13 @@ bool QTVRDecoder::loadNodeData() {
 	if (_version == 0)
 		return false;
 
-	// We had to have found the QTVR track
-	if (!_qtvrTrack)
+	// We had to have found the panoramic track
+	// (There's no plan to support object VR files currently)
+	if (!_panoTrack)
 		return false;
 
-	// v2 requires the pano track
-	if (_version == 2 && !_panoTrack)
+	// v2 requires the QTVR track
+	if (_version == 2 && !_qtvrTrack)
 		return false;
 
 	return true;
@@ -91,8 +92,8 @@ void QTVRDecoder::initQTVRParseTable() {
 }
 
 Common::QuickTimeParser::SampleDesc *QTVRDecoder::readSampleDesc(Common::QuickTimeParser::Track *track, uint32 format, uint32 descSize) {	
-	if (track->codecType == CODEC_TYPE_QTVR_V1) {
-		// QTVR1 sample description in v1
+	if (track->codecType == CODEC_TYPE_PANO_V1) {
+		// Panoramic sample description in v1
 		_panoDesc.majorVersion = _fd->readUint16BE();
 		_panoDesc.minorVersion = _fd->readUint16BE();
 		_panoDesc.sceneTrackID = _fd->readUint32BE();
@@ -120,12 +121,12 @@ Common::QuickTimeParser::SampleDesc *QTVRDecoder::readSampleDesc(Common::QuickTi
 		_panoDesc.hotspotFrameCountY = _fd->readUint16BE();
 		_panoDesc.hotspotColorDepth = _fd->readUint16BE();
 
-		// Mark this as the QTVR track
-		_qtvrTrack = Common::QuickTimeParser::_tracks.back();
+		// Mark this as the pano track
+		_panoTrack = Common::QuickTimeParser::_tracks.back();
 
 		// We don't need a sample desc, so return 0
 		return 0;
-	} else if (track->codecType == CODEC_TYPE_QTVR_V2) {
+	} else if (track->codecType == CODEC_TYPE_QTVR) {
 		// The data here is an atom container
 		Atom a = { 0, 0, 0, 0 };
 		a.size = descSize;
@@ -136,7 +137,7 @@ Common::QuickTimeParser::SampleDesc *QTVRDecoder::readSampleDesc(Common::QuickTi
 
 		// Don't need a sample desc here either
 		return 0;
-	} else if (track->codecType == CODEC_TYPE_PANO) {
+	} else if (track->codecType == CODEC_TYPE_PANO_V2) {
 		// Mark this as the pano track
 		_panoTrack = Common::QuickTimeParser::_tracks.back();
 
