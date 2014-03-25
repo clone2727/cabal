@@ -186,6 +186,7 @@ protected:
 		uint32 type;
 		uint32 offset;
 		uint32 size;
+		uint32 id; // For atom containers only
 	};
 
 	typedef Common::Functor1<Atom, int> AtomParser;

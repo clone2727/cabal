@@ -69,7 +69,7 @@ bool QuickTimeParser::parseFile(const String &filename) {
 	_foundMOOV = false;
 	_disposeFileHandle = DisposeAfterUse::YES;
 
-	Atom atom = { 0, 0, 0 };
+	Atom atom = { 0, 0, 0, 0 };
 
 	if (_resFork->hasResFork()) {
 		// Search for a 'moov' resource
@@ -102,7 +102,7 @@ bool QuickTimeParser::parseStream(SeekableReadStream *stream, DisposeAfterUse::F
 	_foundMOOV = false;
 	_disposeFileHandle = disposeFileHandle;
 
-	Atom atom = { 0, 0, 0xffffffff };
+	Atom atom = { 0, 0, 0xffffffff, 0 };
 
 	if (readDefault(atom) < 0 || !_foundMOOV) {
 		close();
@@ -268,7 +268,7 @@ int QuickTimeParser::readAtomContainerNode(Atom atom) {
 	uint32 startOffset = _fd->pos();
 	uint32 size = _fd->readUint32BE();
 	uint32 type = _fd->readUint32BE(); // root == 'sean'
-	_fd->readUint32BE(); // atom ID
+	uint32 id = _fd->readUint32BE();
 	_fd->readUint16BE(); // reserved
 	uint16 childCount = _fd->readUint16BE();
 	_fd->readUint32BE(); // reserved
@@ -280,6 +280,7 @@ int QuickTimeParser::readAtomContainerNode(Atom atom) {
 		a.offset = _fd->pos();
 		a.type = type;
 		a.size = size - (a.offset - startOffset);
+		a.id = id;
 
 		uint32 i = 0;
 
@@ -305,7 +306,7 @@ int QuickTimeParser::readAtomContainerNode(Atom atom) {
 		debug(0, "Node parent: '%s'", tag2str(type));
 
 		for (uint16 i = 0; i < childCount; i++) {
-			Atom a = { 0, 0, 0 };
+			Atom a = { 0, 0, 0, 0 };
 
 			if (readAtomContainerNode(a) < 0)
 				return -1;
@@ -362,7 +363,7 @@ int QuickTimeParser::readCMOV(Atom atom) {
 	_fd = new MemoryReadStream(uncompressedData, uncompressedSize, DisposeAfterUse::YES);
 
 	// Read the contents of the uncompressed data
-	Atom a = { MKTAG('m', 'o', 'o', 'v'), 0, uncompressedSize };
+	Atom a = { MKTAG('m', 'o', 'o', 'v'), 0, uncompressedSize, 0 };
 	int err = readDefault(a);
 
 	// Assign the file handle back to the original handle
@@ -607,7 +608,7 @@ int QuickTimeParser::readSTSD(Atom atom) {
 	track->sampleDescs.reserve(entryCount);
 
 	for (uint32 i = 0; i < entryCount; i++) { // Parsing Sample description table
-		Atom a = { 0, 0, 0 };
+		Atom a = { 0, 0, 0, 0 };
 		uint32 start_pos = _fd->pos();
 		int size = _fd->readUint32BE(); // size
 		uint32 format = _fd->readUint32BE(); // data format
