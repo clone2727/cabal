@@ -183,10 +183,14 @@ protected:
 
 protected:
 	struct Atom {
+		// Normal atoms
 		uint32 type;
 		uint32 offset;
 		uint32 size;
-		uint32 id; // For atom containers only
+
+		// Atom containers only
+		uint32 id;
+		Atom *parent;
 	};
 
 	typedef Common::Functor1<Atom, int> AtomParser;

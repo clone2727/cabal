@@ -128,7 +128,7 @@ Common::QuickTimeParser::SampleDesc *QTVRDecoder::readSampleDesc(Common::QuickTi
 		return 0;
 	} else if (track->codecType == CODEC_TYPE_QTVR) {
 		// The data here is an atom container
-		Atom a = { 0, 0, 0, 0 };
+		Atom a = { 0, 0, 0, 0, 0 };
 		a.size = descSize;
 		readAtomContainer(a);
 

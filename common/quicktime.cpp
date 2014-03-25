@@ -69,7 +69,7 @@ bool QuickTimeParser::parseFile(const String &filename) {
 	_foundMOOV = false;
 	_disposeFileHandle = DisposeAfterUse::YES;
 
-	Atom atom = { 0, 0, 0, 0 };
+	Atom atom = { 0, 0, 0, 0, 0 };
 
 	if (_resFork->hasResFork()) {
 		// Search for a 'moov' resource
@@ -102,7 +102,7 @@ bool QuickTimeParser::parseStream(SeekableReadStream *stream, DisposeAfterUse::F
 	_foundMOOV = false;
 	_disposeFileHandle = disposeFileHandle;
 
-	Atom atom = { 0, 0, 0xffffffff, 0 };
+	Atom atom = { 0, 0, 0xffffffff, 0, 0 };
 
 	if (readDefault(atom) < 0 || !_foundMOOV) {
 		close();
@@ -179,7 +179,7 @@ void QuickTimeParser::initParseTable() {
 
 int QuickTimeParser::readDefault(Atom atom) {
 	uint32 total_size = 0;
-	Atom a;
+	Atom a = { 0, 0, 0, 0, 0 };
 	int err = 0;
 
 	a.offset = atom.offset;
@@ -281,6 +281,7 @@ int QuickTimeParser::readAtomContainerNode(Atom atom) {
 		a.type = type;
 		a.size = size - (a.offset - startOffset);
 		a.id = id;
+		a.parent = atom.parent;
 
 		uint32 i = 0;
 
@@ -305,8 +306,15 @@ int QuickTimeParser::readAtomContainerNode(Atom atom) {
 	} else {
 		debug(0, "Node parent: '%s'", tag2str(type));
 
+		Atom parentAtom;
+		parentAtom.offset = startOffset;
+		parentAtom.type = type;
+		parentAtom.size = size - 20;
+		parentAtom.id = id;
+		parentAtom.parent = atom.parent;
+
 		for (uint16 i = 0; i < childCount; i++) {
-			Atom a = { 0, 0, 0, 0 };
+			Atom a = { 0, 0, 0, 0, &parentAtom };
 
 			if (readAtomContainerNode(a) < 0)
 				return -1;
@@ -363,7 +371,7 @@ int QuickTimeParser::readCMOV(Atom atom) {
 	_fd = new MemoryReadStream(uncompressedData, uncompressedSize, DisposeAfterUse::YES);
 
 	// Read the contents of the uncompressed data
-	Atom a = { MKTAG('m', 'o', 'o', 'v'), 0, uncompressedSize, 0 };
+	Atom a = { MKTAG('m', 'o', 'o', 'v'), 0, uncompressedSize, 0, 0 };
 	int err = readDefault(a);
 
 	// Assign the file handle back to the original handle
@@ -608,7 +616,7 @@ int QuickTimeParser::readSTSD(Atom atom) {
 	track->sampleDescs.reserve(entryCount);
 
 	for (uint32 i = 0; i < entryCount; i++) { // Parsing Sample description table
-		Atom a = { 0, 0, 0, 0 };
+		Atom a = { 0, 0, 0, 0, 0 };
 		uint32 start_pos = _fd->pos();
 		int size = _fd->readUint32BE(); // size
 		uint32 format = _fd->readUint32BE(); // data format
