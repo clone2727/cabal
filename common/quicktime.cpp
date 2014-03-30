@@ -918,6 +918,50 @@ void QuickTimeParser::close() {
 	_fd = 0;
 }
 
+Common::SeekableReadStream *QuickTimeParser::getSample(Track *track, int sample, uint32 &descId) {
+	// First, we have to track down which chunk holds the sample and which sample in the chunk contains the frame we are looking for.
+	int32 totalSampleCount = 0;
+	int32 sampleInChunk = 0;
+	int32 actualChunk = -1;
+	uint32 sampleToChunkIndex = 0;
+
+	for (uint32 i = 0; i < track->chunkCount; i++) {
+		if (sampleToChunkIndex < track->sampleToChunkCount && i >= track->sampleToChunk[sampleToChunkIndex].first)
+			sampleToChunkIndex++;
+
+		totalSampleCount += track->sampleToChunk[sampleToChunkIndex - 1].count;
+
+		if (totalSampleCount > sample) {
+			actualChunk = i;
+			descId = track->sampleToChunk[sampleToChunkIndex - 1].id;
+			sampleInChunk = track->sampleToChunk[sampleToChunkIndex - 1].count - totalSampleCount + sample;
+			break;
+		}
+	}
+
+	if (actualChunk < 0)
+		error("Could not find data for sample %d", sample);
+
+	// Next seek to that frame
+	_fd->seek(track->chunkOffsets[actualChunk]);
+
+	// Then, if the chunk holds more than one frame, seek to where the frame we want is located
+	for (int32 i = sample - sampleInChunk; i < sample; i++) {
+		if (track->sampleSize != 0)
+			_fd->skip(track->sampleSize);
+		else
+			_fd->skip(track->sampleSizes[i]);
+	}
+
+	// Finally, read in the raw data for the frame
+	//debug("Frame Data[%d]: Offset = %d, Size = %d", sample, stream->pos(), track->sampleSizes[sample]);
+
+	if (track->sampleSize != 0)
+		return _fd->readStream(track->sampleSize);
+
+	return _fd->readStream(track->sampleSizes[sample]);
+}
+
 QuickTimeParser::SampleDesc::SampleDesc(Track *parentTrack, uint32 codecTag) {
 	_parentTrack = parentTrack;
 	_codecTag = codecTag;

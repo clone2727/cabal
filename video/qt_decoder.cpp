@@ -569,48 +569,7 @@ Common::Rational QuickTimeDecoder::VideoTrackHandler::getScaledHeight() const {
 }
 
 Common::SeekableReadStream *QuickTimeDecoder::VideoTrackHandler::getNextFramePacket(uint32 &descId) {
-	// First, we have to track down which chunk holds the sample and which sample in the chunk contains the frame we are looking for.
-	int32 totalSampleCount = 0;
-	int32 sampleInChunk = 0;
-	int32 actualChunk = -1;
-	uint32 sampleToChunkIndex = 0;
-
-	for (uint32 i = 0; i < _parent->chunkCount; i++) {
-		if (sampleToChunkIndex < _parent->sampleToChunkCount && i >= _parent->sampleToChunk[sampleToChunkIndex].first)
-			sampleToChunkIndex++;
-
-		totalSampleCount += _parent->sampleToChunk[sampleToChunkIndex - 1].count;
-
-		if (totalSampleCount > _curFrame) {
-			actualChunk = i;
-			descId = _parent->sampleToChunk[sampleToChunkIndex - 1].id;
-			sampleInChunk = _parent->sampleToChunk[sampleToChunkIndex - 1].count - totalSampleCount + _curFrame;
-			break;
-		}
-	}
-
-	if (actualChunk < 0)
-		error("Could not find data for frame %d", _curFrame);
-
-	// Next seek to that frame
-	Common::SeekableReadStream *stream = _decoder->_fd;
-	stream->seek(_parent->chunkOffsets[actualChunk]);
-
-	// Then, if the chunk holds more than one frame, seek to where the frame we want is located
-	for (int32 i = _curFrame - sampleInChunk; i < _curFrame; i++) {
-		if (_parent->sampleSize != 0)
-			stream->skip(_parent->sampleSize);
-		else
-			stream->skip(_parent->sampleSizes[i]);
-	}
-
-	// Finally, read in the raw data for the frame
-	//debug("Frame Data[%d]: Offset = %d, Size = %d", _curFrame, stream->pos(), _parent->sampleSizes[_curFrame]);
-
-	if (_parent->sampleSize != 0)
-		return stream->readStream(_parent->sampleSize);
-
-	return stream->readStream(_parent->sampleSizes[_curFrame]);
+	return _decoder->getSample(_parent, _curFrame, descId);
 }
 
 uint32 QuickTimeDecoder::VideoTrackHandler::getFrameDuration() {

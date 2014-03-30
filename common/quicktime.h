@@ -209,6 +209,8 @@ protected:
 
 	Common::Array<AtomParseEntry*> _parseTable;
 
+	Common::SeekableReadStream *getSample(Track *track, int sample, uint32 &descId);
+
 private:
 	DisposeAfterUse::Flag _disposeFileHandle;
 
