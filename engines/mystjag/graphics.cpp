@@ -20,38 +20,49 @@
  *
  */
 
-#include "common/error.h"
+#include "common/stream.h"
 #include "common/system.h"
-#include "engines/util.h"
+#include "common/textconsole.h"	
+#include "graphics/surface.h"
 
 #include "mystjag/graphics.h"
-#include "mystjag/mystjag.h"
-#include "mystjag/sound.h"
 
 namespace MystJaguar {
 
-MystJaguarEngine::MystJaguarEngine(OSystem *syst, const MystJaguarGameDescription *gamedesc) : Engine(syst), _gameDescription(gamedesc) {
-	_gfx = 0;
-	_sound = 0;
+GraphicsManager::GraphicsManager() {
 }
 
-MystJaguarEngine::~MystJaguarEngine() {
-	delete _gfx;
-	delete _sound;
+GraphicsManager::~GraphicsManager() {
 }
 
-Common::Error MystJaguarEngine::run() {
-	_gfx = new GraphicsManager();
-	_sound = new SoundManager();
+template <typename PixelInt>
+void readSurface(Graphics::Surface &surface, Common::SeekableReadStream &stream) {
+	// Weirdest. color. format. ever. RBG556
+	Graphics::PixelFormat srcFormat(2, 5, 6, 5, 0, 11, 0, 6, 0);
+	PixelInt *dst = (PixelInt *)surface.getPixels();
 
-	// Initialize graphics
-	initGraphics(544, 384, true, 0);
+	for (int32 i = 0; i < surface.w * surface.h; i++) {
+		uint16 color = stream.readUint16BE();
+		byte r, g, b;
+		srcFormat.colorToRGB(color, r, g, b);
 
-	// I mean, we should have high color since we requested it in configure...
-	if (g_system->getScreenFormat().bytesPerPixel == 1)
-		return Common::kUnsupportedColorMode;
+		*dst++ = surface.format.RGBToColor(r, g, b);
+	}
+}
 
-	return Common::kNoError;
+Graphics::Surface *GraphicsManager::decodeImage(Common::SeekableReadStream &stream) {
+	uint16 width = stream.readUint16BE();
+	uint16 height = stream.readUint16BE();
+
+	Graphics::Surface *surface = new Graphics::Surface();
+	surface->create(width, height, g_system->getScreenFormat());
+
+	if (surface->format.bytesPerPixel == 2)
+		readSurface<uint16>(*surface, stream);
+	else
+		readSurface<uint32>(*surface, stream);
+
+	return surface;
 }
 
 } // End of namespace MystJaguar

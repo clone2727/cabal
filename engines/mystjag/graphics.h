@@ -20,32 +20,25 @@
  *
  */
 
-#ifndef MYSTJAG_MYSTJAG_H
-#define MYSTJAG_MYSTJAG_H
+#ifndef MYSTJAG_GRAPHICS_H
+#define MYSTJAG_GRAPHICS_H
 
-#include "engines/engine.h"
+namespace Common {
+class SeekableReadStream;
+}
+
+namespace Graphics {
+struct Surface;
+}
 
 namespace MystJaguar {
 
-class GraphicsManager;
-struct MystJaguarGameDescription;
-class SoundManager;
-
-class MystJaguarEngine : public ::Engine {
+class GraphicsManager {
 public:
-	MystJaguarEngine(OSystem *syst, const MystJaguarGameDescription *gamedesc);
-	virtual ~MystJaguarEngine();
+	GraphicsManager();
+	~GraphicsManager();
 
-	// Engine functions
-	const MystJaguarGameDescription *_gameDescription;
-	bool hasFeature(EngineFeature f) const;
-
-protected:
-	Common::Error run();
-
-private:
-	GraphicsManager *_gfx;
-	SoundManager *_sound;
+	Graphics::Surface *decodeImage(Common::SeekableReadStream &stream);
 };
 
 } // End of namespace MystJaguar

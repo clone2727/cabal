@@ -2,6 +2,7 @@ MODULE := engines/mystjag
 
 MODULE_OBJS = \
 	detection.o \
+	graphics.o \
 	mystjag.o \
 	sound.o
 
