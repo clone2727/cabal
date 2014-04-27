@@ -21,6 +21,8 @@
  */
 
 #include "common/error.h"
+#include "common/system.h"
+#include "engines/util.h"
 
 #include "mystjag/mystjag.h"
 #include "mystjag/sound.h"
@@ -37,6 +39,13 @@ MystJaguarEngine::~MystJaguarEngine() {
 
 Common::Error MystJaguarEngine::run() {
 	_sound = new SoundManager();
+
+	// Initialize graphics
+	initGraphics(544, 384, true, 0);
+
+	// I mean, we should have high color since we requested it in configure...
+	if (g_system->getScreenFormat().bytesPerPixel == 1)
+		return Common::kUnsupportedColorMode;
 
 	return Common::kNoError;
 }
