@@ -82,7 +82,14 @@ private:
 	byte _bitsPerPixel;
 };
 
-SegaFILMDecoder::SegaFILMDecoder() : _stream(0), _sampleTable(0) {
+struct ChunkTableEntry {
+	uint32 offset;
+	uint32 size;
+	uint32 time;
+	uint32 syncBytes;
+};
+
+SegaFILMDecoder::SegaFILMDecoder() : _stream(0) {
 }
 
 SegaFILMDecoder::~SegaFILMDecoder() {
@@ -104,8 +111,8 @@ bool SegaFILMDecoder::loadStream(Common::SeekableReadStream *stream) {
 	uint32 filmVersion = _stream->readUint32BE();
 	_stream->readUint32BE(); // Reserved
 
-	// We don't support the 3DO/SegaCD/Batman and Robin variants
-	if (filmVersion == 0 || filmVersion == 0x20000) {
+	// We don't support the SegaCD/Batman and Robin variants
+	if (filmVersion == 0x20000) {
 		close();
 		return false;
 	}
@@ -116,15 +123,10 @@ bool SegaFILMDecoder::loadStream(Common::SeekableReadStream *stream) {
 		return false;
 	}
 
-	/* uint32 fdscChunkSize = */ _stream->readUint32BE();
+	uint32 fdscChunkSize = _stream->readUint32BE();
 	uint32 codecTag = _stream->readUint32BE();
 	uint32 height = _stream->readUint32BE();
 	uint32 width = _stream->readUint32BE();
-	byte bitsPerPixel = _stream->readByte();
-	byte audioChannels = _stream->readByte();
-	byte audioSampleSize = _stream->readByte();
-	_stream->readByte(); // Unknown
-	uint16 audioFrequency = _stream->readUint16BE();
 
 	if (codecTag == 0) {
 		warning("Unsupported audio-only Sega FILM file");
@@ -132,46 +134,109 @@ bool SegaFILMDecoder::loadStream(Common::SeekableReadStream *stream) {
 		return false;
 	}
 
-	_stream->skip(6);
+	byte bitsPerPixel = 24;
+	byte audioChannels = 0;
+	byte audioSampleSize = 0;
+	uint16 audioSampleRate = 0;
+	uint audioFlags = 0;
+	bool hasSound = false;
+	bool planarSound = false;
 
-	// STAB Chunk
-	if (_stream->readUint32BE() != MKTAG('S', 'T', 'A', 'B')) {
-		close();
-		return false;
-	}
+	if (fdscChunkSize >= 32) {
+		bitsPerPixel = _stream->readByte();
+		audioChannels = _stream->readByte();
+		audioSampleSize = _stream->readByte();
+		_stream->readByte(); // Unknown
+		audioSampleRate = _stream->readUint16BE();
+		_stream->skip(6);
 
-	// The STAB chunk size changes definitions depending on the version anyway...
-	/* uint32 stabChunkSize = */ _stream->readUint32BE();
-	uint32 timeScale = _stream->readUint32BE();
-	uint32 sampleCount = _stream->readUint32BE();
-
-	_sampleTable = new SampleTableEntry[sampleCount];
-	uint32 frameCount = 0;
-
-	for (uint32 i = 0; i < sampleCount; i++) {
-		_sampleTable[i].offset = _stream->readUint32BE() + filmHeaderLength; // Offset is relative to the end of the header
-		_sampleTable[i].length = _stream->readUint32BE();
-		_sampleTable[i].sampleInfo1 = _stream->readUint32BE();
-		_sampleTable[i].sampleInfo2 = _stream->readUint32BE();
-
-		// Calculate the frame count based on the number of video samples.
-		// 0xFFFFFFFF represents an audio frame.
-		if (_sampleTable[i].sampleInfo1 != 0xFFFFFFFF)
-			frameCount++;
-	}
-
-	addTrack(new SegaFILMVideoTrack(width, height, codecTag, bitsPerPixel, frameCount, timeScale));
-
-	// Create the audio stream if audio is present
-	if (audioSampleSize != 0) {
-		uint audioFlags = 0;
 		if (audioChannels == 2)
 			audioFlags |= Audio::FLAG_STEREO;
 		if (audioSampleSize == 16)
 			audioFlags |= Audio::FLAG_16BITS;
 
-		addTrack(new SegaFILMAudioTrack(audioFrequency, audioFlags));
+		if (fdscChunkSize > 32)
+			_stream->skip(fdscChunkSize - 32);
+
+		hasSound = audioSampleSize != 0;
+		planarSound = true;
 	}
+
+	uint32 tag = _stream->readUint32BE();
+
+	if (tag == MKTAG('A', 'D', 'S', 'C')) {
+		// Atari Jaguar audio description
+		hasSound = true;
+		/* uint32 adscSize = */ _stream->readUint32BE();
+
+		// Just a flag here
+		uint32 stereoFlag = stream->readUint32BE();
+		if (stereoFlag == 1)
+			audioFlags |= Audio::FLAG_STEREO;
+
+		// Some strange rate calculation
+		uint32 sampleRate = 830965 / ((_stream->readUint32BE() + 1) << 1);
+		uint32 sampleFactor = 0xFFFFFFFF / _stream->readUint32BE();
+		audioSampleRate = sampleRate + sampleRate / sampleFactor;
+
+		tag = _stream->readUint32BE();
+	}
+
+	uint32 frameCount = 0;
+	uint32 timeScale = 0;
+
+	if (tag == MKTAG('C', 'T', 'A', 'B')) {
+		// Atari Jaguar chunk table
+		/* uint32 ctabSize = */ _stream->readUint32BE();
+		timeScale = _stream->readUint32BE();
+		uint32 chunkCount = _stream->readUint32BE();
+
+		// Load the chunk table
+		Common::Array<ChunkTableEntry> chunks;
+		chunks.resize(chunkCount);
+
+		for (uint32 i = 0; i < chunkCount; i++) {
+			ChunkTableEntry &chunk = chunks[i];
+			chunk.offset = _stream->readUint32BE() + filmHeaderLength + 0x40; // 0x40 = sync bytes
+			chunk.size = _stream->readUint32BE();
+			chunk.time = _stream->readUint32BE();
+			chunk.syncBytes = _stream->readUint32BE();
+		}
+
+		// Now aggregate all the sample tables
+		for (uint32 i = 0; i < chunkCount; i++) {
+			const ChunkTableEntry &chunk = chunks[i];
+			stream->seek(chunk.offset);
+
+			tag = _stream->readUint32BE();
+			if (tag != MKTAG('S', 'T', 'A', 'B')) {
+				warning("Failed to find STAB section in chunk %d", i);
+				close();
+				return false;
+			}
+
+			uint32 stabSize = _stream->readUint32BE();
+			_stream->readUint32BE(); // duplicate of time scale
+			addSampleTableEntries(chunk.offset + stabSize, frameCount);
+		}
+	} else if (tag == MKTAG('S', 'T', 'A', 'B')) {
+		// Sample table
+
+		// The STAB chunk size changes definitions depending on the version anyway...
+		/* uint32 stabSize = */ _stream->readUint32BE();
+		timeScale = _stream->readUint32BE();
+		addSampleTableEntries(filmHeaderLength, frameCount);
+	} else {
+		// Unknown
+		close();
+		return false;
+	}
+
+	addTrack(new SegaFILMVideoTrack(width, height, codecTag, bitsPerPixel, frameCount, timeScale));
+
+	// Create the audio stream if audio is present
+	if (hasSound)
+		addTrack(new SegaFILMAudioTrack(audioSampleRate, audioFlags, planarSound));
 
 	_sampleTablePosition = 0;
 
@@ -181,7 +246,7 @@ bool SegaFILMDecoder::loadStream(Common::SeekableReadStream *stream) {
 void SegaFILMDecoder::close() {
 	VideoDecoder::close();
 
-	delete[] _sampleTable; _sampleTable = 0;
+	_sampleTable.clear();
 	delete _stream; _stream = 0;
 }
 
@@ -209,6 +274,25 @@ void SegaFILMDecoder::readNextPacket() {
 
 	// This should be impossible to get to
 	error("Could not find Sega FILM frame %d", getCurFrame());
+}
+
+void SegaFILMDecoder::addSampleTableEntries(uint32 offset, uint32 &frameCount) {
+	uint32 sampleCount = _stream->readUint32BE();
+
+	for (uint32 i = 0; i < sampleCount; i++) {
+		SampleTableEntry sample;
+		sample.offset = _stream->readUint32BE() + offset;
+		sample.length = _stream->readUint32BE();
+		sample.sampleInfo1 = _stream->readUint32BE();
+		sample.sampleInfo2 = _stream->readUint32BE();
+
+		// Calculate the frame count based on the number of video samples.
+		// 0xFFFFFFFF represents an audio frame.
+		if (sample.sampleInfo1 != 0xFFFFFFFF)
+			frameCount++;
+
+		_sampleTable.push_back(sample);
+	}
 }
 
 SegaFILMDecoder::SegaFILMVideoTrack::SegaFILMVideoTrack(uint32 width, uint32 height, uint32 codecTag, byte bitsPerPixel, uint32 frameCount, uint32 timeScale) {
@@ -242,9 +326,10 @@ void SegaFILMDecoder::SegaFILMVideoTrack::decodeFrame(Common::SeekableReadStream
 	_nextFrameStartTime += duration; // Add the frame's duration to the next frame start
 }
 
-SegaFILMDecoder::SegaFILMAudioTrack::SegaFILMAudioTrack(uint audioFrequency, uint audioFlags) {
+SegaFILMDecoder::SegaFILMAudioTrack::SegaFILMAudioTrack(uint audioFrequency, uint audioFlags, bool usePlanar) {
 	_audioFlags = audioFlags;
 	_audioStream = Audio::makeQueuingAudioStream(audioFrequency, audioFlags & Audio::FLAG_STEREO);
+	_usePlanar = usePlanar;
 }
 
 SegaFILMDecoder::SegaFILMAudioTrack::~SegaFILMAudioTrack() {
@@ -252,27 +337,31 @@ SegaFILMDecoder::SegaFILMAudioTrack::~SegaFILMAudioTrack() {
 }
 
 void SegaFILMDecoder::SegaFILMAudioTrack::queueAudio(Common::SeekableReadStream *stream, uint32 length) {
-	// TODO: Maybe move this to a new class?
 	// TODO: CRI ADX ADPCM is possible here too
 	byte *audioBuffer = (byte *)malloc(length);
 
-	if (_audioFlags & Audio::FLAG_16BITS) {
-		if (_audioFlags & Audio::FLAG_STEREO) {
-			for (byte i = 0; i < 2; i++)
-				for (uint16 j = 0; j < length / 4; j++)
-					WRITE_BE_UINT16(audioBuffer + j * 4 + i * 2, stream->readUint16BE());
+	if (_usePlanar) {
+		// TODO: Maybe move this to a new class?
+		if (_audioFlags & Audio::FLAG_16BITS) {
+			if (_audioFlags & Audio::FLAG_STEREO) {
+				for (byte i = 0; i < 2; i++)
+					for (uint16 j = 0; j < length / 4; j++)
+						WRITE_BE_UINT16(audioBuffer + j * 4 + i * 2, stream->readUint16BE());
+			} else {
+				for (uint16 i = 0; i < length / 2; i++)
+					WRITE_BE_UINT16(audioBuffer + i * 2, stream->readUint16BE());
+			}
 		} else {
-			for (uint16 i = 0; i < length / 2; i++)
-				WRITE_BE_UINT16(audioBuffer + i * 2, stream->readUint16BE());
+			if (_audioFlags & Audio::FLAG_STEREO) {
+				for (byte i = 0; i < 2; i++)
+					for (uint16 j = 0; j < length / 2; j++)
+						audioBuffer[j * 2 + i] = stream->readByte();
+			} else {
+				stream->read(audioBuffer, length);
+			}
 		}
 	} else {
-		if (_audioFlags & Audio::FLAG_STEREO) {
-			for (byte i = 0; i < 2; i++)
-				for (uint16 j = 0; j < length / 2; j++)
-					audioBuffer[j * 2 + i] = stream->readByte();
-		} else {
-			stream->read(audioBuffer, length);
-		}
+		stream->read(audioBuffer, length);
 	}
 
 	// Now the audio is loaded, so let's queue it

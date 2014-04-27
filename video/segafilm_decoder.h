@@ -23,6 +23,7 @@
 #ifndef VIDEO_SEGAFILM_DECODER_H
 #define VIDEO_SEGAFILM_DECODER_H
 
+#include "common/array.h"
 #include "video/video_decoder.h"
 
 namespace Audio {
@@ -79,7 +80,7 @@ private:
 
 	class SegaFILMAudioTrack : public AudioTrack {
 	public:
-		SegaFILMAudioTrack(uint audioFrequency, uint audioFlags);
+		SegaFILMAudioTrack(uint audioFrequency, uint audioFlags, bool usePlanar);
 		~SegaFILMAudioTrack();
 
 		void queueAudio(Common::SeekableReadStream *stream, uint32 length);
@@ -90,6 +91,7 @@ private:
 	private:
 		Audio::QueuingAudioStream *_audioStream;
 		uint16 _audioFlags;
+		bool _usePlanar;
 	};
 
 	Common::SeekableReadStream *_stream;
@@ -102,7 +104,8 @@ private:
 	};
 
 	uint32 _sampleTablePosition;
-	SampleTableEntry *_sampleTable;
+	Common::Array<SampleTableEntry> _sampleTable;
+	void addSampleTableEntries(uint32 offset, uint32 &frameCount);
 };
 
 } // End of namespace Video
