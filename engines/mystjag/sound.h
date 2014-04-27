@@ -20,30 +20,26 @@
  *
  */
 
-#ifndef MYSTJAG_MYSTJAG_H
-#define MYSTJAG_MYSTJAG_H
+#ifndef MYSTJAG_SOUND_H
+#define MYSTJAG_SOUND_H
 
-#include "engines/engine.h"
+namespace Audio {
+class SeekableAudioStream;
+}
+
+namespace Common {
+class SeekableReadStream;
+class String;
+}
 
 namespace MystJaguar {
 
-struct MystJaguarGameDescription;
-class SoundManager;
-
-class MystJaguarEngine : public ::Engine {
+class SoundManager {
 public:
-	MystJaguarEngine(OSystem *syst, const MystJaguarGameDescription *gamedesc);
-	virtual ~MystJaguarEngine();
+	SoundManager();
+	~SoundManager();
 
-	// Engine functions
-	const MystJaguarGameDescription *_gameDescription;
-	bool hasFeature(EngineFeature f) const;
-
-protected:
-	Common::Error run();
-
-private:
-	SoundManager *_sound;
+	Audio::SeekableAudioStream *decodeJSND(Common::SeekableReadStream &stream);
 };
 
 } // End of namespace MystJaguar

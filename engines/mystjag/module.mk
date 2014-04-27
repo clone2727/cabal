@@ -2,7 +2,8 @@ MODULE := engines/mystjag
 
 MODULE_OBJS = \
 	detection.o \
-	mystjag.o
+	mystjag.o \
+	sound.o
 
 
 # This module can be built as a plugin

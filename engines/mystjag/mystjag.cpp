@@ -23,16 +23,21 @@
 #include "common/error.h"
 
 #include "mystjag/mystjag.h"
+#include "mystjag/sound.h"
 
 namespace MystJaguar {
 
 MystJaguarEngine::MystJaguarEngine(OSystem *syst, const MystJaguarGameDescription *gamedesc) : Engine(syst), _gameDescription(gamedesc) {
+	_sound = 0;
 }
 
 MystJaguarEngine::~MystJaguarEngine() {
+	delete _sound;
 }
 
 Common::Error MystJaguarEngine::run() {
+	_sound = new SoundManager();
+
 	return Common::kNoError;
 }
 
