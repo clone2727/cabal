@@ -4,6 +4,7 @@ MODULE_OBJS = \
 	detection.o \
 	graphics.o \
 	mystjag.o \
+	session.o \
 	sound.o
 
 
