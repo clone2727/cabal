@@ -40,6 +40,10 @@ bool MystJaguarEngine::hasFeature(EngineFeature f) const {
 		(f == kSupportsRTL);
 }
 
+bool MystJaguarEngine::isDemo() const {
+	return (_gameDescription->desc.flags & ADGF_DEMO) != 0;
+}
+
 } // End of namespace MystJaguar
 
 static const PlainGameDescriptor mystJaguarGames[] = {

@@ -29,6 +29,7 @@ namespace MystJaguar {
 
 class GraphicsManager;
 struct MystJaguarGameDescription;
+class SessionManager;
 class SoundManager;
 
 class MystJaguarEngine : public ::Engine {
@@ -39,12 +40,14 @@ public:
 	// Engine functions
 	const MystJaguarGameDescription *_gameDescription;
 	bool hasFeature(EngineFeature f) const;
+	bool isDemo() const;
 
 protected:
 	Common::Error run();
 
 private:
 	GraphicsManager *_gfx;
+	SessionManager *_session;
 	SoundManager *_sound;
 };
 

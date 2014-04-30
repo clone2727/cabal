@@ -21,11 +21,15 @@
  */
 
 #include "common/error.h"
+#include "common/events.h"
 #include "common/system.h"
 #include "engines/util.h"
+#include "graphics/surface.h"
+#include "video/segafilm_decoder.h"
 
 #include "mystjag/graphics.h"
 #include "mystjag/mystjag.h"
+#include "mystjag/session.h"
 #include "mystjag/sound.h"
 
 namespace MystJaguar {
@@ -33,16 +37,19 @@ namespace MystJaguar {
 MystJaguarEngine::MystJaguarEngine(OSystem *syst, const MystJaguarGameDescription *gamedesc) : Engine(syst), _gameDescription(gamedesc) {
 	_gfx = 0;
 	_sound = 0;
+	_session = 0;
 }
 
 MystJaguarEngine::~MystJaguarEngine() {
 	delete _gfx;
 	delete _sound;
+	delete _session;
 }
 
 Common::Error MystJaguarEngine::run() {
 	_gfx = new GraphicsManager();
 	_sound = new SoundManager();
+	_session = new SessionManager(isDemo());
 
 	// Initialize graphics
 	initGraphics(544, 384, true, 0);
@@ -50,6 +57,38 @@ Common::Error MystJaguarEngine::run() {
 	// I mean, we should have high color since we requested it in configure...
 	if (g_system->getScreenFormat().bytesPerPixel == 1)
 		return Common::kUnsupportedColorMode;
+
+	if (!_session->loadOffsetTable())
+		return Common::kNoGameDataFoundError;
+
+	// Show off the Cyan logo
+	Common::SeekableReadStream *cyanLogoStream = _session->getFile(0);
+	Video::SegaFILMDecoder video;
+	if (!video.loadStream(cyanLogoStream))
+		error("Failed to load Cyan logo video");
+
+	uint32 x = (_system->getWidth() - video.getWidth()) / 2;
+	uint32 y = (_system->getHeight() - video.getHeight()) / 2;
+
+	video.start();
+
+	while (!shouldQuit() && !video.endOfVideo()) {
+		if (video.needsUpdate()) {
+			const Graphics::Surface *frame = video.decodeNextFrame();
+
+			if (frame) {
+				_system->copyRectToScreen(frame->getPixels(), frame->pitch, x, y, frame->w, frame->h);
+				_system->updateScreen();
+			}
+		}
+
+		Common::Event event;
+		while (_eventMan->pollEvent(event))
+			;
+
+		_system->delayMillis(10);
+	}
+	
 
 	return Common::kNoError;
 }
