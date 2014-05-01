@@ -37,7 +37,6 @@ struct FileEntry {
 	uint32 sector;
 	uint32 size;
 	uint32 syncBytes;
-	uint32 offset;
 };
 
 class SessionManager {

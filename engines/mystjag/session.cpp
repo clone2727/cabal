@@ -47,7 +47,6 @@ bool SessionManager::loadOffsetTable() {
 
 	// Demo offset table
 	stream->seek(0xAF22);
-	uint32 offset = 0;
 
 	for (int i = 0; i < 400; i++) {
 		FileEntry entry;
@@ -55,14 +54,17 @@ bool SessionManager::loadOffsetTable() {
 		entry.sector = stream->readUint32BE();
 		entry.size = stream->readUint32BE();
 		entry.syncBytes = stream->readUint32BE();
-		entry.offset = offset;
-		offset += entry.size + 0x40;
 		_files.push_back(entry);
 	}
 
 	delete stream;
 	return true;
 }
+
+enum {
+	kSectorSize = 2352,
+	kSectorCheckCount = 2 // Apparently the sectors aren't always correct. This works for the demo though.
+};
 
 Common::SeekableReadStream *SessionManager::getFile(uint file) {
 	// Get the file from the data track
@@ -75,9 +77,46 @@ Common::SeekableReadStream *SessionManager::getFile(uint file) {
 	if (file >= _files.size())
 		error("Invalid file %d", file);
 
+	// Get to the sector offset
 	const FileEntry &entry = _files[file];
-	uint32 offset = entry.offset + 0x4EA;
-	return new Common::SeekableSubReadStream(stream, offset, offset + entry.size, DisposeAfterUse::YES);
+	uint32 offset = entry.sector * kSectorSize;
+	stream->seek(offset);
+
+	// Now we get to search for the sync
+	uint32 test = stream->readUint32BE();
+
+	while ((uint32)stream->pos() < offset + kSectorSize * kSectorCheckCount) {
+		if (test == entry.syncBytes) {
+			uint32 curOffset = stream->pos();
+			bool valid = true;
+
+			// OK, now we need to find this 15 more times
+			for (uint32 i = 0; i < 15; i++) {
+				uint32 check = stream->readUint32BE();
+				if (check != entry.syncBytes) {
+					valid = false;
+					break;
+				}
+			}
+
+			if (valid) {
+				// Yay, we found it
+				break;
+			} else {
+				// Boo :(
+				stream->seek(curOffset);
+			}
+		}
+
+		// Shift and grab the next byte
+		test <<= 8;
+		test |= stream->readByte();
+	}
+
+	if ((uint32)stream->pos() == offset + kSectorSize * kSectorCheckCount)
+		error("Failed to find file %d (sector %d, sync '%s')", file, entry.sector, tag2str(entry.syncBytes));
+
+	return new Common::SeekableSubReadStream(stream, stream->pos(), stream->pos() + entry.size, DisposeAfterUse::YES);
 }
 
 
