@@ -40,7 +40,7 @@ bool SessionManager::loadOffsetTable() {
 	if (!_isDemo)
 		return false;
 
-	Common::SeekableReadStream *stream = SearchMan.createReadStreamForMember("mystjag2.dat");
+	Common::SeekableReadStream *stream = SearchMan.createReadStreamForMember("mystjag0.dat");
 
 	if (!stream)
 		return false;
@@ -50,7 +50,7 @@ bool SessionManager::loadOffsetTable() {
 
 	for (int i = 0; i < 400; i++) {
 		FileEntry entry;
-		entry.unk = stream->readUint16BE();
+		entry.track = stream->readUint16BE();
 		entry.sector = stream->readUint32BE();
 		entry.size = stream->readUint32BE();
 		entry.syncBytes = stream->readUint32BE();
@@ -67,18 +67,17 @@ enum {
 };
 
 Common::SeekableReadStream *SessionManager::getFile(uint file) {
-	// Get the file from the data track
-
-	Common::SeekableReadStream *stream = SearchMan.createReadStreamForMember("mystjag3.dat");
-
-	if (!stream)
-		error("Failed to open mystjag3.dat");
-
 	if (file >= _files.size())
 		error("Invalid file %d", file);
 
-	// Get to the sector offset
 	const FileEntry &entry = _files[file];
+	Common::String fileName = Common::String::format("mystjag%d.dat", entry.track);
+	Common::SeekableReadStream *stream = SearchMan.createReadStreamForMember(fileName);
+
+	if (!stream)
+		error("Failed to open '%s'", fileName.c_str());
+
+	// Get to the sector offset
 	uint32 offset = entry.sector * kSectorSize;
 	stream->seek(offset);
 
@@ -114,7 +113,7 @@ Common::SeekableReadStream *SessionManager::getFile(uint file) {
 	}
 
 	if ((uint32)stream->pos() == offset + kSectorSize * kSectorCheckCount)
-		error("Failed to find file %d (sector %d, sync '%s')", file, entry.sector, tag2str(entry.syncBytes));
+		error("Failed to find file %d (track %d, sector %d, sync '%s')", file, entry.track, entry.sector, tag2str(entry.syncBytes));
 
 	return new Common::SeekableSubReadStream(stream, stream->pos(), stream->pos() + entry.size, DisposeAfterUse::YES);
 }

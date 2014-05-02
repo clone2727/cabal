@@ -59,7 +59,7 @@ static const MystJaguarGameDescription gameDescriptions[] = {
 		{
 			"mystjag",
 			"Demo",
-			AD_ENTRY1s("mystjag3.dat", "9bf4d4487b5b3b9f67edc5e10a8ce67a", 62360928),
+			AD_ENTRY1s("mystjag1.dat", "9bf4d4487b5b3b9f67edc5e10a8ce67a", 62360928),
 			Common::EN_ANY,
 			Common::kPlatformJaguar,
 			ADGF_DEMO,

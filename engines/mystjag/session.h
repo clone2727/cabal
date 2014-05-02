@@ -33,7 +33,7 @@ class SeekableReadStream;
 namespace MystJaguar {
 
 struct FileEntry {
-	uint16 unk; // always 1?
+	uint16 track; // relative to the session start
 	uint32 sector;
 	uint32 size;
 	uint32 syncBytes;
