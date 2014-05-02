@@ -45,11 +45,12 @@ public:
 	~SessionManager();
 
 	bool loadOffsetTable();
-	Common::SeekableReadStream *getFile(uint file);
+	Common::SeekableReadStream *getFile(uint stack, uint file);
 
 private:
 	bool _isDemo;
-	Common::Array<FileEntry> _files;
+	typedef Common::Array<FileEntry> FileTable;
+	Common::Array<FileTable> _fileTables;
 };
 
 } // End of namespace MystJaguar

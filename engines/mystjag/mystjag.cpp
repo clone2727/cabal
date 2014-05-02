@@ -62,7 +62,7 @@ Common::Error MystJaguarEngine::run() {
 		return Common::kNoGameDataFoundError;
 
 	// Show off the Cyan logo
-	Common::SeekableReadStream *cyanLogoStream = _session->getFile(0);
+	Common::SeekableReadStream *cyanLogoStream = _session->getFile(0, isDemo() ? 0 : 2);
 	Video::SegaFILMDecoder video;
 	if (!video.loadStream(cyanLogoStream))
 		error("Failed to load Cyan logo video");

@@ -33,28 +33,54 @@ SessionManager::SessionManager(bool isDemo) : _isDemo(isDemo) {
 SessionManager::~SessionManager() {
 }
 
+struct OffsetTableLocation {
+	uint32 offset;
+	uint32 entryCount;
+};
+
+static const OffsetTableLocation s_demoOffsetTables[] = {
+	{ 0xAF22, 400 } // Demo/Myst (track 1)
+};
+
+static const OffsetTableLocation s_fullOffsetTables[] = {
+	{ 0x1FFB6, 1069 }, // Myst (track 2)
+	{ 0x33E1A, 369 },  // Stoneship (track 3)
+	{ 0x425BE, 351 },  // Selenitic (track 4)
+	{ 0x51EA2, 326 },  // Mechanical (track 5)
+	{ 0x68C26, 685 },  // Channelwood (track 6)
+	{ 0x6CD8A, 57 }    // D'ni (track 7)
+};
+
 bool SessionManager::loadOffsetTable() {
-	// Load the file offset table from executable track
+	// Load the file offset tables from executable track
 
-	// TODO: There's no way in hell the full table will be at the same offset
-	if (!_isDemo)
-		return false;
-
-	Common::SeekableReadStream *stream = SearchMan.createReadStreamForMember("mystjag0.dat");
+	// The full game uses a boot track to load the executables. The demo is wholly in the
+	// boot track. There's an offset table for the executables in the boot track, but it's
+	// completely not worth loading it.
+	Common::String fileName = Common::String::format("mystjag%d.dat", _isDemo ? 0 : 1);
+	Common::SeekableReadStream *stream = SearchMan.createReadStreamForMember(fileName);
 
 	if (!stream)
 		return false;
 
-	// Demo offset table
-	stream->seek(0xAF22);
+	const OffsetTableLocation *locations = _isDemo ? s_demoOffsetTables : s_fullOffsetTables;
+	uint locationCount = _isDemo ? ARRAYSIZE(s_demoOffsetTables) : ARRAYSIZE(s_fullOffsetTables);
+	_fileTables.resize(locationCount);
 
-	for (int i = 0; i < 400; i++) {
-		FileEntry entry;
-		entry.track = stream->readUint16BE();
-		entry.sector = stream->readUint32BE();
-		entry.size = stream->readUint32BE();
-		entry.syncBytes = stream->readUint32BE();
-		_files.push_back(entry);
+	for (uint i = 0; i < locationCount; i++) {
+		const OffsetTableLocation &location = locations[i];
+		stream->seek(location.offset);
+
+		FileTable &table = _fileTables[i];
+		table.resize(location.entryCount);
+
+		for (uint j = 0; j < location.entryCount; j++) {
+			FileEntry &entry = table[j];
+			entry.track = stream->readUint16BE();
+			entry.sector = stream->readUint32BE();
+			entry.size = stream->readUint32BE();
+			entry.syncBytes = stream->readUint32BE();
+		}
 	}
 
 	delete stream;
@@ -63,14 +89,19 @@ bool SessionManager::loadOffsetTable() {
 
 enum {
 	kSectorSize = 2352,
-	kSectorCheckCount = 2 // Apparently the sectors aren't always correct. This works for the demo though.
+	kSectorCheckCount = 3 // Apparently the sectors aren't always correct. This works for the demo though.
 };
 
-Common::SeekableReadStream *SessionManager::getFile(uint file) {
-	if (file >= _files.size())
+Common::SeekableReadStream *SessionManager::getFile(uint stack, uint file) {
+	if (stack >= _fileTables.size())
+		error("Invalid stack %d", stack);
+
+	const FileTable &table = _fileTables[stack];
+
+	if (file >= table.size())
 		error("Invalid file %d", file);
 
-	const FileEntry &entry = _files[file];
+	const FileEntry &entry = table[file];
 	Common::String fileName = Common::String::format("mystjag%d.dat", entry.track);
 	Common::SeekableReadStream *stream = SearchMan.createReadStreamForMember(fileName);
 
@@ -113,7 +144,7 @@ Common::SeekableReadStream *SessionManager::getFile(uint file) {
 	}
 
 	if ((uint32)stream->pos() == offset + kSectorSize * kSectorCheckCount)
-		error("Failed to find file %d (track %d, sector %d, sync '%s')", file, entry.track, entry.sector, tag2str(entry.syncBytes));
+		error("Failed to find file %d (stack %d, track %d, sector %d, sync '%s')", stack, file, entry.track, entry.sector, tag2str(entry.syncBytes));
 
 	return new Common::SeekableSubReadStream(stream, stream->pos(), stream->pos() + entry.size, DisposeAfterUse::YES);
 }
