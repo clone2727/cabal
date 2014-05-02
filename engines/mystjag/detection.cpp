@@ -58,8 +58,36 @@ static const MystJaguarGameDescription gameDescriptions[] = {
 	{
 		{
 			"mystjag",
+			"",
+			{
+				{ "mystjag0.dat", 0, "59fb745d97d309b4c916c28e5a01bbec", 1406496 }, 
+				{ "mystjag1.dat", 0, "2b3d457a55746abea326e1e1ab144515", 2185008 },
+				{ "mystjag2.dat", 0, "d9d26846e50796cc35f95adc1217218a", 264915168 },
+				{ "mystjag3.dat", 0, "811de759dea8802fc814555c2e93a495", 43681344 },
+				{ "mystjag4.dat", 0, "900e998dcd37c5c1e2fa6530a8c9b7ab", 84695520 },
+				{ "mystjag5.dat", 0, "95fc9fab920481d4c360c822e8ab0436", 34122816 },
+				{ "mystjag6.dat", 0, "9c7abfa97c108345259118613dd7aa38", 73921008 },
+				{ "mystjag7.dat", 0, "2b10b83679a13fb057a3240434b6d184", 36634752 },
+				{ "mystjag8.dat", 0, "83e48e8ab4bba3800081b04a5d690be8", 1053696 },
+				{ 0, 0, 0, 0 }
+			},
+			Common::EN_ANY,
+			Common::kPlatformJaguar,
+			ADGF_NO_FLAGS,
+			GUIO0()
+		},
+	},
+
+	{
+		{
+			"mystjag",
 			"Demo",
-			AD_ENTRY1s("mystjag1.dat", "9bf4d4487b5b3b9f67edc5e10a8ce67a", 62360928),
+			{
+				{ "mystjag0.dat", 0, "2eb99ee8365ed21b9beb172d5939dfb7", 1404144 }, 
+				{ "mystjag1.dat", 0, "9bf4d4487b5b3b9f67edc5e10a8ce67a", 62360928 },
+				{ "mystjag2.dat", 0, "e59fd7fb7804dd32e98aa11eefcf2a2c", 1051344 },
+				{ 0, 0, 0, 0 }
+			},
 			Common::EN_ANY,
 			Common::kPlatformJaguar,
 			ADGF_DEMO,
