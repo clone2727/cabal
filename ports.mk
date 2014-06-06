@@ -155,6 +155,10 @@ ifdef USE_SPARKLE
 OSX_STATIC_LIBS += -framework Sparkle -F$(STATICLIBPATH)
 endif
 
+ifdef USE_ICONV
+OSX_ICONV ?= -liconv
+endif
+
 # Special target to create a static linked binary for Mac OS X.
 # We use -force_cpusubtype_ALL to ensure the binary runs on every
 # PowerPC machine.
@@ -162,7 +166,8 @@ cabalexec-static: $(OBJS)
 	$(CXX) $(LDFLAGS) -force_cpusubtype_ALL -o cabalexec-static $(OBJS) \
 		-framework CoreMIDI \
 		$(OSX_STATIC_LIBS) \
-		$(OSX_ZLIB)
+		$(OSX_ZLIB) \
+		$(OSX_ICONV)
 
 # Special target to create a static linked binary for the iPhone
 iphone: $(OBJS)
