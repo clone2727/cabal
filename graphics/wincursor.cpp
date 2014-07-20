@@ -55,6 +55,8 @@ public:
 
 	/** Read the cursor's data out of a stream. */
 	bool readFromStream(Common::SeekableReadStream &stream);
+	/** Read only the bitmap out of a stream. */
+	bool readFromBitmap(Common::SeekableReadStream &stream, uint16 hotspotX, uint16 hotspotY);
 
 private:
 	byte *_surface;
@@ -68,6 +70,9 @@ private:
 
 	/** Clear the cursor. */
 	void clear();
+
+	/** Read the bitmap out of the stream. */
+	bool readBitmap(Common::SeekableReadStream &stream, bool hasHotspot);
 };
 
 WinCursor::WinCursor() {
@@ -106,9 +111,23 @@ byte WinCursor::getKeyColor() const {
 
 bool WinCursor::readFromStream(Common::SeekableReadStream &stream) {
 	clear();
+	
+	return readBitmap(stream, true);
+}
 
-	_hotspotX = stream.readUint16LE();
-	_hotspotY = stream.readUint16LE();
+bool WinCursor::readFromBitmap(Common::SeekableReadStream &stream, uint16 hotspotX, uint16 hotspotY) {
+	clear();
+
+	_hotspotX = hotspotX;
+	_hotspotY = hotspotY;
+	return readBitmap(stream, false);
+}
+
+bool WinCursor::readBitmap(Common::SeekableReadStream &stream, bool hasHotspot) {
+	if (hasHotspot) {
+		_hotspotX = stream.readUint16LE();
+		_hotspotY = stream.readUint16LE();
+	}
 
 	// Check header size
 	if (stream.readUint32LE() != 40)
@@ -148,7 +167,7 @@ bool WinCursor::readFromStream(Common::SeekableReadStream &stream) {
 		numColors = 1 << bitsPerPixel;
 
 	// Reading the palette
-	stream.seek(40 + 4);
+	stream.seek(40 + (hasHotspot ? 4 : 0));
 	for (uint32 i = 0 ; i < numColors; i++) {
 		_palette[i * 3 + 2] = stream.readByte();
 		_palette[i * 3 + 1] = stream.readByte();
@@ -341,6 +360,55 @@ WinCursorGroup *WinCursorGroup::createCursorGroup(Common::PEResources &exe, cons
 
 		CursorItem item;
 		item.id = cursorId;
+		item.cursor = cursor;
+		group->cursors.push_back(item);
+	}
+
+	return group;
+}
+
+WinCursorGroup *WinCursorGroup::createCursorGroup(Common::SeekableReadStream &stream) {
+	if (stream.size() < 6)
+		return 0;
+
+	stream.skip(4);
+	uint32 cursorCount = stream.readUint16LE();
+	if ((uint32)stream.size() < (6 + cursorCount * 16))
+		return 0;
+
+	WinCursorGroup *group = new WinCursorGroup();
+	group->cursors.reserve(cursorCount);
+
+	for (uint32 i = 0; i < cursorCount; i++) {
+		stream.readByte(); // width
+		stream.readByte(); // height
+		stream.readByte(); // color count
+		stream.readByte(); // reserved, 0
+		uint16 hotspotX = stream.readUint16LE();
+		uint16 hotspotY = stream.readUint16LE();
+		uint32 imageSize = stream.readUint32LE();
+		uint32 imageOffset = stream.readUint32LE();
+
+		// Retrieve the bitmap data
+		uint32 lastPos = stream.pos();
+		stream.seek(imageOffset);
+		Common::ScopedPtr<Common::SeekableReadStream> cursorStream(stream.readStream(imageSize));
+		stream.seek(lastPos);
+
+		if (!cursorStream) {
+			delete group;
+			return 0;
+		}
+
+		WinCursor *cursor = new WinCursor();
+		if (!cursor->readFromBitmap(*cursorStream, hotspotX, hotspotY)) {
+			delete cursor;
+			delete group;
+			return 0;
+		}
+
+		CursorItem item;
+		item.id = i;
 		item.cursor = cursor;
 		group->cursors.push_back(item);
 	}
