@@ -51,5 +51,10 @@ MODULE_OBJS += \
 	rdft.o \
 	sinetables.o
 
+ifdef USE_ICONV
+MODULE_OBJS += \
+	iconv.o
+endif
+
 # Include common rules
 include $(srcdir)/rules.mk
