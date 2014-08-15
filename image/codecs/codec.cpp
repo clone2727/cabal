@@ -221,6 +221,8 @@ Codec *createBitmapCodec(uint32 tag, int width, int height, int bitsPerPixel, Co
 	case MKTAG('M','J','P','G'):
 	case MKTAG('m','j','p','g'):
 		return new MJPEGDecoder();
+	case MKTAG('S','V','Q','1'):
+		return new SVQ1Decoder(width, height);
 #ifdef USE_THEORADEC
 	case MKTAG('t','h','e','o'):
 		// Theora requires extra data
