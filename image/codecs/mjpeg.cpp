@@ -150,70 +150,81 @@ static const byte s_mjpegValACChrominance[] = {
 };
 
 const Graphics::Surface *MJPEGDecoder::decodeFrame(Common::SeekableReadStream &stream) {
-	// We need to reconstruct an actual JPEG stream here, then feed it to the JPEG decoder
-	// Yes, this is a pain.
-
+	// Try to check if it's an MJPEG frame or an actual JPEG frame. Why would anything
+	// be consistent?
+	
 	stream.readUint32BE(); // Skip nonsense JPEG header
 	uint16 inputSkip = stream.readUint16BE() + 4;
 	uint32 tag = stream.readUint32BE();
 
-	if (tag != MKTAG('A', 'V', 'I', '1')) {
-		warning("Invalid MJPEG tag found");
-		return 0;
+	if (tag == MKTAG('A', 'V', 'I', '1')) {
+		// OK, we know this is custom MJPEG nonsense. We need to reconstruct an actual JPEG
+		// stream here, then feed it to the JPEG decoder. Yes, this is a pain.
+
+		uint32 outputSize = stream.size() - inputSkip + sizeof(s_jpegHeader) + DHT_SEGMENT_SIZE;
+		byte *data = (byte *)malloc(outputSize);
+
+		if (!data) {
+			warning("Failed to allocate data for MJPEG conversion");
+			return 0;
+		}
+
+		// Copy the header
+		memcpy(data, s_jpegHeader, sizeof(s_jpegHeader));
+		uint32 dataOffset = sizeof(s_jpegHeader);
+
+		// Write the fake DHT segment
+		memcpy(data + dataOffset, s_dhtSegmentHead, sizeof(s_dhtSegmentHead));
+		dataOffset += sizeof(s_dhtSegmentHead);
+		memcpy(data + dataOffset, s_mjpegBitsDCLuminance + 1, 16);
+		dataOffset += 16;
+		memcpy(data + dataOffset, s_dhtSegmentFrag, sizeof(s_dhtSegmentFrag));
+		dataOffset += sizeof(s_dhtSegmentFrag);
+		memcpy(data + dataOffset, s_mjpegValDC, 12);
+		dataOffset += 12;
+		data[dataOffset++] = 0x10;
+		memcpy(data + dataOffset, s_mjpegBitsACLuminance + 1, 16);
+		dataOffset += 16;
+		memcpy(data + dataOffset, s_mjpegValACLuminance, 162);
+		dataOffset += 162;
+		data[dataOffset++] = 0x11;
+		memcpy(data + dataOffset, s_mjpegBitsACChrominance + 1, 16);
+		dataOffset += 16;
+		memcpy(data + dataOffset, s_mjpegValACChrominance, 162);
+		dataOffset += 162;
+
+		// Write the actual data
+		stream.seek(inputSkip);
+		stream.read(data + dataOffset, stream.size() - inputSkip);
+
+		// Decode using our reconstructed stream
+		Common::MemoryReadStream convertedStream(data, outputSize, DisposeAfterUse::YES);
+		decodeJPEGStream(convertedStream);
+	} else {
+		// Try to parse this as a normal JPEG stream instead
+		stream.seek(0);
+		decodeJPEGStream(stream);
 	}
 
-	uint32 outputSize = stream.size() - inputSkip + sizeof(s_jpegHeader) + DHT_SEGMENT_SIZE;
-	byte *data = (byte *)malloc(outputSize);
+	return _surface;
+}
 
-	if (!data) {
-		warning("Failed to allocate data for MJPEG conversion");
-		return 0;
-	}
-
-	// Copy the header
-	memcpy(data, s_jpegHeader, sizeof(s_jpegHeader));
-	uint32 dataOffset = sizeof(s_jpegHeader);
-
-	// Write the fake DHT segment
-	memcpy(data + dataOffset, s_dhtSegmentHead, sizeof(s_dhtSegmentHead));
-	dataOffset += sizeof(s_dhtSegmentHead);
-	memcpy(data + dataOffset, s_mjpegBitsDCLuminance + 1, 16);
-	dataOffset += 16;
-	memcpy(data + dataOffset, s_dhtSegmentFrag, sizeof(s_dhtSegmentFrag));
-	dataOffset += sizeof(s_dhtSegmentFrag);
-	memcpy(data + dataOffset, s_mjpegValDC, 12);
-	dataOffset += 12;
-	data[dataOffset++] = 0x10;
-	memcpy(data + dataOffset, s_mjpegBitsACLuminance + 1, 16);
-	dataOffset += 16;
-	memcpy(data + dataOffset, s_mjpegValACLuminance, 162);
-	dataOffset += 162;
-	data[dataOffset++] = 0x11;
-	memcpy(data + dataOffset, s_mjpegBitsACChrominance + 1, 16);
-	dataOffset += 16;
-	memcpy(data + dataOffset, s_mjpegValACChrominance, 162);
-	dataOffset += 162;
-
-	// Write the actual data
-	stream.seek(inputSkip);
-	stream.read(data + dataOffset, stream.size() - inputSkip);
-
-	Common::MemoryReadStream convertedStream(data, outputSize, DisposeAfterUse::YES);
-	JPEGDecoder jpeg;
-
-	if (!jpeg.loadStream(convertedStream)) {
-		warning("Failed to decode MJPEG frame");
-		return 0;
-	}
-
+void MJPEGDecoder::decodeJPEGStream(Common::SeekableReadStream &stream) {
+	// Throw out the old one
 	if (_surface) {
 		_surface->free();
 		delete _surface;
+		_surface = 0;
+	}
+
+	// And then decode to new one
+	JPEGDecoder jpeg;
+	if (!jpeg.loadStream(stream)) {
+		warning("Failed to decode MJPEG frame");
+		return;
 	}
 
 	_surface = jpeg.getSurface()->convertTo(_pixelFormat);
-
-	return _surface;
 }
 
 } // End of namespace Image

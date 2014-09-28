@@ -52,6 +52,8 @@ public:
 private:
 	Graphics::PixelFormat _pixelFormat;
 	Graphics::Surface *_surface;
+
+	void decodeJPEGStream(Common::SeekableReadStream &stream);
 };
 
 } // End of namespace Image
