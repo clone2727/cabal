@@ -48,9 +48,9 @@ MystJaguarEngine::~MystJaguarEngine() {
 }
 
 Common::Error MystJaguarEngine::run() {
-	_gfx = new GraphicsManager();
 	_sound = new SoundManager();
 	_session = new SessionManager(isDemo());
+	_gfx = new GraphicsManager(_session);
 
 	// Initialize graphics
 	initGraphics(544, 384, true, 0);

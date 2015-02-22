@@ -23,6 +23,10 @@
 #ifndef MYSTJAG_GRAPHICS_H
 #define MYSTJAG_GRAPHICS_H
 
+#include "common/scummsys.h"
+
+#include "mystjag/session.h"
+
 namespace Common {
 class SeekableReadStream;
 }
@@ -33,12 +37,48 @@ struct Surface;
 
 namespace MystJaguar {
 
+enum Cursor {
+	kCursorNone = -1,
+	kCursorUp = 0,
+	kCursorDown,
+	kCursorLeft,
+	kCursorRight,
+	kCursorWhitePage,
+	kCursorBluePage,
+	kCursorRedPage,
+	kCursorFlat,
+	kCursorGrab,
+	kCursorKey,
+	kCursorMatch,
+	kCursorStrikingMatch,
+	kCursorLitMatch,
+	kCursorRotateLeft,
+	kCursorRotateRight,
+	kCursorZip,
+	kCursorArrow,
+	kCursorZoomIn,
+	kCursorZoomOut,
+	kCursorTurnLeft,
+	kCursorTurnRight,
+	kCursorTurnBoth
+};
+
 class GraphicsManager {
 public:
-	GraphicsManager();
+	GraphicsManager(SessionManager *session);
 	~GraphicsManager();
 
 	Graphics::Surface *decodeImage(Common::SeekableReadStream &stream);
+	void setCursor(Cursor cursor);
+
+private:
+	SessionManager *_session;
+	Cursor _lastCursor;
+
+	/**
+	 * Load a hardcoded image out of the game's executable
+	 */
+	Graphics::Surface *loadExecutableImage(BinDataType dataType, uint16 width, uint16 height);
 };
 
 } // End of namespace MystJaguar
