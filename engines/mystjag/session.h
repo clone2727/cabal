@@ -39,15 +39,22 @@ struct FileEntry {
 	uint32 syncBytes;
 };
 
+enum BinDataType {
+	kBinDataCursors = 0
+};
+
 class SessionManager {
 public:
 	SessionManager(bool isDemo);
 	~SessionManager();
 
-	bool loadOffsetTable();
+	void loadOffsetTable();
 	Common::SeekableReadStream *getFile(uint stack, uint file);
+	Common::SeekableReadStream *loadExecutableData(BinDataType dataType, uint32 size);
 
 private:
+	static Common::SeekableReadStream *getTrack(uint track);
+
 	bool _isDemo;
 	typedef Common::Array<FileEntry> FileTable;
 	Common::Array<FileTable> _fileTables;

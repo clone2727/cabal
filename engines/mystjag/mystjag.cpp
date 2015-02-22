@@ -22,6 +22,7 @@
 
 #include "common/error.h"
 #include "common/events.h"
+#include "common/stream.h"
 #include "common/system.h"
 #include "engines/util.h"
 #include "graphics/surface.h"
@@ -58,8 +59,8 @@ Common::Error MystJaguarEngine::run() {
 	if (g_system->getScreenFormat().bytesPerPixel == 1)
 		return Common::kUnsupportedColorMode;
 
-	if (!_session->loadOffsetTable())
-		return Common::kNoGameDataFoundError;
+	// Load the offset table
+	_session->loadOffsetTable();
 
 	// Show off the Cyan logo
 	Common::SeekableReadStream *cyanLogoStream = _session->getFile(0, isDemo() ? 0 : 2);

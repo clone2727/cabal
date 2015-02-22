@@ -51,17 +51,13 @@ static const OffsetTableLocation s_fullOffsetTables[] = {
 	{ 0x6CD8A, 57 }    // D'ni (track 7)
 };
 
-bool SessionManager::loadOffsetTable() {
+void SessionManager::loadOffsetTable() {
 	// Load the file offset tables from executable track
 
 	// The full game uses a boot track to load the executables. The demo is wholly in the
 	// boot track. There's an offset table for the executables in the boot track, but it's
 	// completely not worth loading it.
-	Common::String fileName = Common::String::format("mystjag%d.dat", _isDemo ? 0 : 1);
-	Common::SeekableReadStream *stream = SearchMan.createReadStreamForMember(fileName);
-
-	if (!stream)
-		return false;
+	Common::SeekableReadStream *stream = getTrack(_isDemo ? 0 : 1);
 
 	const OffsetTableLocation *locations = _isDemo ? s_demoOffsetTables : s_fullOffsetTables;
 	uint locationCount = _isDemo ? ARRAYSIZE(s_demoOffsetTables) : ARRAYSIZE(s_fullOffsetTables);
@@ -84,7 +80,6 @@ bool SessionManager::loadOffsetTable() {
 	}
 
 	delete stream;
-	return true;
 }
 
 enum {
@@ -102,11 +97,7 @@ Common::SeekableReadStream *SessionManager::getFile(uint stack, uint file) {
 		error("Invalid file %d", file);
 
 	const FileEntry &entry = table[file];
-	Common::String fileName = Common::String::format("mystjag%d.dat", entry.track);
-	Common::SeekableReadStream *stream = SearchMan.createReadStreamForMember(fileName);
-
-	if (!stream)
-		error("Failed to open '%s'", fileName.c_str());
+	Common::SeekableReadStream *stream = getTrack(entry.track);
 
 	// Get to the sector offset
 	uint32 offset = entry.sector * kSectorSize;
@@ -149,5 +140,26 @@ Common::SeekableReadStream *SessionManager::getFile(uint stack, uint file) {
 	return new Common::SeekableSubReadStream(stream, stream->pos(), stream->pos() + entry.size, DisposeAfterUse::YES);
 }
 
+Common::SeekableReadStream *SessionManager::getTrack(uint track) {
+	Common::String fileName = Common::String::format("mystjag%d.dat", track);
+	Common::SeekableReadStream *stream = SearchMan.createReadStreamForMember(fileName);
+
+	if (!stream)
+		error("Failed to open '%s'", fileName.c_str());
+
+	return stream;
+}
+
+Common::SeekableReadStream *SessionManager::loadExecutableData(BinDataType dataType, uint32 size) {
+	static const uint32 offsets[][2] = {
+		{ 54230, 56418 } // Cursors
+	};
+
+	Common::SeekableReadStream *stream = getTrack(0);
+	stream->seek(offsets[dataType][_isDemo ? 1 : 0]);
+	Common::SeekableReadStream *data = stream->readStream(size);
+	delete stream;
+	return data;
+}
 
 } // End of namespace MystJaguar
