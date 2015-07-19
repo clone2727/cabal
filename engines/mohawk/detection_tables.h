@@ -543,6 +543,21 @@ static const MohawkGameDescription gameDescriptions[] = {
 	{
 		{
 			"csworld",
+			"v3.0 Demo",
+			AD_ENTRY1("C2K.MHK", "fa7dd2184485da739a2d2174884876e8"),
+			Common::EN_ANY,
+			Common::kPlatformWindows,
+			ADGF_DEMO,
+			GUIO1(GUIO_NOASPECT)
+		},
+		GType_CSWORLD,
+		GF_DEMO,
+		0
+	},
+
+	{
+		{
+			"csworld",
 			"v3.5",
 			AD_ENTRY1("C2K.MHK", "d4857aeb0f5e2e0c4ac556aa74f38c23"),
 			Common::EN_ANY,
@@ -971,7 +986,7 @@ static const MohawkGameDescription gameDescriptions[] = {
 	{
 		{
 			"csusa",
-			"",
+			"v3.0",
 			AD_ENTRY1("USAC2K.MHK", "b8c9d3a2586f62bce3a48b50d7a700e9"),
 			Common::EN_ANY,
 			Common::kPlatformWindows,
@@ -980,6 +995,21 @@ static const MohawkGameDescription gameDescriptions[] = {
 		},
 		GType_CSUSA,
 		0,
+		0
+	},
+
+	{
+		{
+			"csusa",
+			"v3.0 Demo",
+			AD_ENTRY1("USAC2K.MHK", "f53989dcf8ddc273deb301396b1aa0fc"),
+			Common::EN_ANY,
+			Common::kPlatformWindows,
+			ADGF_DEMO,
+			GUIO1(GUIO_NOASPECT)
+		},
+		GType_CSUSA,
+		GF_DEMO,
 		0
 	},
 
