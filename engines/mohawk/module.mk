@@ -18,6 +18,11 @@ MODULE_OBJS = \
 	video.o \
 	view.o
 
+ifdef ENABLE_CARMENV3
+MODULE_OBJS += \
+	carmenv3.o
+endif
+
 ifdef ENABLE_CSTIME
 MODULE_OBJS += \
 	cstime.o \

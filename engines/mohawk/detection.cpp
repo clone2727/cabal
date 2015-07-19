@@ -29,6 +29,10 @@
 
 #include "mohawk/livingbooks.h"
 
+#ifdef ENABLE_CARMENV3
+#include "mohawk/carmenv3.h"
+#endif
+
 #ifdef ENABLE_CSTIME
 #include "mohawk/cstime.h"
 #endif
@@ -261,13 +265,21 @@ bool MohawkMetaEngine::createInstance(OSystem *syst, Engine **engine, const ADGa
 			warning("CSTime support not compiled in");
 			return false;
 #endif
-		case Mohawk::GType_ZOOMBINI:
 		case Mohawk::GType_CSWORLD:
 		case Mohawk::GType_CSAMTRAK:
+		case Mohawk::GType_CSUSA:
+#ifdef ENABLE_CARMENV3
+			*engine = new Mohawk::MohawkEngine_CarmenV3(syst, gd);
+			break;
+#else
+			warning("CarmenV3 support not copmiled in");
+			return false;
+#endif
+
+		case Mohawk::GType_ZOOMBINI:
 		case Mohawk::GType_JAMESMATH:
 		case Mohawk::GType_TREEHOUSE:
 		case Mohawk::GType_1STDEGREE:
-		case Mohawk::GType_CSUSA:
 			warning("Unsupported Mohawk Engine");
 			return false;
 		default:
