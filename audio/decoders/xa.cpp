@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -20,6 +20,8 @@
  *
  */
 
+// Based on the ScummVM (GPLv2+) file of the same name
+
 #include "audio/decoders/xa.h"
 #include "audio/audiostream.h"
 #include "common/stream.h"
@@ -31,7 +33,7 @@ public:
 	XAStream(Common::SeekableReadStream *stream, int rate, DisposeAfterUse::Flag disposeAfterUse);
 	~XAStream();
 
-	bool isStereo() const { return false; }
+	uint getChannels() const { return 1; }
 	bool endOfData() const { return _endOfData && _samplesRemaining == 0; }
 	int getRate() const { return _rate; }
 	int readBuffer(int16 *buffer, const int numSamples);

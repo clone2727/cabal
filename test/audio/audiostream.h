@@ -8,7 +8,7 @@ class AudioStreamTestSuite : public CxxTest::TestSuite
 {
 public:
 	void test_convertTimeToStreamPos() {
-		const Audio::Timestamp a = Audio::convertTimeToStreamPos(Audio::Timestamp(500, 1000), 11025, true);
+		const Audio::Timestamp a = Audio::convertTimeToStreamPos(Audio::Timestamp(500, 1000), 11025, 2);
 		// The last bit has to be 0 in any case for a stereo stream.
 		TS_ASSERT_EQUALS(a.totalNumberOfFrames() & 1, 0);
 
@@ -16,36 +16,36 @@ public:
 		// instead of 11024 and it would still be a valid sample position for ~500ms.
 		TS_ASSERT_EQUALS(a.totalNumberOfFrames(), 11024);
 
-		const Audio::Timestamp b = Audio::convertTimeToStreamPos(Audio::Timestamp(500, 1000), 11025, false);
+		const Audio::Timestamp b = Audio::convertTimeToStreamPos(Audio::Timestamp(500, 1000), 11025, 1);
 		TS_ASSERT_EQUALS(b.totalNumberOfFrames(), 500 * 11025 / 1000);
 
 		// Test Audio CD positioning
 
 		// for 44kHz and stereo
-		const Audio::Timestamp c = Audio::convertTimeToStreamPos(Audio::Timestamp(0, 50, 75), 44100, true);
+		const Audio::Timestamp c = Audio::convertTimeToStreamPos(Audio::Timestamp(0, 50, 75), 44100, 2);
 		TS_ASSERT_EQUALS(c.totalNumberOfFrames(), 50 * 44100 * 2 / 75);
 
 		// for 11kHz and mono
-		const Audio::Timestamp d = Audio::convertTimeToStreamPos(Audio::Timestamp(0, 50, 75), 11025, false);
+		const Audio::Timestamp d = Audio::convertTimeToStreamPos(Audio::Timestamp(0, 50, 75), 11025, 1);
 		TS_ASSERT_EQUALS(d.totalNumberOfFrames(), 50 * 11025 / 75);
 
 		// Some misc test
-		const Audio::Timestamp e = Audio::convertTimeToStreamPos(Audio::Timestamp(1, 1, 4), 11025, false);
+		const Audio::Timestamp e = Audio::convertTimeToStreamPos(Audio::Timestamp(1, 1, 4), 11025, 1);
 		TS_ASSERT_EQUALS(e.totalNumberOfFrames(), 5 * 11025 / 4);
 	}
 
 private:
-	void testLoopingAudioStreamFixedIter(const int sampleRate, const bool isStereo) {
-		const int secondLength = sampleRate * (isStereo ? 2 : 1);
+	void testLoopingAudioStreamFixedIter(const int sampleRate, const uint channels) {
+		const int secondLength = sampleRate * channels;
 
 		int16 *sine = 0;
-		Audio::SeekableAudioStream *s = createSineStream<int16>(sampleRate, 1, &sine, false, isStereo);
+		Audio::SeekableAudioStream *s = createSineStream<int16>(sampleRate, 1, &sine, false, channels);
 		Audio::LoopingAudioStream *loop = new Audio::LoopingAudioStream(s, 7);
 
 		int16 *buffer = new int16[secondLength * 3];
 
 		// Check parameters
-		TS_ASSERT_EQUALS(loop->isStereo(), isStereo);
+		TS_ASSERT_EQUALS(loop->getChannels(), channels);
 		TS_ASSERT_EQUALS(loop->getRate(), sampleRate);
 		TS_ASSERT_EQUALS(loop->endOfData(), false);
 		TS_ASSERT_EQUALS(loop->getCompleteIterations(), (uint)0);
@@ -102,41 +102,41 @@ private:
 
 public:
 	void test_looping_audio_stream_mono_11025_fixed_iter() {
-		testLoopingAudioStreamFixedIter(11025, false);
+		testLoopingAudioStreamFixedIter(11025, 1);
 	}
 
 	void test_looping_audio_stream_mono_22050_fixed_iter() {
-		testLoopingAudioStreamFixedIter(22050, false);
+		testLoopingAudioStreamFixedIter(22050, 1);
 	}
 
 	void test_looping_audio_stream_stereo_11025_fixed_iter() {
-		testLoopingAudioStreamFixedIter(11025, true);
+		testLoopingAudioStreamFixedIter(11025, 2);
 	}
 
 	void test_looping_audio_stream_stereo_22050_fixed_iter() {
-		testLoopingAudioStreamFixedIter(22050, true);
+		testLoopingAudioStreamFixedIter(22050, 2);
 	}
 
 private:
-	void testSubLoopingAudioStreamFixedIter(const int sampleRate, const bool isStereo, const int time, const int loopEndTime) {
-		const int secondLength = sampleRate * (isStereo ? 2 : 1);
+	void testSubLoopingAudioStreamFixedIter(const int sampleRate, const uint channels, const int time, const int loopEndTime) {
+		const int secondLength = sampleRate * channels;
 
 		const Audio::Timestamp loopStart(500, 1000), loopEnd(loopEndTime * 1000, 1000);
 
-		const int32 loopStartPos = Audio::convertTimeToStreamPos(loopStart, sampleRate, isStereo).totalNumberOfFrames();
-		const int32 loopEndPos = Audio::convertTimeToStreamPos(loopEnd, sampleRate, isStereo).totalNumberOfFrames();
+		const int32 loopStartPos = Audio::convertTimeToStreamPos(loopStart, sampleRate, channels).totalNumberOfFrames();
+		const int32 loopEndPos = Audio::convertTimeToStreamPos(loopEnd, sampleRate, channels).totalNumberOfFrames();
 
 		const int32 loopIteration = loopEndPos - loopStartPos;
 
 		int16 *sine = 0;
-		Audio::SeekableAudioStream *s = createSineStream<int16>(sampleRate, time, &sine, false, isStereo);
+		Audio::SeekableAudioStream *s = createSineStream<int16>(sampleRate, time, &sine, false, channels);
 		Audio::SubLoopingAudioStream *loop = new Audio::SubLoopingAudioStream(s, 5, loopStart, loopEnd);
 
 		const int32 bufferLen = MAX<int32>(loopIteration * 3, loopEndPos);
 		int16 *buffer = new int16[bufferLen];
 
 		// Check parameters
-		TS_ASSERT_EQUALS(loop->isStereo(), isStereo);
+		TS_ASSERT_EQUALS(loop->getChannels(), channels);
 		TS_ASSERT_EQUALS(loop->getRate(), sampleRate);
 		TS_ASSERT_EQUALS(loop->endOfData(), false);
 
@@ -175,34 +175,34 @@ private:
 
 public:
 	void test_sub_looping_audio_stream_mono_11025_mid_fixed_iter() {
-		testSubLoopingAudioStreamFixedIter(11025, false, 2, 1);
+		testSubLoopingAudioStreamFixedIter(11025, 1, 2, 1);
 	}
 
 	void test_sub_looping_audio_stream_mono_22050_mid_fixed_iter() {
-		testSubLoopingAudioStreamFixedIter(22050, false, 2, 1);
+		testSubLoopingAudioStreamFixedIter(22050, 1, 2, 1);
 	}
 
 	void test_sub_looping_audio_stream_stereo_11025_mid_fixed_iter() {
-		testSubLoopingAudioStreamFixedIter(11025, true, 2, 1);
+		testSubLoopingAudioStreamFixedIter(11025, 2, 2, 1);
 	}
 
 	void test_sub_looping_audio_stream_stereo_22050_mid_fixed_iter() {
-		testSubLoopingAudioStreamFixedIter(22050, true, 2, 1);
+		testSubLoopingAudioStreamFixedIter(22050, 2, 2, 1);
 	}
 
 	void test_sub_looping_audio_stream_mono_11025_end_fixed_iter() {
-		testSubLoopingAudioStreamFixedIter(11025, false, 2, 2);
+		testSubLoopingAudioStreamFixedIter(11025, 1, 2, 2);
 	}
 
 	void test_sub_looping_audio_stream_mono_22050_end_fixed_iter() {
-		testSubLoopingAudioStreamFixedIter(22050, false, 2, 2);
+		testSubLoopingAudioStreamFixedIter(22050, 1, 2, 2);
 	}
 
 	void test_sub_looping_audio_stream_stereo_11025_end_fixed_iter() {
-		testSubLoopingAudioStreamFixedIter(11025, true, 2, 2);
+		testSubLoopingAudioStreamFixedIter(11025, 2, 2, 2);
 	}
 
 	void test_sub_looping_audio_stream_stereo_22050_end_fixed_iter() {
-		testSubLoopingAudioStreamFixedIter(22050, true, 2, 2);
+		testSubLoopingAudioStreamFixedIter(22050, 2, 2, 2);
 	}
 };

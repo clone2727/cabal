@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -19,6 +19,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
  */
+
+// Based on the ScummVM (GPLv2+) file of the same name
 
 #include "common/config-manager.h"
 #include "common/timer.h"
@@ -165,7 +167,7 @@ void IMuseDigital::startSound(int soundId, const char *soundName, int soundType,
 			track->dataMod12Bit = otherTrack->dataMod12Bit;
 		}
 
-		track->stream = Audio::makeQueuingAudioStream(freq, track->mixerFlags & kFlagStereo);
+		track->stream = Audio::makeQueuingAudioStream(freq, (track->mixerFlags & kFlagStereo) ? 2 : 1);
 		_mixer->playStream(track->getType(), &track->mixChanHandle, track->stream, -1, track->getVol(), track->getPan());
 	}
 
@@ -365,7 +367,7 @@ Track *IMuseDigital::cloneToFadeOutTrack(Track *track, int fadeDelay) {
 	fadeTrack->volFadeUsed = true;
 
 	// Create an appendable output buffer
-	fadeTrack->stream = Audio::makeQueuingAudioStream(_sound->getFreq(fadeTrack->soundDesc), track->mixerFlags & kFlagStereo);
+	fadeTrack->stream = Audio::makeQueuingAudioStream(_sound->getFreq(fadeTrack->soundDesc), (track->mixerFlags & kFlagStereo) ? 2 : 1);
 	_mixer->playStream(track->getType(), &fadeTrack->mixChanHandle, fadeTrack->stream, -1, fadeTrack->getVol(), fadeTrack->getPan());
 	fadeTrack->used = true;
 

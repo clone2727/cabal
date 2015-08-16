@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -19,6 +19,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
  */
+
+// Based on the ScummVM (GPLv2+) file of the same name
 
 #include "voyeur/animation.h"
 #include "voyeur/staticres.h"
@@ -436,7 +438,7 @@ Graphics::Surface *RL2Decoder::RL2VideoTrack::getBackSurface() {
 RL2Decoder::RL2AudioTrack::RL2AudioTrack(const RL2FileHeader &header, Common::SeekableReadStream *stream, Audio::Mixer::SoundType soundType):
 		_header(header), _soundType(soundType) {
 	// Create audio straem for the audio track
-	_audStream = Audio::makeQueuingAudioStream(_header._rate, _header._channels == 2);
+	_audStream = Audio::makeQueuingAudioStream(_header._rate, _header._channels);
 }
 
 RL2Decoder::RL2AudioTrack::~RL2AudioTrack() {

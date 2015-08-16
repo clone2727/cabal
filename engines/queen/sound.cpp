@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -20,6 +20,7 @@
  *
  */
 
+// Based on the ScummVM (GPLv2+) file of the same name
 
 #include "common/config-manager.h"
 #include "common/endian.h"
@@ -81,9 +82,7 @@ public:
 	int readBuffer(int16 *buffer, const int numSamples) {
 		return _stream->readBuffer(buffer, numSamples);
 	}
-	bool isStereo() const {
-		return _stream->isStereo();
-	}
+	uint getChannels() const { return _stream->getChannels(); }
 	bool endOfData() const {
 		return _stream->endOfData();
 	}

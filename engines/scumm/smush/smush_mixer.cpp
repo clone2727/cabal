@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -20,6 +20,7 @@
  *
  */
 
+// Based on the ScummVM (GPLv2+) file of the same name
 
 #include "common/util.h"
 
@@ -120,7 +121,7 @@ bool SmushMixer::handleFrame() {
 				if (_mixer->isReady()) {
 					// Stream the data
 					if (!_channels[i].stream) {
-						_channels[i].stream = Audio::makeQueuingAudioStream(_channels[i].chan->getRate(), stereo);
+						_channels[i].stream = Audio::makeQueuingAudioStream(_channels[i].chan->getRate(), stereo ? 2 : 1);
 						_mixer->playStream(Audio::Mixer::kSFXSoundType, &_channels[i].handle, _channels[i].stream);
 					}
 					_mixer->setChannelVolume(_channels[i].handle, vol);

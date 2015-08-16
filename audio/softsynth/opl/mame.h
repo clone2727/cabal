@@ -194,7 +194,7 @@ public:
 
 	void writeReg(int r, int v);
 
-	bool isStereo() const { return false; }
+	uint getChannels() const { return 1; }
 
 protected:
 	void generateSamples(int16 *buffer, int length);

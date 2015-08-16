@@ -55,7 +55,7 @@ public:
 	BaseMP3Stream();
 	virtual ~BaseMP3Stream();
 
-	bool isStereo() const { return _channels == 2; }
+	uint getChannels() const { return _channels; }
 	int getRate() const { return _rate; }
 
 protected:

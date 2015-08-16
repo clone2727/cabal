@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -19,6 +19,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
  */
+
+// Based on the ScummVM (GPLv2+) file of the same name
 
 // Based on the Xentax Wiki documentation:
 // http://wiki.xentax.com/index.php/The_Last_Express_SND
@@ -497,7 +499,7 @@ void StreamedSound::setFilterId(int32 filterId) {
 //////////////////////////////////////////////////////////////////////////
 AppendableSound::AppendableSound() : SimpleSound() {
 	// Create an audio stream where the decoded chunks will be appended
-	_as = Audio::makeQueuingAudioStream(44100, false);
+	_as = Audio::makeQueuingAudioStream(44100, 1);
 	_finished = false;
 
 	// Start playing the decoded audio stream

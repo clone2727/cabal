@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -19,6 +19,9 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
  */
+
+// Based on the ScummVM (GPLv2+) file of the same name
+
 #include "common/scummsys.h"
 
 #include "graphics/palette.h"
@@ -214,7 +217,7 @@ void ComposerEngine::playWaveForAnim(uint16 id, uint16 priority, bool bufferingO
 	byte *buffer = (byte *)malloc(size);
 	stream->read(buffer, size);
 	if (!_audioStream)
-		_audioStream = Audio::makeQueuingAudioStream(22050, false);
+		_audioStream = Audio::makeQueuingAudioStream(22050, 1);
 	_audioStream->queueBuffer(buffer, size, DisposeAfterUse::YES, Audio::FLAG_UNSIGNED);
 	_currSoundPriority = priority;
 	delete stream;

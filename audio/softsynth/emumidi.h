@@ -91,7 +91,7 @@ public:
 
 	// AudioStream API
 	virtual int readBuffer(int16 *data, const int numSamples) {
-		const int stereoFactor = isStereo() ? 2 : 1;
+		const int stereoFactor = getChannels();
 		int len = numSamples / stereoFactor;
 		int step;
 

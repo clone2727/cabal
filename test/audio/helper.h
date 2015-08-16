@@ -24,15 +24,15 @@ static T *createSine(const int sampleRate, const int time) {
 }
 
 template<typename T>
-static Audio::SeekableAudioStream *createSineStream(const int sampleRate, const int time, int16 **comp, bool le, bool isStereo) {
-	T *sine = createSine<T>(sampleRate, time * (isStereo ? 2 : 1));
+static Audio::SeekableAudioStream *createSineStream(const int sampleRate, const int time, int16 **comp, bool le, uint channels) {
+	T *sine = createSine<T>(sampleRate, time * channels);
 
 	const bool isUnsigned = !std::numeric_limits<T>::is_signed;
 	const T xorMask = isUnsigned ? (1 << (std::numeric_limits<T>::digits - 1)) : 0;
 	const bool is16Bits = (sizeof(T) == 2);
 	assert(sizeof(T) == 2 || sizeof(T) == 1);
 
-	const int samples = sampleRate * time * (isStereo ? 2 : 1);
+	const int samples = sampleRate * time * channels;
 
 	if (comp) {
 		*comp = new int16[samples];
@@ -60,7 +60,7 @@ static Audio::SeekableAudioStream *createSineStream(const int sampleRate, const 
 	                             (is16Bits ? Audio::FLAG_16BITS : 0)
 	                             | (isUnsigned ? Audio::FLAG_UNSIGNED : 0)
 	                             | (le ? Audio::FLAG_LITTLE_ENDIAN : 0)
-	                             | (isStereo ? Audio::FLAG_STEREO : 0));
+	                             | ((channels == 2) ? Audio::FLAG_STEREO : 0));
 
 	return s;
 }

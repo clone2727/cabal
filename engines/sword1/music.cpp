@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -20,6 +20,7 @@
  *
  */
 
+// Based on the ScummVM (GPLv2+) file of the same name
 
 #include "common/file.h"
 #include "common/util.h"
@@ -170,8 +171,8 @@ bool MusicHandle::streaming() const {
 	return (_audioSource) ? (!_audioSource->endOfStream()) : false;
 }
 
-bool MusicHandle::isStereo() const {
-	return (_audioSource) ? _audioSource->isStereo() : false;
+uint MusicHandle::getChannels() const {
+	return _audioSource ? _audioSource->getChannels() : 1;
 }
 
 int MusicHandle::getRate() const {

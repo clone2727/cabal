@@ -493,7 +493,7 @@ bool ROQPlayer::processBlockSoundMono(ROQBlockHeader &blockHeader) {
 
 	// Initialize the audio stream if needed
 	if (!_audioStream && !playFirstFrame()) {
-		_audioStream = Audio::makeQueuingAudioStream(22050, false);
+		_audioStream = Audio::makeQueuingAudioStream(22050, 1);
 		Audio::SoundHandle sound_handle;
 		g_system->getMixer()->playStream(Audio::Mixer::kPlainSoundType, &sound_handle, _audioStream);
 	}
@@ -539,7 +539,7 @@ bool ROQPlayer::processBlockSoundStereo(ROQBlockHeader &blockHeader) {
 
 	// Initialize the audio stream if needed
 	if (!_audioStream && !playFirstFrame()) {
-		_audioStream = Audio::makeQueuingAudioStream(22050, true);
+		_audioStream = Audio::makeQueuingAudioStream(22050, 2);
 		Audio::SoundHandle sound_handle;
 		g_system->getMixer()->playStream(Audio::Mixer::kPlainSoundType, &sound_handle, _audioStream);
 	}

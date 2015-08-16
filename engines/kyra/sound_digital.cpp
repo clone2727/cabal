@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -20,6 +20,8 @@
  *
  */
 
+// Based on the ScummVM (GPLv2+) file of the same name
+
 #include "kyra/sound_digital.h"
 #include "kyra/resource.h"
 #include "kyra/kyra_mr.h"
@@ -38,7 +40,7 @@ public:
 	~KyraAudioStream() { delete _impl; _impl = 0; }
 
 	int readBuffer(int16 *buffer, const int numSamples);
-	bool isStereo() const { return _impl->isStereo(); }
+	uint getChannels() const { return _impl->getChannels(); }
 	bool endOfData() const { return _impl->endOfData() | _endOfData; }
 	int getRate() const { return _rate; }
 
@@ -113,7 +115,7 @@ public:
 
 	int readBuffer(int16 *buffer, const int numSamples);
 
-	bool isStereo() const { return false; }
+	uint getChannels() const { return 1; }
 	bool endOfData() const { return _endOfData; }
 
 	int getRate() const { return _rate; }
@@ -355,7 +357,7 @@ int AUDStream::readChunk(int16 *buffer, const int maxSamples) {
 }
 
 bool AUDStream::seek(const Audio::Timestamp &where) {
-	const uint32 seekSample = Audio::convertTimeToStreamPos(where, getRate(), isStereo()).totalNumberOfFrames();
+	const uint32 seekSample = Audio::convertTimeToStreamPos(where, getRate(), getChannels()).totalNumberOfFrames();
 
 	_stream->seek(_streamStart);
 	_processedSize = 0;

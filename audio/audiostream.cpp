@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -19,6 +19,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
  */
+
+// Based on the ScummVM (GPLv2+) file of the same name
 
 #include "common/debug.h"
 #include "common/file.h"
@@ -176,9 +178,9 @@ SubLoopingAudioStream::SubLoopingAudioStream(SeekableAudioStream *stream,
                                              const Timestamp loopEnd,
                                              DisposeAfterUse::Flag disposeAfterUse)
     : _parent(stream, disposeAfterUse), _loops(loops),
-      _pos(0, getRate() * (isStereo() ? 2 : 1)),
-      _loopStart(convertTimeToStreamPos(loopStart, getRate(), isStereo())),
-      _loopEnd(convertTimeToStreamPos(loopEnd, getRate(), isStereo())),
+      _pos(0, getRate() * getChannels()),
+      _loopStart(convertTimeToStreamPos(loopStart, getRate(), getChannels())),
+      _loopEnd(convertTimeToStreamPos(loopEnd, getRate(), getChannels())),
       _done(false) {
 	assert(loopStart < loopEnd);
 
@@ -239,11 +241,11 @@ bool SubLoopingAudioStream::endOfStream() const {
 
 SubSeekableAudioStream::SubSeekableAudioStream(SeekableAudioStream *parent, const Timestamp start, const Timestamp end, DisposeAfterUse::Flag disposeAfterUse)
     : _parent(parent, disposeAfterUse),
-      _start(convertTimeToStreamPos(start, getRate(), isStereo())),
-      _pos(0, getRate() * (isStereo() ? 2 : 1)),
-      _length(convertTimeToStreamPos(end, getRate(), isStereo()) - _start) {
+      _start(convertTimeToStreamPos(start, getRate(), getChannels())),
+      _pos(0, getRate() * getChannels()),
+      _length(convertTimeToStreamPos(end, getRate(), getChannels()) - _start) {
 
-	assert(_length.totalNumberOfFrames() % (isStereo() ? 2 : 1) == 0);
+	assert(_length.totalNumberOfFrames() % getChannels() == 0);
 	_parent->seek(_start);
 }
 
@@ -255,7 +257,7 @@ int SubSeekableAudioStream::readBuffer(int16 *buffer, const int numSamples) {
 }
 
 bool SubSeekableAudioStream::seek(const Timestamp &where) {
-	_pos = convertTimeToStreamPos(where, getRate(), isStereo());
+	_pos = convertTimeToStreamPos(where, getRate(), getChannels());
 	if (_pos > _length) {
 		_pos = _length;
 		return false;
@@ -303,9 +305,9 @@ private:
 	const int _rate;
 
 	/**
-	 * Whether this audio stream is mono (=false) or stereo (=true).
+	 * How many channels this audio stream contains.
 	 */
-	const int _stereo;
+	const uint _channels;
 
 	/**
 	 * This flag is set by the finish() method only. See there for more details.
@@ -324,13 +326,13 @@ private:
 	Common::Queue<StreamHolder> _queue;
 
 public:
-	QueuingAudioStreamImpl(int rate, bool stereo)
-	    : _rate(rate), _stereo(stereo), _finished(false) {}
+	QueuingAudioStreamImpl(int rate, uint channels)
+	    : _rate(rate), _channels(channels), _finished(false) {}
 	~QueuingAudioStreamImpl();
 
 	// Implement the AudioStream API
 	virtual int readBuffer(int16 *buffer, const int numSamples);
-	virtual bool isStereo() const { return _stereo; }
+	virtual uint getChannels() const { return _channels; }
 	virtual int getRate() const { return _rate; }
 
 	virtual bool endOfData() const {
@@ -367,7 +369,7 @@ QueuingAudioStreamImpl::~QueuingAudioStreamImpl() {
 
 void QueuingAudioStreamImpl::queueAudioStream(AudioStream *stream, DisposeAfterUse::Flag disposeAfterUse) {
 	assert(!_finished);
-	if ((stream->getRate() != getRate()) || (stream->isStereo() != isStereo()))
+	if ((stream->getRate() != getRate()) || (stream->getChannels() != getChannels()))
 		error("QueuingAudioStreamImpl::queueAudioStream: stream has mismatched parameters");
 
 	Common::StackLock lock(_mutex);
@@ -398,17 +400,21 @@ int QueuingAudioStreamImpl::readBuffer(int16 *buffer, const int numSamples) {
 	return samplesDecoded;
 }
 
-QueuingAudioStream *makeQueuingAudioStream(int rate, bool stereo) {
-	return new QueuingAudioStreamImpl(rate, stereo);
+QueuingAudioStream *makeQueuingAudioStream(int rate, uint channels) {
+	return new QueuingAudioStreamImpl(rate, channels);
 }
 
-Timestamp convertTimeToStreamPos(const Timestamp &where, int rate, bool isStereo) {
-	Timestamp result(where.convertToFramerate(rate * (isStereo ? 2 : 1)));
+Timestamp convertTimeToStreamPos(const Timestamp &where, int rate, uint channels) {
+	Timestamp result(where.convertToFramerate(rate * channels));
 
-	// When the Stream is a stereo stream, we have to assure
-	// that the sample position is an even number.
-	if (isStereo && (result.totalNumberOfFrames() & 1))
-		result = result.addFrames(-1); // We cut off one sample here.
+	// When the Stream is a multichannel stream, we have to assure
+	// that the sample position is a channel-divisible number.
+	if (channels > 1) {
+		int remainder = result.totalNumberOfFrames() % channels;
+
+		if (remainder > 0)
+			result = result.addFrames(-remainder);
+	}
 
 	// Since Timestamp allows sub-frame-precision it might lead to odd behaviors
 	// when we would just return result.
@@ -450,11 +456,10 @@ public:
 
 	bool endOfData() const { return _parentStream->endOfData() || reachedLimit(); }
 	bool endOfStream() const { return _parentStream->endOfStream() || reachedLimit(); }
-	bool isStereo() const { return _parentStream->isStereo(); }
+	uint getChannels() const { return _parentStream->getChannels(); }
 	int getRate() const { return _parentStream->getRate(); }
 
 private:
-	int getChannels() const { return isStereo() ? 2 : 1; }
 	bool reachedLimit() const { return _samplesRead >= _totalSamples; }
 
 	AudioStream *_parentStream;
@@ -472,10 +477,10 @@ AudioStream *makeLimitingAudioStream(AudioStream *parentStream, const Timestamp 
  */
 class NullAudioStream : public AudioStream {
 public:
-        bool isStereo() const { return false; }
-        int getRate() const;
-        int readBuffer(int16 *data, const int numSamples) { return 0; }
-        bool endOfData() const { return true; }
+	uint getChannels() const { return 1; }
+	int getRate() const;
+	int readBuffer(int16 *data, const int numSamples) { return 0; }
+	bool endOfData() const { return true; }
 };
 
 int NullAudioStream::getRate() const {

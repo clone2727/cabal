@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -19,6 +19,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
  */
+
+// Based on the ScummVM (GPLv2+) file of the same name
 
 #include "common/debug.h"
 #include "common/endian.h"
@@ -81,7 +83,7 @@ public:
 
 	virtual int readBuffer(int16 *buffer, const int numSamples);
 
-	virtual bool isStereo() const { return false; }
+	virtual uint getChannels() const { return 1; }
 
 	virtual int getRate() const { return _rate; }
 
@@ -271,7 +273,7 @@ bool VocStream::seek(const Timestamp &where) {
 		return false;
 
 	// Search for the block containing the requested sample
-	const uint32 seekSample = convertTimeToStreamPos(where, getRate(), isStereo()).totalNumberOfFrames();
+	const uint32 seekSample = convertTimeToStreamPos(where, getRate(), getChannels()).totalNumberOfFrames();
 	uint32 curSample = 0;
 
 	for (_curBlock = _blocks.begin(); _curBlock != _blocks.end(); ++_curBlock) {

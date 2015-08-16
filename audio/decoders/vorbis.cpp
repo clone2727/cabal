@@ -87,7 +87,7 @@ class VorbisStream : public SeekableAudioStream {
 protected:
 	Common::DisposablePtr<Common::SeekableReadStream> _inStream;
 
-	bool _isStereo;
+	uint _channels;
 	int _rate;
 
 	Timestamp _length;
@@ -106,7 +106,7 @@ public:
 	int readBuffer(int16 *buffer, const int numSamples);
 
 	bool endOfData() const		{ return _pos >= _bufferEnd; }
-	bool isStereo() const		{ return _isStereo; }
+	uint getChannels() const { return _channels; }
 	int getRate() const			{ return _rate; }
 
 	bool seek(const Timestamp &where);
@@ -132,7 +132,7 @@ VorbisStream::VorbisStream(Common::SeekableReadStream *inStream, DisposeAfterUse
 		return;
 
 	// Setup some header information
-	_isStereo = ov_info(&_ovFile, -1)->channels >= 2;
+	_channels = ov_info(&_ovFile, -1)->channels;
 	_rate = ov_info(&_ovFile, -1)->rate;
 
 #ifdef USE_TREMOR
@@ -163,9 +163,9 @@ int VorbisStream::readBuffer(int16 *buffer, const int numSamples) {
 }
 
 bool VorbisStream::seek(const Timestamp &where) {
-	// Vorbisfile uses the sample pair number, thus we always use "false" for the isStereo parameter
+	// Vorbisfile uses the sample pair number, thus we always use 1 for the channels parameter
 	// of the convertTimeToStreamPos helper.
-	int res = ov_pcm_seek(&_ovFile, convertTimeToStreamPos(where, getRate(), false).totalNumberOfFrames());
+	int res = ov_pcm_seek(&_ovFile, convertTimeToStreamPos(where, getRate(), 1).totalNumberOfFrames());
 	if (res) {
 		warning("Error seeking in Vorbis stream (%d)", res);
 		_pos = _bufferEnd;
@@ -239,7 +239,7 @@ public:
 	bool parseExtraData(Common::SeekableReadStream &packet1, Common::SeekableReadStream &packet2, Common::SeekableReadStream &packet3);
 
 	// AudioStream API
-	bool isStereo() const { return _vorbisInfo.channels == 2; }
+	uint getChannels() const { return _vorbisInfo.channels; }
 	int getRate() const { return _vorbisInfo.rate; }
 	int readBuffer(int16 *buffer, const int numSamples);
 	bool endOfData() const;
@@ -438,16 +438,15 @@ int PacketizedVorbisStream::readBuffer(int16 *buffer, const int numSamples) {
 		}
 
 		// See how many samples we can decode
-		uint channels = isStereo() ? 2 : 1;
-		decSamples = MIN<int>((numSamples - samples) / channels, decSamples);
+		decSamples = MIN<int>((numSamples - samples) / getChannels(), decSamples);
 
 #ifdef USE_TREMOR
 		for (int i = 0; i < decSamples; i++)
-			for (uint j = 0; j < channels; j++)
+			for (uint j = 0; j < getChannels(); j++)
 				buffer[samples++] = (int16)(pcm[j][i] / 32768);
 #else
 		for (int i = 0; i < decSamples; i++)
-			for (uint j = 0; j < channels; j++)
+			for (uint j = 0; j < getChannels(); j++)
 				buffer[samples++] = CLIP<int>(floor(pcm[j][i] * 32767.0f + 0.5), -32768, 32767);
 #endif
 

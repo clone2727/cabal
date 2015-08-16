@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -19,6 +19,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
  */
+
+// Based on the ScummVM (GPLv2+) file of the same name
 
 /*
  * This code is based on original Mortville Manor DOS source code
@@ -220,7 +222,7 @@ void SoundManager::litph(tablint &t, int typ, int tempo) {
 					warning("unhandled index %d", val);
 				} else {
 					if (!_audioStream)
-						_audioStream = Audio::makeQueuingAudioStream(freq, false);
+						_audioStream = Audio::makeQueuingAudioStream(freq, 1);
 					_audioStream->queueBuffer(&_noiseBuf[noiseAdr[val * 2]], noiseAdr[(val * 2) + 1] - noiseAdr[(val * 2)], DisposeAfterUse::NO, Audio::FLAG_UNSIGNED);
 				}
 			} else { // 2
@@ -238,7 +240,7 @@ void SoundManager::litph(tablint &t, int typ, int tempo) {
 					warning("unhandled index %d", val);
 				} else {
 					if (!_audioStream)
-						_audioStream = Audio::makeQueuingAudioStream(freq, false);
+						_audioStream = Audio::makeQueuingAudioStream(freq, 1);
 					_audioStream->queueBuffer(&_ambiantNoiseBuf[ambiantNoiseAdr[val * 2]], ambiantNoiseAdr[(val * 2) + 1] - ambiantNoiseAdr[(val * 2)], DisposeAfterUse::NO, Audio::FLAG_UNSIGNED);
 				}
 			}
@@ -273,7 +275,7 @@ void SoundManager::litph(tablint &t, int typ, int tempo) {
 				warning("TODO: blab");
 			else if (idx == 32) {
 				if (!_audioStream)
-					_audioStream = Audio::makeQueuingAudioStream(freq, false);
+					_audioStream = Audio::makeQueuingAudioStream(freq, 1);
 				_audioStream->queueBuffer(emptyBuf, 19, DisposeAfterUse::NO, Audio::FLAG_UNSIGNED);
 			} else if (idx == 35) {
 				if (i < _ptr_oct)
@@ -281,7 +283,7 @@ void SoundManager::litph(tablint &t, int typ, int tempo) {
 				i = _ptr_oct;
 			} else if (idx == 46) {
 				if (!_audioStream)
-					_audioStream = Audio::makeQueuingAudioStream(freq, false);
+					_audioStream = Audio::makeQueuingAudioStream(freq, 1);
 				for (int j = 0; j < 10; j++)
 					_audioStream->queueBuffer(emptyBuf, 19, DisposeAfterUse::NO, Audio::FLAG_UNSIGNED);
 			} else {

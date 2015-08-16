@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -19,6 +19,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
  */
+
+// Based on the ScummVM (GPLv2+) file of the same name
 
 #ifndef SCUMM_IMUSE_MAC_M68K_H
 #define SCUMM_IMUSE_MAC_M68K_H
@@ -48,7 +50,7 @@ public:
 	virtual MidiChannel *allocateChannel();
 	virtual MidiChannel *getPercussionChannel() { return 0; }
 
-	virtual bool isStereo() const { return false; }
+	virtual uint getChannels() const { return 1; }
 	virtual int getRate() const {
 		// The original is using a frequency of approx. 22254.54546 here.
 		// To be precise it uses the 16.16 fixed point value 0x56EE8BA3.

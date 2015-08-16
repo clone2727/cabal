@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -19,6 +19,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
  */
+
+// Based on the ScummVM (GPLv2+) file of the same name
 
 #include "audio/mixer.h"
 #include "audio/decoders/raw.h"
@@ -86,7 +88,7 @@ void MoviePlayer::playMovie(uint resIndex) {
 	_vm->_cameraY = 0;
 	_vm->_guiHeight = 0;
 
-	_audioStream = Audio::makeQueuingAudioStream(rate, false);
+	_audioStream = Audio::makeQueuingAudioStream(rate, 1);
 
 	_vm->_mixer->playStream(Audio::Mixer::kPlainSoundType, &_audioStreamHandle, _audioStream);
 

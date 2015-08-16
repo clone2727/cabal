@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -19,6 +19,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
  */
+
+// Based on the ScummVM (GPLv2+) file of the same name
 
 #ifndef SCUMM_PLAYERS_PLAYER_V2BASE_H
 #define SCUMM_PLAYERS_PLAYER_V2BASE_H
@@ -86,7 +88,7 @@ public:
 		return numSamples;
 	}
 */
-	virtual bool isStereo() const { return true; }
+	virtual uint getChannels() const { return 2; }
 	virtual bool endOfData() const { return false; }
 	virtual int getRate() const { return _sampleRate; }
 

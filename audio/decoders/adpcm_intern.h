@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -19,6 +19,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
  */
+
+// Based on the ScummVM (GPLv2+) file of the same name
 
 /**
  * Internal interfaces to the ADPCM decoders.
@@ -63,7 +65,7 @@ public:
 	ADPCMStream(Common::SeekableReadStream *stream, DisposeAfterUse::Flag disposeAfterUse, uint32 size, int rate, int channels, uint32 blockAlign);
 
 	virtual bool endOfData() const { return (_stream->eos() || _stream->pos() >= _endpos); }
-	virtual bool isStereo() const { return _channels == 2; }
+	virtual uint getChannels() const { return _channels; }
 	virtual int getRate() const { return _rate; }
 
 	virtual bool rewind();

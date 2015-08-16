@@ -34,7 +34,7 @@ public:
 	~AudioCDStream();
 
 	int readBuffer(int16 *buffer, const int numSamples);
-	bool isStereo() const { return true; }
+	uint getChannels() const { return 2; }
 	int getRate() const { return 44100; }
 	bool endOfData() const;
 	bool seek(const Audio::Timestamp &where);

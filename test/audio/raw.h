@@ -9,11 +9,11 @@ class RawStreamTestSuite : public CxxTest::TestSuite
 {
 private:
 	template<typename T>
-	void readBufferTestTemplate(const int sampleRate, const int time, const bool le, const bool isStereo) {
+	void readBufferTestTemplate(const int sampleRate, const int time, const bool le, const uint channels) {
 		int16 *sine;
-		Audio::SeekableAudioStream *s = createSineStream<int8>(sampleRate, time, &sine, le, isStereo);
+		Audio::SeekableAudioStream *s = createSineStream<int8>(sampleRate, time, &sine, le, channels);
 
-		const int totalSamples = sampleRate * time * (isStereo ? 2 : 1);
+		const int totalSamples = sampleRate * time * channels;
 		int16 *buffer = new int16[totalSamples];
 		TS_ASSERT_EQUALS(s->readBuffer(buffer, totalSamples), totalSamples);
 		TS_ASSERT_EQUALS(memcmp(sine, buffer, sizeof(int16) * totalSamples), 0);
@@ -26,47 +26,47 @@ private:
 
 public:
 	void test_read_buffer_8_bit_signed_mono() {
-		readBufferTestTemplate<int8>(11025, 2, false, false);
+		readBufferTestTemplate<int8>(11025, 2, false, 1);
 	}
 
 	void test_read_buffer_8_bit_signed_stereo() {
-		readBufferTestTemplate<int8>(11025, 2, false, true);
+		readBufferTestTemplate<int8>(11025, 2, false, 2);
 	}
 
 	void test_read_buffer_8_bit_unsigned_mono() {
-		readBufferTestTemplate<uint8>(11025, 2, false, false);
+		readBufferTestTemplate<uint8>(11025, 2, false, 1);
 	}
 
 	void test_read_buffer_16_bit_signed_be_mono() {
-		readBufferTestTemplate<int16>(11025, 2, false, false);
+		readBufferTestTemplate<int16>(11025, 2, false, 1);
 	}
 
 	void test_read_buffer_16_bit_signed_be_stereo() {
-		readBufferTestTemplate<int16>(11025, 2, false, true);
+		readBufferTestTemplate<int16>(11025, 2, false, 2);
 	}
 
 	void test_read_buffer_16_bit_unsigned_be_mono() {
-		readBufferTestTemplate<uint16>(11025, 2, false, false);
+		readBufferTestTemplate<uint16>(11025, 2, false, 1);
 	}
 
 	void test_read_buffer_16_bit_unsigned_be_stereo() {
-		readBufferTestTemplate<uint16>(11025, 2, false, true);
+		readBufferTestTemplate<uint16>(11025, 2, false, 2);
 	}
 
 	void test_read_buffer_16_bit_signed_le_mono() {
-		readBufferTestTemplate<int16>(11025, 2, true, false);
+		readBufferTestTemplate<int16>(11025, 2, true, 1);
 	}
 
 	void test_read_buffer_16_bit_signed_le_stereo() {
-		readBufferTestTemplate<int16>(11025, 2, true, true);
+		readBufferTestTemplate<int16>(11025, 2, true, 2);
 	}
 
 	void test_read_buffer_16_bit_unsigned_le_mono() {
-		readBufferTestTemplate<uint16>(11025, 2, true, false);
+		readBufferTestTemplate<uint16>(11025, 2, true, 1);
 	}
 
 	void test_read_buffer_16_bit_unsigned_le_stereo() {
-		readBufferTestTemplate<uint16>(11025, 2, true, true);
+		readBufferTestTemplate<uint16>(11025, 2, true, 2);
 	}
 
 private:
@@ -75,7 +75,7 @@ private:
 		const int time = 4;
 
 		int16 *sine;
-		Audio::SeekableAudioStream *s = createSineStream<int8>(sampleRate, time, &sine, false, false);
+		Audio::SeekableAudioStream *s = createSineStream<int8>(sampleRate, time, &sine, false, 1);
 		int16 *buffer = new int16[sampleRate * time];
 
 		TS_ASSERT_EQUALS(s->readBuffer(buffer, sampleRate), sampleRate);
@@ -103,7 +103,7 @@ private:
 	void readAfterEndTest() {
 		const int sampleRate = 11025;
 		const int time = 1;
-		Audio::SeekableAudioStream *s = createSineStream<int8>(sampleRate, time, 0, false, false);
+		Audio::SeekableAudioStream *s = createSineStream<int8>(sampleRate, time, 0, false, 1);
 		int16 *buffer = new int16[sampleRate * time];
 
 		TS_ASSERT_EQUALS(s->readBuffer(buffer, sampleRate * time), sampleRate * time);
@@ -125,7 +125,7 @@ private:
 	void rewindTest() {
 		const int sampleRate = 11025;
 		const int time = 2;
-		Audio::SeekableAudioStream *s = createSineStream<int8>(sampleRate, time, 0, false, false);
+		Audio::SeekableAudioStream *s = createSineStream<int8>(sampleRate, time, 0, false, 1);
 		int16 *buffer = new int16[sampleRate * time];
 
 		TS_ASSERT_EQUALS(s->readBuffer(buffer, sampleRate * time), sampleRate * time);
@@ -154,51 +154,51 @@ private:
 
 		// 11025 Hz tests
 		sampleRate = 11025;
-		s = createSineStream<int8>(sampleRate, time, 0, false, false);
+		s = createSineStream<int8>(sampleRate, time, 0, false, 1);
 		TS_ASSERT_EQUALS(s->getLength().totalNumberOfFrames(), sampleRate * time);
 		delete s;
 
-		s = createSineStream<uint16>(sampleRate, time, 0, false, false);
+		s = createSineStream<uint16>(sampleRate, time, 0, false, 1);
 		TS_ASSERT_EQUALS(s->getLength().totalNumberOfFrames(), sampleRate * time);
 		delete s;
 
 		// 48000 Hz tests
 		sampleRate = 48000;
-		s = createSineStream<int8>(sampleRate, time, 0, false, false);
+		s = createSineStream<int8>(sampleRate, time, 0, false, 1);
 		TS_ASSERT_EQUALS(s->getLength().totalNumberOfFrames(), sampleRate * time);
 		delete s;
 
-		s = createSineStream<uint16>(sampleRate, time, 0, true, false);
+		s = createSineStream<uint16>(sampleRate, time, 0, true, 1);
 		TS_ASSERT_EQUALS(s->getLength().totalNumberOfFrames(), sampleRate * time);
 		delete s;
 
 		// 11840 Hz tests
 		sampleRate = 11840;
-		s = createSineStream<int8>(sampleRate, time, 0, false, false);
+		s = createSineStream<int8>(sampleRate, time, 0, false, 1);
 		TS_ASSERT_EQUALS(s->getLength().totalNumberOfFrames(), sampleRate * time);
 		delete s;
 
-		s = createSineStream<uint16>(sampleRate, time, 0, false, false);
+		s = createSineStream<uint16>(sampleRate, time, 0, false, 1);
 		TS_ASSERT_EQUALS(s->getLength().totalNumberOfFrames(), sampleRate * time);
 		delete s;
 
 		// 11111 Hz tests
 		sampleRate = 11111;
-		s = createSineStream<int8>(sampleRate, time, 0, false, false);
+		s = createSineStream<int8>(sampleRate, time, 0, false, 1);
 		TS_ASSERT_EQUALS(s->getLength().totalNumberOfFrames(), sampleRate * time);
 		delete s;
 
-		s = createSineStream<uint16>(sampleRate, time, 0, false, false);
+		s = createSineStream<uint16>(sampleRate, time, 0, false, 1);
 		TS_ASSERT_EQUALS(s->getLength().totalNumberOfFrames(), sampleRate * time);
 		delete s;
 
 		// 22050 Hz stereo test
 		sampleRate = 22050;
-		s = createSineStream<int8>(sampleRate, time, 0, false, true);
+		s = createSineStream<int8>(sampleRate, time, 0, false, 2);
 		TS_ASSERT_EQUALS(s->getLength().totalNumberOfFrames(), sampleRate * time);
 		delete s;
 
-		s = createSineStream<uint16>(sampleRate, time, 0, true, true);
+		s = createSineStream<uint16>(sampleRate, time, 0, true, 2);
 		TS_ASSERT_EQUALS(s->getLength().totalNumberOfFrames(), sampleRate * time);
 		delete s;
 	}
@@ -209,19 +209,19 @@ public:
 	}
 
 private:
-	void seekTest(const int sampleRate, const int time, const bool isStereo) {
-		const int totalFrames = sampleRate * time * (isStereo ? 2 : 1);
+	void seekTest(const int sampleRate, const int time, const uint channels) {
+		const int totalFrames = sampleRate * time * channels;
 		int readData = 0, offset = 0;
 
 		int16 *buffer = new int16[totalFrames];
 		Audio::SeekableAudioStream *s = 0;
 		int16 *sine = 0;
 
-		s = createSineStream<int8>(sampleRate, time, &sine, false, isStereo);
+		s = createSineStream<int8>(sampleRate, time, &sine, false, channels);
 
 		// Seek to 500ms
 		const Audio::Timestamp a(0, 1, 2);
-		offset = Audio::convertTimeToStreamPos(a, sampleRate, isStereo).totalNumberOfFrames();
+		offset = Audio::convertTimeToStreamPos(a, sampleRate, channels).totalNumberOfFrames();
 		readData = totalFrames - offset;
 
 		TS_ASSERT_EQUALS(s->seek(a), true);
@@ -232,7 +232,7 @@ private:
 
 		// Seek to 3/4 of a second
 		const Audio::Timestamp b(0, 3, 4);
-		offset = Audio::convertTimeToStreamPos(b, sampleRate, isStereo).totalNumberOfFrames();
+		offset = Audio::convertTimeToStreamPos(b, sampleRate, channels).totalNumberOfFrames();
 		readData = totalFrames - offset;
 
 		TS_ASSERT_EQUALS(s->seek(b), true);
@@ -247,7 +247,7 @@ private:
 
 		// Seek to the mid of the stream
 		const Audio::Timestamp c(time * 1000 / 2, 1000);
-		offset = Audio::convertTimeToStreamPos(c, sampleRate, isStereo).totalNumberOfFrames();
+		offset = Audio::convertTimeToStreamPos(c, sampleRate, channels).totalNumberOfFrames();
 		readData = totalFrames - offset;
 
 		TS_ASSERT_EQUALS(s->seek(c), true);
@@ -258,7 +258,7 @@ private:
 
 		// Seek to the 1/4th of the last second of the stream
 		const Audio::Timestamp d(time - 1, 1, 4);
-		offset = Audio::convertTimeToStreamPos(d, sampleRate, isStereo).totalNumberOfFrames();
+		offset = Audio::convertTimeToStreamPos(d, sampleRate, channels).totalNumberOfFrames();
 		readData = totalFrames - offset;
 
 		TS_ASSERT_EQUALS(s->seek(d), true);
@@ -282,10 +282,10 @@ private:
 
 public:
 	void test_seek_mono() {
-		seekTest(11025, 2, false);
+		seekTest(11025, 2, 1);
 	}
 
 	void test_seek_stereo() {
-		seekTest(11025, 2, true);
+		seekTest(11025, 2, 2);
 	}
 };

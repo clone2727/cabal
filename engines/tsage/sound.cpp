@@ -2599,7 +2599,7 @@ bool PlayStream::play(int voiceNum, EventHandler *endAction) {
 		_file.skip(4);
 
 		// Create the stream
-		_audioStream = Audio::makeQueuingAudioStream(rate, false);
+		_audioStream = Audio::makeQueuingAudioStream(rate, 1);
 
 		// Load in the first chunk
 		byte *data = (byte *)malloc(chunkSize);
@@ -3087,7 +3087,7 @@ void SoundBlasterDriver::playSound(const byte *channelData, int dataOffset, int 
 	byte *soundData = (byte *)malloc(dataSize - dataOffset);
 	Common::copy(_channelData, _channelData + (dataSize - dataOffset), soundData);
 
-	_audioStream = Audio::makeQueuingAudioStream(11025, false);
+	_audioStream = Audio::makeQueuingAudioStream(11025, 1);
 	_audioStream->queueBuffer(soundData, dataSize - dataOffset, DisposeAfterUse::YES, Audio::FLAG_UNSIGNED);
 
 	// Start the new sound

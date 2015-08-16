@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -19,6 +19,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
  */
+
+// Based on the ScummVM (GPLv2+) file of the same name
 
 #include "scumm/cdda.h"
 #include "common/stream.h"
@@ -48,7 +50,7 @@ public:
 	virtual ~CDDAStream();
 
 	int readBuffer(int16 *buffer, const int numSamples);
-	bool isStereo() const { return true; }
+	uint getChannels() const { return 2; }
 	int getRate() const { return 44100; }
 	bool endOfData() const { return _stream->eos(); }
 	bool seek(const Audio::Timestamp &where);
@@ -61,7 +63,7 @@ CDDAStream::CDDAStream(Common::SeekableReadStream *stream, DisposeAfterUse::Flag
 	// The total size of CDDA.SOU is 289,808,802 bytes or (289808802 - 800) / 1177 = 246226 blocks
 	// We also deduct the shift values to return the correct length
 	uint32 blocks = (_stream->size() - START_OF_CDDA_DATA) / BLOCK_SIZE;
-	_length = Audio::Timestamp(0, (_stream->size() - START_OF_CDDA_DATA - blocks) / (isStereo() ? 2 : 1), getRate());
+	_length = Audio::Timestamp(0, (_stream->size() - START_OF_CDDA_DATA - blocks) / getChannels(), getRate());
 }
 
 CDDAStream::~CDDAStream() {
@@ -70,7 +72,7 @@ CDDAStream::~CDDAStream() {
 }
 
 bool CDDAStream::seek(const Audio::Timestamp &where) {
-	const uint32 seekSample = convertTimeToStreamPos(where, getRate(), isStereo()).totalNumberOfFrames();
+	const uint32 seekSample = convertTimeToStreamPos(where, getRate(), getChannels()).totalNumberOfFrames();
 	uint32 blocks = seekSample / 1176;
 
 	// Before seeking, read the shift values from the beginning of that block

@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -19,6 +19,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
  */
+
+// Based on the ScummVM (GPLv2+) file of the same name
 
 #include "audio/decoders/aac.h"
 
@@ -90,7 +92,7 @@ AudioStream *AACDecoder::decodeFrame(Common::SeekableReadStream &stream) {
 	byte *inBuffer = new byte[inBufferSize];
 	stream.read(inBuffer, inBufferSize);
 
-	QueuingAudioStream *audioStream = makeQueuingAudioStream(_rate, _channels == 2);
+	QueuingAudioStream *audioStream = makeQueuingAudioStream(_rate, _channels);
 
 	// Decode until we have enough samples (or there's no more left)
 	while (inBufferPos < inBufferSize) {

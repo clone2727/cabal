@@ -49,7 +49,7 @@ public:
 
 	int readBuffer(int16 *buffer, const int numSamples);
 
-	bool isStereo() const	{ return false; }
+	uint getChannels() const { return 1; }
 	bool endOfData() const	{ return false; }
 	bool endOfStream() const { return false; }
 	int getRate() const;

@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -19,6 +19,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
  */
+
+// Based on the ScummVM (GPLv2+) file of the same name
 
 /**
  * Internal interface to the QuickTime audio decoder.
@@ -70,7 +72,7 @@ protected:
 
 		// AudioStream API
 		int readBuffer(int16 *buffer, const int numSamples);
-		bool isStereo() const { return _queue->isStereo(); }
+		uint getChannels() const { return _queue->getChannels(); }
 		int getRate() const { return _queue->getRate(); }
 		bool endOfData() const;
 

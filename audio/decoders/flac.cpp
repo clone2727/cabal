@@ -128,7 +128,7 @@ public:
 
 	int readBuffer(int16 *buffer, const int numSamples);
 
-	bool isStereo() const { return _streaminfo.channels >= 2; }
+	uint getChannels() const { return MIN<uint>(_streaminfo.channels, MAX_OUTPUT_CHANNELS); }
 	int getRate() const { return _streaminfo.sample_rate; }
 	bool endOfData() const {
 		// End of data is reached if there either is no valid stream data available,
@@ -141,8 +141,6 @@ public:
 
 	bool isStreamDecoderReady() const { return getStreamDecoderState() == FLAC__STREAM_DECODER_SEARCH_FOR_FRAME_SYNC; }
 protected:
-	uint getChannels() const { return MIN<uint>(_streaminfo.channels, MAX_OUTPUT_CHANNELS); }
-
 	bool allocateBuffer(uint minSamples);
 
 	inline FLAC__StreamDecoderState getStreamDecoderState() const;
@@ -293,9 +291,9 @@ bool FLACStream::seekAbsolute(FLAC__uint64 sample) {
 bool FLACStream::seek(const Timestamp &where) {
 	_sampleCache.bufFill = 0;
 	_sampleCache.bufReadPos = NULL;
-	// FLAC uses the sample pair number, thus we always use "false" for the isStereo parameter
+	// FLAC uses the sample pair number, thus we always use 1 for the channels parameter
 	// of the convertTimeToStreamPos helper.
-	return seekAbsolute((FLAC__uint64)convertTimeToStreamPos(where, getRate(), false).totalNumberOfFrames());
+	return seekAbsolute((FLAC__uint64)convertTimeToStreamPos(where, getRate(), 1).totalNumberOfFrames());
 }
 
 int FLACStream::readBuffer(int16 *buffer, const int numSamples) {

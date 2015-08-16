@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -20,9 +20,10 @@
  *
  */
 
-// Based on eos' Bink decoder which is in turn
-// based quite heavily on the Bink decoder found in FFmpeg.
-// Many thanks to Kostya Shishkov for doing the hard work.
+// Based on the ScummVM (GPLv2+) file of the same name, which is based on
+// xoreos' Bink decoder (used with permissing from Sven Hesse and Matthew
+// Hoops) which is in turn based quite heavily on the Bink decoder found
+// in FFmpeg. Many thanks to Kostya Shishkov for doing the hard work.
 
 #include "audio/audiostream.h"
 #include "audio/decoders/raw.h"
@@ -1350,7 +1351,7 @@ void BinkDecoder::BinkVideoTrack::IDCTPut(DecodeContext &ctx, int16 *block) {
 }
 
 BinkDecoder::BinkAudioTrack::BinkAudioTrack(BinkDecoder::AudioInfo &audio) : _audioInfo(&audio) {
-	_audioStream = Audio::makeQueuingAudioStream(_audioInfo->outSampleRate, _audioInfo->outChannels == 2);
+	_audioStream = Audio::makeQueuingAudioStream(_audioInfo->outSampleRate, _audioInfo->outChannels);
 }
 
 BinkDecoder::BinkAudioTrack::~BinkAudioTrack() {

@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -19,6 +19,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
  */
+
+// Based on the ScummVM (GPLv2+) file of the same name
 
 #include "audio/softsynth/fmtowns_pc98/towns_pc98_fmsynth.h"
 #include "common/endian.h"
@@ -1223,8 +1225,8 @@ int TownsPC98_FmSynth::readBuffer(int16 *buffer, const int numSamples) {
 	return numSamples;
 }
 
-bool TownsPC98_FmSynth::isStereo() const {
-	return true;
+uint TownsPC98_FmSynth::getChannels() const {
+	return 2;
 }
 
 bool TownsPC98_FmSynth::endOfData() const {

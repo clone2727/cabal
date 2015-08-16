@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -19,6 +19,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
  */
+
+// Based on the ScummVM (GPLv2+) file of the same name
 
 // Based on http://wiki.multimedia.cx/index.php?title=Smacker
 // and the FFmpeg Smacker decoder (libavcodec/smacker.c), revision 16143
@@ -755,7 +757,7 @@ void SmackerDecoder::SmackerVideoTrack::unpackPalette(Common::SeekableReadStream
 
 SmackerDecoder::SmackerAudioTrack::SmackerAudioTrack(const AudioInfo &audioInfo, Audio::Mixer::SoundType soundType) :
 		_audioInfo(audioInfo), _soundType(soundType) {
-	_audioStream = Audio::makeQueuingAudioStream(_audioInfo.sampleRate, _audioInfo.isStereo);
+	_audioStream = Audio::makeQueuingAudioStream(_audioInfo.sampleRate, _audioInfo.isStereo ? 2 : 1);
 }
 
 SmackerDecoder::SmackerAudioTrack::~SmackerAudioTrack() {
@@ -764,7 +766,7 @@ SmackerDecoder::SmackerAudioTrack::~SmackerAudioTrack() {
 
 bool SmackerDecoder::SmackerAudioTrack::rewind() {
 	delete _audioStream;
-	_audioStream = Audio::makeQueuingAudioStream(_audioInfo.sampleRate, _audioInfo.isStereo);
+	_audioStream = Audio::makeQueuingAudioStream(_audioInfo.sampleRate, _audioInfo.isStereo ? 2 : 1);
 	return true;
 }
 

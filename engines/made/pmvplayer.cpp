@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -19,6 +19,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
  */
+
+// Based on the ScummVM (GPLv2+) file of the same name
 
 #include "made/pmvplayer.h"
 #include "made/made.h"
@@ -116,7 +118,7 @@ bool PmvPlayer::play(const char *filename) {
 	// TODO: Sound can still be a little choppy. A bug in the decoder or -
 	// perhaps more likely - do we have to implement double buffering to
 	// get it to work well?
-	_audioStream = Audio::makeQueuingAudioStream(soundFreq, false);
+	_audioStream = Audio::makeQueuingAudioStream(soundFreq, 1);
 
 	SoundDecoderData *soundDecoderData = new SoundDecoderData();
 

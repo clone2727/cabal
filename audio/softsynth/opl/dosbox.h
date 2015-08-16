@@ -97,7 +97,7 @@ public:
 
 	void writeReg(int r, int v);
 
-	bool isStereo() const { return _type != Config::kOpl2; }
+	uint getChannels() const { return (_type == Config::kOpl2) ? 1 : 2; }
 
 protected:
 	void generateSamples(int16 *buffer, int length);

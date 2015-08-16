@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -19,6 +19,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
  */
+
+// Based on the ScummVM (GPLv2+) file of the same name
 
 #include "common/debug.h"
 #include "common/util.h"
@@ -45,7 +47,7 @@ namespace Audio {
  */
 class SilentAudioStream : public AudioStream {
 public:
-	SilentAudioStream(int rate, bool stereo) : _rate(rate), _isStereo(stereo) {}
+	SilentAudioStream(int rate, uint channels) : _rate(rate), _channels(channels) {}
 
 	int readBuffer(int16 *buffer, const int numSamples) {
 		memset(buffer, 0, numSamples * 2);
@@ -53,12 +55,12 @@ public:
 	}
 
 	bool endOfData() const { return false; } // it never ends!
-	bool isStereo() const { return _isStereo; }
+	uint getChannels() const { return _channels; }
 	int getRate() const { return _rate; }
 
 private:
 	int _rate;
-	bool _isStereo;
+	uint _channels;
 };
 
 /**
@@ -76,23 +78,24 @@ public:
 	}
 
 	int readBuffer(int16 *buffer, const int numSamples) {
-		if (!_parentStream->isStereo())
+		if (_parentStream->getChannels() == 1)
 			return _parentStream->readBuffer(buffer, numSamples);
 
-		int16 temp[2];
+		int16 *temp = new int16[_parentStream->getChannels()];
 		int samples = 0;
 
 		while (samples < numSamples && !endOfData()) {
-			_parentStream->readBuffer(temp, 2);
+			_parentStream->readBuffer(temp, _parentStream->getChannels());
 			*buffer++ = temp[0];
 			samples++;
 		}
 
+		delete[] temp;
 		return samples;
 	}
 
 	bool endOfData() const { return _parentStream->endOfData(); }
-	bool isStereo() const { return false; }
+	uint getChannels() const { return 1; }
 	int getRate() const { return _parentStream->getRate(); }
 
 private:
@@ -228,7 +231,7 @@ void QuickTimeAudioDecoder::QuickTimeAudioTrack::queueAudio(const Timestamp &len
 				_skipSamples = Timestamp();
 			}
 
-			queueStream(makeLimitingAudioStream(new SilentAudioStream(getRate(), isStereo()), editLength), editLength);
+			queueStream(makeLimitingAudioStream(new SilentAudioStream(getRate(), getChannels()), editLength), editLength);
 			_curEdit++;
 			enterNewEdit(nextEditTime);
 		} else {
@@ -294,7 +297,7 @@ void QuickTimeAudioDecoder::QuickTimeAudioTrack::queueRemainingAudio() {
 
 int QuickTimeAudioDecoder::QuickTimeAudioTrack::readBuffer(int16 *buffer, const int numSamples) {
 	int samplesRead = _queue->readBuffer(buffer, numSamples);
-	_samplesQueued -= samplesRead / (isStereo() ? 2 : 1);
+	_samplesQueued -= samplesRead / getChannels();
 	return samplesRead;
 }
 
@@ -336,7 +339,7 @@ Timestamp QuickTimeAudioDecoder::QuickTimeAudioTrack::getLength() const {
 
 QueuingAudioStream *QuickTimeAudioDecoder::QuickTimeAudioTrack::createStream() const {
 	AudioSampleDesc *entry = (AudioSampleDesc *)_parentTrack->sampleDescs[0];
-	return makeQueuingAudioStream(entry->_sampleRate, entry->_channels == 2);
+	return makeQueuingAudioStream(entry->_sampleRate, entry->_channels);
 }
 
 bool QuickTimeAudioDecoder::QuickTimeAudioTrack::isOldDemuxing() const {
@@ -409,8 +412,8 @@ void QuickTimeAudioDecoder::QuickTimeAudioTrack::skipSamples(const Timestamp &le
 	if (sampleCount <= 0)
 		return;
 
-	if (isStereo())
-		sampleCount *= 2;
+	// Convert to the total samples, instead of samples per channel
+	sampleCount *= getChannels();
 
 	int16 *tempBuffer = new int16[sampleCount];
 	uint32 result = stream->readBuffer(tempBuffer, sampleCount);
@@ -419,7 +422,7 @@ void QuickTimeAudioDecoder::QuickTimeAudioTrack::skipSamples(const Timestamp &le
 	// If this is the queue, make sure we subtract this number from the
 	// amount queued
 	if (stream == _queue)
-		_samplesQueued -= result / (isStereo() ? 2 : 1);
+		_samplesQueued -= result / getChannels();
 }
 
 void QuickTimeAudioDecoder::QuickTimeAudioTrack::findEdit(const Timestamp &position) {
@@ -702,7 +705,7 @@ public:
 		return samples;
 	}
 
-	bool isStereo() const { return _audioTracks[0]->isStereo(); }
+	uint getChannels() const { return _audioTracks[0]->getChannels(); }
 	int getRate() const { return _audioTracks[0]->getRate(); }
 	bool endOfData() const { return _audioTracks[0]->endOfData(); }
 

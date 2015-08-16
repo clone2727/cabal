@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -19,6 +19,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
  */
+
+// Based on the ScummVM (GPLv2+) file of the same name
 
 #ifndef SOUND_MP3_PSP_H
 #define SOUND_MP3_PSP_H
@@ -58,7 +60,6 @@ protected:
 
 	Timestamp _length;
 	uint32 _sampleRate;
-	bool _stereo;
 
 	mad_timer_t _totalTime;
 	mad_stream _stream;		//
@@ -108,7 +109,7 @@ public:
 	int readBuffer(int16 *buffer, const int numSamples);
 
 	bool endOfData() const		{ return _state == MP3_STATE_EOS; }
-	bool isStereo() const		{ return _stereo; }
+	uint getChannels() const { return MAD_NCHANNELS(&_header); }
 	int getRate() const			{ return _sampleRate; }
 
 	bool seek(const Timestamp &where);

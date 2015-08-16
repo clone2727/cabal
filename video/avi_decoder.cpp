@@ -953,8 +953,7 @@ void AVIDecoder::AVIAudioTrack::skipAudio(const Audio::Timestamp &time, const Au
 	if (!audioStream)
 		return;
 
-	if (audioStream->isStereo())
-		skipFrames *= 2;
+	skipFrames *= audioStream->getChannels();
 
 	int16 *tempBuffer = new int16[skipFrames];
 	audioStream->readBuffer(tempBuffer, skipFrames);

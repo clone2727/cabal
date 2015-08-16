@@ -122,7 +122,7 @@ public:
 	void setVolume(byte volume);
 
 	// AudioStream API
-	bool isStereo() const { return false; }
+	uint getChannels() const { return 1; }
 
 protected:
 	// EmulatedAudioDevice API

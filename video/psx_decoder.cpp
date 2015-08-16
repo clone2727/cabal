@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -19,6 +19,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
  */
+
+// Based on the ScummVM (GPLv2+) file of the same name
 
 // PlayStation Stream demuxer and XA audio decoder based on FFmpeg/libav
 // MDEC video emulation based on http://kenai.com/downloads/jpsxdec/Old/PlayStation1_STR_format1-00.txt
@@ -317,7 +319,7 @@ PSXStreamDecoder::PSXAudioTrack::PSXAudioTrack(Common::SeekableReadStream *secto
 	byte format = sector->readByte();
 	bool stereo = (format & (1 << 0)) != 0;
 	uint rate = (format & (1 << 2)) ? 18900 : 37800;
-	_audStream = Audio::makeQueuingAudioStream(rate, stereo);
+	_audStream = Audio::makeQueuingAudioStream(rate, stereo ? 2 : 1);
 
 	memset(&_adpcmStatus, 0, sizeof(_adpcmStatus));
 }

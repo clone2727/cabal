@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -20,7 +20,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+ *
  */
+
+// Based on the ScummVM (GPLv2+) file of the same name
 
 /*****************************************************************************
  *		SOUND.H		Sound engine
@@ -114,7 +117,7 @@ public:
 	int readBuffer(int16 *buffer, const int numSamples);
 
 	bool endOfData() const	{ return eosIntern(); }
-	bool isStereo() const	{ return false; }
+	uint getChannels() const { return 1; }
 	int getRate() const	{ return 22050; }
 };
 
@@ -158,7 +161,7 @@ public:
 	int readBuffer(int16 *buffer, const int numSamples);
 
 	bool endOfData() const	{ return eosIntern(); }
-	bool isStereo() const	{ return _decoder->isStereo(); }
+	uint getChannels() const { return _decoder->getChannels(); }
 	int getRate() const	{ return _decoder->getRate(); }
 
 	int getCD()		{ return _cd; }
@@ -226,7 +229,7 @@ public:
 	// AudioStream API
 
 	int readBuffer(int16 *buffer, const int numSamples);
-	bool isStereo() const { return false; }
+	uint getChannels() const { return 1; }
 	bool endOfData() const;
 	int getRate() const { return Sword2Engine::isPsx() ? 11025 : 22050; }
 

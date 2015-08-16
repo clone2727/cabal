@@ -354,7 +354,7 @@ OggDecoder::VorbisAudioTrack::VorbisAudioTrack(Audio::Mixer::SoundType soundType
 	vorbis_block_init(&_vorbisDSP, &_vorbisBlock);
 	info = &vorbisInfo;
 
-	_audStream = Audio::makeQueuingAudioStream(vorbisInfo.rate, vorbisInfo.channels != 1);
+	_audStream = Audio::makeQueuingAudioStream(vorbisInfo.rate, vorbisInfo.channels);
 
 	_audioBufferFill = 0;
 	_audioBuffer = 0;
@@ -394,13 +394,13 @@ bool OggDecoder::VorbisAudioTrack::decodeSamples() {
 			assert(_audioBuffer);
 		}
 
-		int channels = _audStream->isStereo() ? 2 : 1;
+		uint channels = _audStream->getChannels();
 		int count = _audioBufferFill / 2;
 		int maxsamples = ((AUDIOFD_FRAGSIZE - _audioBufferFill) / channels) >> 1;
 		int i;
 
 		for (i = 0; i < ret && i < maxsamples; i++) {
-			for (int j = 0; j < channels; j++) {
+			for (uint j = 0; j < channels; j++) {
 				int val = CLIP((int)rint(pcm[j][i] * 32767.f), -32768, 32767);
 				_audioBuffer[count++] = val;
 			}

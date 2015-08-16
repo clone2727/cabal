@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -19,6 +19,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
  */
+
+// Based on the ScummVM (GPLv2+) file of the same name
 
 #include "common/endian.h"
 #include "common/memstream.h"
@@ -49,14 +51,14 @@ namespace Audio {
 template<bool is16Bit, bool isUnsigned, bool isLE>
 class RawStream : public SeekableAudioStream {
 public:
-	RawStream(int rate, bool stereo, DisposeAfterUse::Flag disposeStream, Common::SeekableReadStream *stream)
-		: _rate(rate), _isStereo(stereo), _playtime(0, rate), _stream(stream, disposeStream), _endOfData(false), _buffer(0) {
+	RawStream(int rate, uint channels, DisposeAfterUse::Flag disposeStream, Common::SeekableReadStream *stream)
+		: _rate(rate), _channels(channels), _playtime(0, rate), _stream(stream, disposeStream), _endOfData(false), _buffer(0) {
 		// Setup our buffer for readBuffer
 		_buffer = new byte[kSampleBufferLength * (is16Bit ? 2 : 1)];
 		assert(_buffer);
 
 		// Calculate the total playtime of the stream
-		_playtime = Timestamp(0, _stream->size() / (_isStereo ? 2 : 1) / (is16Bit ? 2 : 1), rate);
+		_playtime = Timestamp(0, _stream->size() / channels / (is16Bit ? 2 : 1), rate);
 	}
 
 	~RawStream() {
@@ -65,7 +67,7 @@ public:
 
 	int readBuffer(int16 *buffer, const int numSamples);
 
-	bool isStereo() const  { return _isStereo; }
+	uint getChannels() const { return _channels; }
 	bool endOfData() const { return _endOfData; }
 
 	int getRate() const         { return _rate; }
@@ -74,7 +76,7 @@ public:
 	bool seek(const Timestamp &where);
 private:
 	const int _rate;                                           ///< Sample rate of stream
-	const bool _isStereo;                                      ///< Whether this is an stereo stream
+	const uint _channels;                                      ///< The number of channels in the stream
 	Timestamp _playtime;                                       ///< Calculated total play time
 	Common::DisposablePtr<Common::SeekableReadStream> _stream; ///< Stream to read data from
 	bool _endOfData;                                           ///< Whether the stream end has been reached
@@ -166,7 +168,7 @@ bool RawStream<is16Bit, isUnsigned, isLE>::seek(const Timestamp &where) {
 	if (where > _playtime)
 		return false;
 
-	const uint32 seekSample = convertTimeToStreamPos(where, getRate(), isStereo()).totalNumberOfFrames();
+	const uint32 seekSample = convertTimeToStreamPos(where, getRate(), getChannels()).totalNumberOfFrames();
 	_stream->seek(seekSample * (is16Bit ? 2 : 1), SEEK_SET);
 
 	// In case of an error we will not continue stream playback.
@@ -192,21 +194,21 @@ bool RawStream<is16Bit, isUnsigned, isLE>::seek(const Timestamp &where) {
 #define MAKE_RAW_STREAM(UNSIGNED) \
 		if (is16Bit) { \
 			if (isLE) \
-				return new RawStream<true, UNSIGNED, true>(rate, isStereo, disposeAfterUse, stream); \
+				return new RawStream<true, UNSIGNED, true>(rate, channels, disposeAfterUse, stream); \
 			else  \
-				return new RawStream<true, UNSIGNED, false>(rate, isStereo, disposeAfterUse, stream); \
+				return new RawStream<true, UNSIGNED, false>(rate, channels, disposeAfterUse, stream); \
 		} else \
-			return new RawStream<false, UNSIGNED, false>(rate, isStereo, disposeAfterUse, stream)
+			return new RawStream<false, UNSIGNED, false>(rate, channels, disposeAfterUse, stream)
 
 SeekableAudioStream *makeRawStream(Common::SeekableReadStream *stream,
                                    int rate, byte flags,
                                    DisposeAfterUse::Flag disposeAfterUse) {
-	const bool isStereo   = (flags & Audio::FLAG_STEREO) != 0;
+	const uint channels   = ((flags & Audio::FLAG_STEREO) != 0) ? 2 : 1;
 	const bool is16Bit    = (flags & Audio::FLAG_16BITS) != 0;
 	const bool isUnsigned = (flags & Audio::FLAG_UNSIGNED) != 0;
 	const bool isLE       = (flags & Audio::FLAG_LITTLE_ENDIAN) != 0;
 
-	assert(stream->size() % ((is16Bit ? 2 : 1) * (isStereo ? 2 : 1)) == 0);
+	assert(stream->size() % ((is16Bit ? 2 : 1) * channels) == 0);
 
 	if (isUnsigned) {
 		MAKE_RAW_STREAM(true);

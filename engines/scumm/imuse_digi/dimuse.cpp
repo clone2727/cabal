@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -19,6 +19,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
  */
+
+// Based on the ScummVM (GPLv2+) file of the same name
 
 #include "common/system.h"
 #include "common/timer.h"
@@ -199,7 +201,7 @@ void IMuseDigital::saveOrLoad(Serializer *ser) {
 			} else
 				error("IMuseDigital::saveOrLoad(): Can't handle %d bit samples", bits);
 
-			track->stream = Audio::makeQueuingAudioStream(freq, (track->mixerFlags & kFlagStereo) != 0);
+			track->stream = Audio::makeQueuingAudioStream(freq, (track->mixerFlags & kFlagStereo) ? 2 : 1);
 
 			_mixer->playStream(track->getType(), &track->mixChanHandle, track->stream, -1, track->getVol(), track->getPan());
 			_mixer->pauseHandle(track->mixChanHandle, true);

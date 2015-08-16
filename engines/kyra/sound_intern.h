@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -19,6 +19,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
  */
+
+// Based on the ScummVM (GPLv2+) file of the same name
 
 #ifndef KYRA_SOUND_INTERN_H
 #define KYRA_SOUND_INTERN_H
@@ -256,7 +258,7 @@ public:
 	void generateSamples(int16 *buffer, int numSamples);
 
 	// AudioStream interface
-	bool isStereo() const { return false; }
+	uint getChannels() const { return 1; }
 	int getRate() const { return _rate; }
 private:
 	Common::Mutex _mutex;

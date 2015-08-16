@@ -114,7 +114,7 @@ EmulatedAudioDevice::~EmulatedAudioDevice() {
 }
 
 int EmulatedAudioDevice::readBuffer(int16 *buffer, const int numSamples) {
-	const int stereoFactor = isStereo() ? 2 : 1;
+	const int stereoFactor = getChannels();
 	int len = numSamples / stereoFactor;
 	int step;
 

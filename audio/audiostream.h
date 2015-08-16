@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -19,6 +19,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
  */
+
+// Based on the ScummVM (GPLv2+) file of the same name
 
 #ifndef AUDIO_AUDIOSTREAM_H
 #define AUDIO_AUDIOSTREAM_H
@@ -59,8 +61,25 @@ public:
 	 */
 	virtual int readBuffer(int16 *buffer, const int numSamples) = 0;
 
-	/** Is this a stereo stream? */
-	virtual bool isStereo() const = 0;
+	/**
+	 * Get the number of channels
+	 *
+	 * These channel counts correspond with the following
+	 * channel layouts:
+	 * 
+	 * 1: center [mono]
+	 * 2: left, right [stereo]
+	 * 4: left, right, left surround, right surround [quadraphonic]
+	 * 5: left, center, right, left surround, right surround [5.0]
+	 * 6: left, center, right, left surround, right surround, low [5.1]
+	 */
+	virtual uint getChannels() const = 0;
+
+	/**
+	 * Is this a stereo stream?
+	 * @deprecated Use getChannels() instead
+	 */
+	bool isStereo() const { return getChannels() == 2; };
 
 	/** Sample rate of the stream. */
 	virtual int getRate() const = 0;
@@ -124,7 +143,7 @@ public:
 	bool endOfData() const;
 	bool endOfStream() const;
 
-	bool isStereo() const { return _parent->isStereo(); }
+	uint getChannels() const { return _parent->getChannels(); }
 	int getRate() const { return _parent->getRate(); }
 
 	/**
@@ -253,7 +272,7 @@ public:
 	bool endOfData() const;
 	bool endOfStream() const;
 
-	bool isStereo() const { return _parent->isStereo(); }
+	uint getChannels() const { return _parent->getChannels(); }
 	int getRate() const { return _parent->getRate(); }
 private:
 	Common::DisposablePtr<SeekableAudioStream> _parent;
@@ -287,7 +306,7 @@ public:
 
 	int readBuffer(int16 *buffer, const int numSamples);
 
-	bool isStereo() const { return _parent->isStereo(); }
+	uint getChannels() const { return _parent->getChannels(); }
 
 	int getRate() const { return _parent->getRate(); }
 
@@ -349,7 +368,7 @@ public:
 /**
  * Factory function for an QueuingAudioStream.
  */
-QueuingAudioStream *makeQueuingAudioStream(int rate, bool stereo);
+QueuingAudioStream *makeQueuingAudioStream(int rate, uint channels);
 
 /**
  * Converts a point in time to a precise sample offset
@@ -357,9 +376,9 @@ QueuingAudioStream *makeQueuingAudioStream(int rate, bool stereo);
  *
  * @param where    Point in time.
  * @param rate     Rate of the stream.
- * @param isStereo Is the stream a stereo stream?
+ * @param channels The number of channels in the stream
  */
-Timestamp convertTimeToStreamPos(const Timestamp &where, int rate, bool isStereo);
+Timestamp convertTimeToStreamPos(const Timestamp &where, int rate, uint channels);
 
 /**
  * Factory function for an AudioStream wrapper that cuts off the amount of samples read after a
@@ -405,11 +424,11 @@ public:
 class StatelessPacketizedAudioStream : public PacketizedAudioStream {
 public:
 	StatelessPacketizedAudioStream(uint rate, uint channels) :
-		_rate(rate), _channels(channels), _stream(makeQueuingAudioStream(rate, channels == 2)) {}
+		_rate(rate), _channels(channels), _stream(makeQueuingAudioStream(rate, channels)) {}
 	virtual ~StatelessPacketizedAudioStream() {}
 
 	// AudioStream API
-	bool isStereo() const { return _channels == 2; }
+	uint getChannels() const { return _channels; }
 	int getRate() const { return _rate; }
 	int readBuffer(int16 *data, const int numSamples) { return _stream->readBuffer(data, numSamples); }
 	bool endOfData() const { return _stream->endOfData(); }
@@ -418,8 +437,6 @@ public:
 	// PacketizedAudioStream API
 	void queuePacket(Common::SeekableReadStream *data) { _stream->queueAudioStream(makeStream(data)); }
 	void finish() { _stream->finish(); }
-
-	uint getChannels() const { return _channels; }
 
 protected:
 	/**

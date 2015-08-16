@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -20,7 +20,8 @@
  *
  */
 
-// Based off ffmpeg's QDM2 decoder
+// Based on the ScummVM (GPLv2+) file of the same name, which is in turn
+// based off ffmpeg's QDM2 decoder.
 
 #include "common/scummsys.h"
 #include "audio/decoders/qdm2.h"
@@ -2602,7 +2603,7 @@ bool QDM2Stream::qdm2_decodeFrame(Common::SeekableReadStream &in, QueuingAudioSt
 }
 
 AudioStream *QDM2Stream::decodeFrame(Common::SeekableReadStream &stream) {
-	QueuingAudioStream *audioStream = makeQueuingAudioStream(_sampleRate, _channels == 2);
+	QueuingAudioStream *audioStream = makeQueuingAudioStream(_sampleRate, _channels);
 
 	while (qdm2_decodeFrame(stream, audioStream))
 		;

@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -18,8 +18,9 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
- * The movie player.
  */
+
+// Based on the ScummVM (GPLv2+) file of the same name
 
 #include "tinsel/tinsel.h"
 #include "tinsel/background.h"
@@ -386,7 +387,7 @@ void BMVPlayer::MoviePalette(int paletteOffset) {
 }
 
 void BMVPlayer::InitializeMovieSound() {
-	_audioStream = Audio::makeQueuingAudioStream(22050, true);
+	_audioStream = Audio::makeQueuingAudioStream(22050, 2);
 	audioStarted = false;
 }
 

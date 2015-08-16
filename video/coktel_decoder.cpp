@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -19,6 +19,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
  */
+
+// Based on the ScummVM (GPLv2+) file of the same name
 
 #include "common/scummsys.h"
 #include "common/rect.h"
@@ -1171,7 +1173,7 @@ bool IMDDecoder::assessAudioProperties() {
 		_soundEnabled = true;
 		_soundStage   = kSoundLoaded;
 
-		_audioStream = Audio::makeQueuingAudioStream(_soundFreq, false);
+		_audioStream = Audio::makeQueuingAudioStream(_soundFreq, 1);
 	}
 
 	return true;
@@ -1510,7 +1512,7 @@ bool IMDDecoder::initialSoundSlice(bool hasNextCmd) {
 	if (!_audioStream || (_soundStage == kSoundFinished)) {
 		delete _audioStream;
 
-		_audioStream = Audio::makeQueuingAudioStream(_soundFreq, false);
+		_audioStream = Audio::makeQueuingAudioStream(_soundFreq, 1);
 		_soundStage  = kSoundLoaded;
 	}
 
@@ -1625,7 +1627,7 @@ bool VMDDecoder::seek(int32 frame, int whence, bool restart) {
 		delete _audioStream;
 
 		_soundStage  = kSoundLoaded;
-		_audioStream = Audio::makeQueuingAudioStream(_soundFreq, _soundStereo != 0);
+		_audioStream = Audio::makeQueuingAudioStream(_soundFreq, _soundStereo ? 2 : 1);
 	}
 
 	_subtitle = -1;
@@ -1936,7 +1938,7 @@ bool VMDDecoder::assessAudioProperties() {
 	_soundEnabled = true;
 	_soundStage   = kSoundLoaded;
 
-	_audioStream = Audio::makeQueuingAudioStream(_soundFreq, _soundStereo != 0);
+	_audioStream = Audio::makeQueuingAudioStream(_soundFreq, _soundStereo ? 2 : 1);
 
 	return true;
 }
@@ -2568,7 +2570,7 @@ public:
 	}
 
 	int readBuffer(int16 *buffer, const int numSamples);
-	bool isStereo() const { return _channels == 2; }
+	uint getChannels() const { return _channels; }
 	int getRate() const { return _rate; }
 	bool endOfData() const { return _stream->pos() >= _stream->size() || _stream->eos() || _stream->err(); }
 
