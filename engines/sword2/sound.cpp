@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -20,7 +20,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+ *
  */
+
+// Based on the ScummVM (GPLv2+) file of the same name
 
 // ---------------------------------------------------------------------------
 //								BROKEN SWORD 2
@@ -231,7 +234,7 @@ void Sound::playMovieSound(int32 res, int type) {
 			stream->seek(ResHeader::size());
 		}
 
-		Audio::RewindableAudioStream *input = 0;
+		Audio::AudioStream *input;
 
 		if (Sword2Engine::isPsx()) {
 			input = Audio::makeXAStream(stream, 11025);
@@ -239,10 +242,10 @@ void Sound::playMovieSound(int32 res, int type) {
 			input = Audio::makeWAVStream(stream, DisposeAfterUse::YES);
 		}
 
-		_vm->_mixer->playStream(
-			Audio::Mixer::kMusicSoundType, handle, input,
-			-1, Audio::Mixer::kMaxChannelVolume, 0,
-			DisposeAfterUse::YES, false, isReverseStereo());
+		if (isReverseStereo())
+			input = Audio::makeReversedStereoAudioStream(input);
+
+		_vm->_mixer->playStream(Audio::Mixer::kMusicSoundType, handle, input);
 	} else {
 		warning("Sound::playMovieSound: Could not allocate %d bytes\n", len);
 	}
@@ -367,10 +370,11 @@ int32 Sound::playFx(Audio::SoundHandle *handle, byte *data, uint32 len, uint8 vo
 
 	assert(input);
 
-	_vm->_mixer->playStream(soundType, handle,
-	                             Audio::makeLoopingAudioStream(input, loop ? 0 : 1),
-	                             -1, vol, pan, DisposeAfterUse::YES, false, isReverseStereo());
+	Audio::AudioStream *audStream = Audio::makeLoopingAudioStream(input, loop ? 0 : 1);
+	if (isReverseStereo())
+		audStream = Audio::makeReversedStereoAudioStream(input);
 
+	_vm->_mixer->playStream(soundType, handle, audStream, -1, vol, pan);
 	return RD_OK;
 }
 

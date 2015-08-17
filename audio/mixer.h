@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -19,6 +19,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
  */
+
+// Based on the ScummVM (GPLv2+) file of the same name
 
 #ifndef AUDIO_MIXER_H
 #define AUDIO_MIXER_H
@@ -102,7 +104,6 @@ public:
 	 *                          freed after playback finished
 	 * @param permanent	a flag indicating whether a plain stopAll call should
 	 *                  not stop this particular stream
-	 * @param reverseStereo	a flag indicating whether left and right channels shall be swapped
 	 */
 	virtual void playStream(
 		SoundType type,
@@ -112,8 +113,7 @@ public:
 		byte volume = kMaxChannelVolume,
 		int8 balance = 0,
 		DisposeAfterUse::Flag autofreeStream = DisposeAfterUse::YES,
-		bool permanent = false,
-		bool reverseStereo = false) = 0;
+		bool permanent = false) = 0;
 
 	/**
 	 * Stop all currently playing sounds.

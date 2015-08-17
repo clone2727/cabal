@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -19,6 +19,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
  */
+
+// Based on the ScummVM (GPLv2+) file of the same name
 
 #ifndef AUDIO_RATE_H
 #define AUDIO_RATE_H
@@ -78,7 +80,7 @@ public:
 	virtual int drain(st_sample_t *obuf, st_size_t osamp, st_volume_t vol) = 0;
 };
 
-RateConverter *makeRateConverter(st_rate_t inrate, st_rate_t outrate, bool stereo, bool reverseStereo = false);
+RateConverter *makeRateConverter(st_rate_t inrate, st_rate_t outrate, bool stereo);
 
 } // End of namespace Audio
 

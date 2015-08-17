@@ -1,24 +1,26 @@
-/* ScummVM - Graphic Adventure Engine
-*
-* ScummVM is the legal property of its developers, whose names
-* are too numerous to list here. Please refer to the COPYRIGHT
-* file distributed with this source distribution.
-*
-* This program is free software; you can redistribute it and/or
-* modify it under the terms of the GNU General Public License
-* as published by the Free Software Foundation; either version 2
-* of the License, or (at your option) any later version.
+/* Cabal - Legacy Game Implementations
+ *
+ * Cabal is the legal property of its developers, whose names
+ * are too numerous to list here. Please refer to the COPYRIGHT
+ * file distributed with this source distribution.
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+ *
+ */
 
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-* GNU General Public License for more details.
-
-* You should have received a copy of the GNU General Public License
-* along with this program; if not, write to the Free Software
-* Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
-*
-*/
+// Based on the ScummVM (GPLv2+) file of the same name
 
 #include "common/scummsys.h"
 
@@ -81,7 +83,7 @@ bool Console::cmdLoadSound(int argc, const char **argv) {
 	if (argc == 2) {
 		Audio::AudioStream *soundStream = makeRawZorkStream(argv[1], _engine);
 		Audio::SoundHandle handle;
-		_engine->_mixer->playStream(Audio::Mixer::kPlainSoundType, &handle, soundStream, -1, 100, 0, DisposeAfterUse::YES, false, false);
+		_engine->_mixer->playStream(Audio::Mixer::kPlainSoundType, &handle, soundStream, -1, 100);
 	} else if (argc == 4) {
 		int isStereo = atoi(argv[3]);
 
@@ -93,7 +95,7 @@ bool Console::cmdLoadSound(int argc, const char **argv) {
 
 		Audio::AudioStream *soundStream = makeRawZorkStream(file, atoi(argv[2]), isStereo == 0 ? false : true);
 		Audio::SoundHandle handle;
-		_engine->_mixer->playStream(Audio::Mixer::kPlainSoundType, &handle, soundStream, -1, 100, 0, DisposeAfterUse::YES, false, false);
+		_engine->_mixer->playStream(Audio::Mixer::kPlainSoundType, &handle, soundStream, -1, 100);
 	} else {
 		debugPrintf("Use %s <fileName> [<rate> <isStereo: 1 or 0>] to load a sound\n", argv[0]);
 		return true;

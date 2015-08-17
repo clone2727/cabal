@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -19,6 +19,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
  */
+
+// Based on the ScummVM (GPLv2+) file of the same name
 
 #include "common/util.h"
 #include "common/system.h"
@@ -42,7 +44,7 @@ namespace Audio {
  */
 class Channel {
 public:
-	Channel(Mixer *mixer, Mixer::SoundType type, AudioStream *stream, DisposeAfterUse::Flag autofreeStream, bool reverseStereo, int id, bool permanent);
+	Channel(Mixer *mixer, Mixer::SoundType type, AudioStream *stream, DisposeAfterUse::Flag autofreeStream, int id, bool permanent);
 	~Channel();
 
 	/**
@@ -225,8 +227,7 @@ void MixerImpl::playStream(
 			AudioStream *stream,
 			int id, byte volume, int8 balance,
 			DisposeAfterUse::Flag autofreeStream,
-			bool permanent,
-			bool reverseStereo) {
+			bool permanent) {
 	Common::StackLock lock(_mutex);
 
 	if (stream == 0) {
@@ -254,11 +255,12 @@ void MixerImpl::playStream(
 	}
 
 #ifdef AUDIO_REVERSE_STEREO
-	reverseStereo = !reverseStereo;
+	stream = makeReversedStereoAudioStream(stream, autofreeStream);
+	autofreeStream = DisposeAfterUse::YES;
 #endif
 
 	// Create the channel
-	Channel *chan = new Channel(this, type, stream, autofreeStream, reverseStereo, id, permanent);
+	Channel *chan = new Channel(this, type, stream, autofreeStream, id, permanent);
 	chan->setVolume(volume);
 	chan->setBalance(balance);
 	insertChannel(handle, chan);
@@ -490,7 +492,7 @@ int MixerImpl::getVolumeForSoundType(SoundType type) const {
 #pragma mark -
 
 Channel::Channel(Mixer *mixer, Mixer::SoundType type, AudioStream *stream,
-                 DisposeAfterUse::Flag autofreeStream, bool reverseStereo, int id, bool permanent)
+                 DisposeAfterUse::Flag autofreeStream, int id, bool permanent)
     : _type(type), _mixer(mixer), _id(id), _permanent(permanent), _volume(Mixer::kMaxChannelVolume),
       _balance(0), _pauseLevel(0), _samplesConsumed(0), _samplesDecoded(0), _mixerTimeStamp(0),
       _pauseStartTime(0), _pauseTime(0), _converter(0), _volL(0), _volR(0),
@@ -499,7 +501,7 @@ Channel::Channel(Mixer *mixer, Mixer::SoundType type, AudioStream *stream,
 	assert(stream);
 
 	// Get a rate converter instance
-	_converter = makeRateConverter(_stream->getRate(), mixer->getOutputRate(), _stream->isStereo(), reverseStereo);
+	_converter = makeRateConverter(_stream->getRate(), mixer->getOutputRate(), _stream->isStereo());
 }
 
 Channel::~Channel() {
