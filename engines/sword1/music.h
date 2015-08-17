@@ -30,7 +30,6 @@
 #include "common/file.h"
 #include "audio/audiostream.h"
 #include "audio/mixer.h"
-#include "audio/rate.h"
 
 namespace Sword1 {
 
@@ -42,8 +41,13 @@ private:
 	int32 _fading;
 	int32 _fadeSamples;
 	Audio::AudioStream *_audioSource;
+	Audio::SoundHandle _handle;
+	int8 _pan;
+	uint8 _volume;
+	Common::Mutex _mutex;
+
 public:
-	MusicHandle() : _fading(0), _audioSource(NULL) {}
+	MusicHandle() : _fading(0), _audioSource(NULL), _pan(0), _volume(192) {}
 	virtual int readBuffer(int16 *buffer, const int numSamples);
 	bool play(const Common::String &filename, bool loop);
 	bool playPSX(uint16 id, bool loop);
@@ -53,12 +57,13 @@ public:
 	bool streaming() const;
 	int32 fading() { return _fading; }
 	bool endOfData() const;
-	bool endOfStream() const { return false; }
+	bool endOfStream() const;
 	uint getChannels() const;
 	int getRate() const;
+	void setVolume(uint8 volL, uint8 volR);
 };
 
-class Music : public Audio::AudioStream {
+class Music {
 public:
 	Music(Audio::Mixer *pMixer);
 	~Music();
@@ -67,26 +72,10 @@ public:
 	void setVolume(uint8 volL, uint8 volR);
 	void giveVolume(uint8 *volL, uint8 *volR);
 
-	// AudioStream API
-	int readBuffer(int16 *buffer, const int numSamples) {
-		mixer(buffer, numSamples / 2);
-		return numSamples;
-	}
-	uint getChannels() const { return 2; }
-	bool endOfData() const { return false; }
-	int getRate() const { return _sampleRate; }
-
 private:
-	Audio::st_volume_t _volumeL, _volumeR;
+	byte _volumeL, _volumeR;
 	MusicHandle _handles[2];
-	Audio::RateConverter *_converter[2];
 	Audio::Mixer *_mixer;
-	Audio::SoundHandle _soundHandle;
-	uint32 _sampleRate;
-	Common::Mutex _mutex;
-
-	static void passMixerFunc(void *param, int16 *buf, uint len);
-	void mixer(int16 *buf, uint32 len);
 
 	static const char _tuneList[TOTAL_TUNES][8]; // in staticres.cpp
 };

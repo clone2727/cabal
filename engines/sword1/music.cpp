@@ -107,7 +107,9 @@ bool MusicHandle::play(const Common::String &filename, bool loop) {
 
 	_audioSource = Audio::makeLoopingAudioStream(stream, loop ? 0 : 1);
 
+	g_system->getMixer()->playStream(Audio::Mixer::kPlainSoundType, &_handle, this, -1, _volume, _pan, DisposeAfterUse::NO);
 	fadeUp();
+
 	return true;
 }
 
@@ -133,6 +135,7 @@ bool MusicHandle::playPSX(uint16 id, bool loop) {
 	if ((size != 0) && (size != 0xffffffff) && ((int32)(offset + size) <= _file.size())) {
 		_file.seek(offset, SEEK_SET);
 		_audioSource = Audio::makeLoopingAudioStream(Audio::makeXAStream(_file.readStream(size), 11025), loop ? 0 : 1);
+		g_system->getMixer()->playStream(Audio::Mixer::kPlainSoundType, &_handle, this, -1, _volume, _pan, DisposeAfterUse::NO);
 		fadeUp();
 	} else {
 		_audioSource = NULL;
@@ -144,6 +147,7 @@ bool MusicHandle::playPSX(uint16 id, bool loop) {
 
 void MusicHandle::fadeDown() {
 	if (streaming()) {
+		Common::StackLock lock(_mutex);
 		if (_fading < 0)
 			_fading = -_fading;
 		else if (_fading == 0)
@@ -154,6 +158,7 @@ void MusicHandle::fadeDown() {
 
 void MusicHandle::fadeUp() {
 	if (streaming()) {
+		Common::StackLock lock(_mutex);
 		if (_fading > 0)
 			_fading = -_fading;
 		else if (_fading == 0)
@@ -163,19 +168,28 @@ void MusicHandle::fadeUp() {
 }
 
 bool MusicHandle::endOfData() const {
-	return !streaming();
+	Common::StackLock lock(_mutex);
+	return !_audioSource || _audioSource->endOfData();
 }
 
-// if we don't have an audiosource, return some dummy values.
+bool MusicHandle::endOfStream() const {
+	Common::StackLock lock(_mutex);
+	return !_audioSource || _audioSource->endOfStream();
+}
+
 bool MusicHandle::streaming() const {
-	return (_audioSource) ? (!_audioSource->endOfStream()) : false;
+	return g_system->getMixer()->isSoundHandleActive(_handle);
 }
 
+// if we don't have an audiosource, return some dummy values
+// (There should be a better solution than this)
 uint MusicHandle::getChannels() const {
+	Common::StackLock lock(_mutex);
 	return _audioSource ? _audioSource->getChannels() : 1;
 }
 
 int MusicHandle::getRate() const {
+	Common::StackLock lock(_mutex);
 	return (_audioSource) ? _audioSource->getRate() : 11025;
 }
 
@@ -195,6 +209,8 @@ int MusicHandle::readBuffer(int16 *buffer, const int numSamples) {
 			stop();
 		}
 	}
+
+	Common::StackLock lock(_mutex);
 	// buffer was filled, now do the fading (if necessary)
 	int samplePos = 0;
 	while ((_fading > 0) && (samplePos < totalSamples)) { // fade down
@@ -217,49 +233,50 @@ int MusicHandle::readBuffer(int16 *buffer, const int numSamples) {
 }
 
 void MusicHandle::stop() {
+	// Lock the mutex until the stream ends
+	Common::StackLock lock(_mutex);
+	g_system->getMixer()->stopHandle(_handle);
 	delete _audioSource;
 	_audioSource = NULL;
 	_file.close();
 	_fading = 0;
 }
 
+void MusicHandle::setVolume(uint8 volL, uint8 volR) {
+	_pan = (volR - volL) / 2;
+	_volume = CLIP<int>((volR + volL) / 2, -127, 127);
+
+	if (streaming()) {
+		g_system->getMixer()->setChannelVolume(_handle, _volume);
+		g_system->getMixer()->setChannelBalance(_handle, _pan);
+	}
+}
+
 Music::Music(Audio::Mixer *pMixer) {
 	_mixer = pMixer;
-	_sampleRate = pMixer->getOutputRate();
-	_converter[0] = NULL;
-	_converter[1] = NULL;
 	_volumeL = _volumeR = 192;
-	_mixer->playStream(Audio::Mixer::kPlainSoundType, &_soundHandle, this, -1, Audio::Mixer::kMaxChannelVolume, 0, DisposeAfterUse::NO, true);
 }
 
 Music::~Music() {
-	_mixer->stopHandle(_soundHandle);
-	delete _converter[0];
-	delete _converter[1];
-}
-
-void Music::mixer(int16 *buf, uint32 len) {
-	Common::StackLock lock(_mutex);
-	memset(buf, 0, 2 * len * sizeof(int16));
-	for (int i = 0; i < ARRAYSIZE(_handles); i++)
-		if (_handles[i].streaming() && _converter[i])
-			_converter[i]->flow(_handles[i], buf, len, _volumeL, _volumeR);
+	_handles[0].stop();
+	_handles[1].stop();
 }
 
 void Music::setVolume(uint8 volL, uint8 volR) {
-	_volumeL = (Audio::st_volume_t)volL;
-	_volumeR = (Audio::st_volume_t)volR;
+	_volumeL = volL;
+	_volumeR = volR;
+	_handles[0].setVolume(volL, volR);
+	_handles[1].setVolume(volL, volR);
 }
 
 void Music::giveVolume(uint8 *volL, uint8 *volR) {
-	*volL = (uint8)_volumeL;
-	*volR = (uint8)_volumeR;
+	*volL = _volumeL;
+	*volR = _volumeR;
 }
 
 void Music::startMusic(int32 tuneId, int32 loopFlag) {
 	if (strlen(_tuneList[tuneId]) > 0) {
 		int newStream = 0;
-		_mutex.lock();
 		if (_handles[0].streaming() && _handles[1].streaming()) {
 			int streamToStop;
 			// Both streams playing - one must be forced to stop.
@@ -290,39 +307,22 @@ void Music::startMusic(int32 tuneId, int32 loopFlag) {
 			_handles[1].fadeDown();
 			newStream = 0;
 		}
-		delete _converter[newStream];
-		_converter[newStream] = NULL;
-		_mutex.unlock();
 
-		/* The handle will load the music file now. It can take a while, so unlock
-		   the mutex before, to have the soundthread playing normally.
-		   As the corresponding _converter is NULL, the handle will be ignored by the playing thread */
 		if (SwordEngine::isPsx()) {
-			if (_handles[newStream].playPSX(tuneId, loopFlag != 0)) {
-				_mutex.lock();
-				_converter[newStream] = Audio::makeRateConverter(_handles[newStream].getRate(), _mixer->getOutputRate(), _handles[newStream].isStereo(), false);
-				_mutex.unlock();
-			}
-		} else if (_handles[newStream].play(_tuneList[tuneId], loopFlag != 0)) {
-			_mutex.lock();
-			_converter[newStream] = Audio::makeRateConverter(_handles[newStream].getRate(), _mixer->getOutputRate(), _handles[newStream].isStereo(), false);
-			_mutex.unlock();
-		} else {
+			_handles[newStream].playPSX(tuneId, loopFlag != 0);
+		} else if (!_handles[newStream].play(_tuneList[tuneId], loopFlag != 0)) {
 			if (tuneId != 81) // file 81 was apparently removed from BS.
 				warning("Can't find music file %s", _tuneList[tuneId]);
 		}
 	} else {
-		_mutex.lock();
 		if (_handles[0].streaming())
 			_handles[0].fadeDown();
 		if (_handles[1].streaming())
 			_handles[1].fadeDown();
-		_mutex.unlock();
 	}
 }
 
 void Music::fadeDown() {
-	Common::StackLock lock(_mutex);
 	for (int i = 0; i < ARRAYSIZE(_handles); i++)
 		if (_handles[i].streaming())
 			_handles[i].fadeDown();
