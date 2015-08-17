@@ -491,4 +491,34 @@ AudioStream *makeNullAudioStream() {
 	return new NullAudioStream();
 }
 
+class ReversedStereoAudioStream : public AudioStream {
+public:
+	ReversedStereoAudioStream(AudioStream *parentStream, DisposeAfterUse::Flag disposeAfterUse) : _parentStream(parentStream, disposeAfterUse) {}
+
+	int readBuffer(int16 *buffer, const int numSamples);
+	uint getChannels() const { return 2; }
+	bool endOfData() const { return _parentStream->endOfData(); }
+	bool endOfStream() const { return _parentStream->endOfStream(); }
+	int getRate() const { return _parentStream->getRate(); }
+
+private:
+	Common::DisposablePtr<AudioStream> _parentStream;
+};
+
+int ReversedStereoAudioStream::readBuffer(int16 *buffer, const int numSamples) {
+	int samples = _parentStream->readBuffer(buffer, numSamples);
+
+	for (int i = 0; i < samples * 2; i += 2)
+		SWAP(buffer[i], buffer[i + 1]);
+
+	return samples;
+}
+
+AudioStream *makeReversedStereoAudioStream(AudioStream *parentStream, DisposeAfterUse::Flag disposeAfterUse) {
+	if (!parentStream || parentStream->getChannels() != 2)
+		return parentStream;
+
+	return new ReversedStereoAudioStream(parentStream, disposeAfterUse);
+}
+
 } // End of namespace Audio

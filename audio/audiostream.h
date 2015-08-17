@@ -456,6 +456,15 @@ private:
  */
 AudioStream *makeNullAudioStream();
 
+/**
+ * Factory function for an AudioStream wrapper that reverses stereo audio streams. If the stream is
+ * mono, that stream is returned directly.
+ *
+ * @param parentStream     The stream to reverse stereo on
+ * @param disposeAfterUse  Whether the parent stream object should be destroyed on destruction of the returned stream
+ */
+AudioStream *makeReversedStereoAudioStream(AudioStream *parentStream, DisposeAfterUse::Flag disposeAfterUse = DisposeAfterUse::YES);
+
 } // End of namespace Audio
 
 #endif
