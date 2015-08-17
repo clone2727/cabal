@@ -647,7 +647,7 @@ AudioStream *QuickTimeAudioDecoder::AudioSampleDesc::createAudioStream(Common::S
 		return makePCMStream(data, dataSize, _sampleRate, flags);
 	} else if (_codecTag == MKTAG('i', 'm', 'a', '4')) {
 		// Riven uses this codec (as do some Myst ME videos)
-		return makeADPCMStream(stream, DisposeAfterUse::YES, stream->size(), kADPCMApple, _sampleRate, _channels, 34);
+		return makeADPCMStream(stream, DisposeAfterUse::YES, kADPCMApple, _sampleRate, _channels, 34);
 	}
 
 	error("Unsupported audio codec");

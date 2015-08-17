@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -19,6 +19,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
  */
+
+// Based on the ScummVM (GPLv2+) file of the same name
 
 #ifndef LASTEXPRESS_SND_H
 #define LASTEXPRESS_SND_H
@@ -61,7 +63,7 @@ public:
 
 protected:
 	void loadHeader(Common::SeekableReadStream *in);
-	LastExpress_ADPCMStream *makeDecoder(Common::SeekableReadStream *in, uint32 size, int32 filterId = -1) const;
+	LastExpress_ADPCMStream *makeDecoder(Common::SeekableReadStream *in, int32 filterId = -1) const;
 	void play(Audio::AudioStream *as);
 
 	uint32 _size;   ///< data size
