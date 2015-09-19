@@ -74,8 +74,12 @@ private:
 	ALCcontext *_ctx;
 
 	enum {
-		kBufferCount = 5,
-		kBufferSize = 32768
+		// Three buffers seems to be sufficient
+		kBufferCount = 3,
+
+		// Too high of a buffer size leads to a severe lag
+		// This one seems to work OK
+		kBufferSize = 44100 / 8
 	};
 
 	// OpenAL source/buffer
@@ -110,7 +114,7 @@ OpenALMixerManager::~OpenALMixerManager() {
 		alDeleteSources(1, &_source);
 
 		// Free the buffers
-		alDeleteBuffers(5, _buffers);
+		alDeleteBuffers(kBufferCount, _buffers);
 
 		// And destroy the context too
 		alcMakeContextCurrent(0);
@@ -168,7 +172,7 @@ void OpenALMixerManager::init() {
 	alSourcePlay(_source);
 	CHECK_AL_ERROR();
 
-	g_system->getTimerManager()->installTimerProc(timerCallback, 1000 * 100, this, "OpenALMixerManager");
+	g_system->getTimerManager()->installTimerProc(timerCallback, 100, this, "OpenALMixerManager");
 }
 
 void OpenALMixerManager::update() {
