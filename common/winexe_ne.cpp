@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -19,6 +19,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
  */
+
+// Based on the ScummVM (GPLv2+) file of the same name
 
 #include "common/debug.h"
 #include "common/file.h"
@@ -111,17 +113,20 @@ bool NEResources::loadFromCompressedEXE(const String &fileName) {
 	memset(window, 0x20, 0x1000); // Initialize to all spaces
 
 	byte *unpackedData = (byte *)malloc(unpackedLength);
-	assert(unpackedData);
+	if (!unpackedData)
+		error("Failed to allocate uncompressed EXE");
+
 	byte *dataPos = unpackedData;
+	byte *endPos = unpackedData + unpackedLength;
 
 	// Apply simple LZSS decompression
-	for (;;) {
+	while (dataPos < endPos) {
 		byte controlByte = file.readByte();
 
 		if (file.eos())
 			break;
 
-		for (byte i = 0; i < 8; i++) {
+		for (byte i = 0; i < 8 && dataPos < endPos; i++) {
 			if (controlByte & (1 << i)) {
 				*dataPos++ = window[pos++] = file.readByte();
 				pos &= 0xFFF;
@@ -130,6 +135,10 @@ bool NEResources::loadFromCompressedEXE(const String &fileName) {
 				int matchLen = file.readByte();
 				matchPos |= (matchLen & 0xF0) << 4;
 				matchLen = (matchLen & 0xF) + 3;
+
+				// Clip the length to the remaining size
+				matchLen = MIN<int>(matchLen, endPos - dataPos);
+
 				while (matchLen--) {
 					*dataPos++ = window[pos++] = window[matchPos++];
 					pos &= 0xFFF;
