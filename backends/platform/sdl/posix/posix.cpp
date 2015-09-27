@@ -37,6 +37,10 @@
 #include "backends/fs/posix/posix-fs-factory.h"
 #include "backends/taskbar/unity/unity-taskbar.h"
 
+#ifdef USE_LINUXCD
+#include "backends/audiocd/linux/linux-audiocd.h"
+#endif
+
 #ifdef LINUX
 #include "audio/audiodev/pcspk.h"
 #include "backends/audiodev/linux/linux_pcspk.h"
@@ -223,5 +227,12 @@ bool OSystem_POSIX::displayLogFile() {
 	return WIFEXITED(status) && WEXITSTATUS(status) == 0;
 }
 
+#ifdef USE_LINUXCD
+
+AudioCDManager *OSystem_POSIX::createAudioCDManager() {
+	return createLinuxAudioCDManager();
+}
+
+#endif
 
 #endif

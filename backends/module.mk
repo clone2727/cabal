@@ -133,6 +133,11 @@ MODULE_OBJS += \
 	events/ps3sdl/ps3sdl-events.o
 endif
 
+ifdef USE_LINUXCD
+MODULE_OBJS += \
+	audiocd/linux/linux-audiocd.o
+endif
+
 ifeq ($(BACKEND),tizen)
 MODULE_OBJS += \
 	timer/tizen/timer.o
