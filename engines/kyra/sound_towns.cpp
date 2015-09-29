@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -19,6 +19,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
  */
+
+// Based on the ScummVM (GPLv2+) file of the same name
 
 #include "kyra/sound_intern.h"
 #include "kyra/resource.h"
@@ -67,6 +69,9 @@ bool SoundTowns::init() {
 	/*_player->driver()->intf()->callback(68);
 	_player->driver()->intf()->callback(70, 0x33);*/
 	_player->driver()->setOutputVolume(1, 118, 118);
+
+	// Initialize CD for audio
+	g_system->getAudioCDManager()->openCD();
 
 	return true;
 }
@@ -407,6 +412,10 @@ bool SoundPC98::init() {
 	_driver = new TownsPC98_AudioDriver(_mixer, TownsPC98_AudioDriver::kType26);
 	bool reslt = _driver->init();
 	updateVolumeSettings();
+
+	// Initialize CD for audio
+	g_system->getAudioCDManager()->openCD();
+
 	return reslt;
 }
 
@@ -529,6 +538,10 @@ bool SoundTownsPC98_v2::init() {
 		if (_resInfo[_currentResourceSet])
 			if (_resInfo[_currentResourceSet]->cdaTableSize)
 				_vm->checkCD();
+
+		// Initialize CD for audio
+		bool hasRealCD = g_system->getAudioCDManager()->openCD();
+
 		// FIXME: While checking for 'track1.XXX(X)' looks like
 		// a good idea, we should definitely not be doing this
 		// here. Basically our filenaming scheme could change
@@ -538,7 +551,7 @@ bool SoundTownsPC98_v2::init() {
 		// check if we have access to CD audio.
 		Resource *r = _vm->resource();
 		if (_musicEnabled &&
-		    (r->exists("track1.mp3") || r->exists("track1.ogg") || r->exists("track1.flac") || r->exists("track1.fla")
+		    (hasRealCD || r->exists("track1.mp3") || r->exists("track1.ogg") || r->exists("track1.flac") || r->exists("track1.fla")
 		     || r->exists("track01.mp3") || r->exists("track01.ogg") || r->exists("track01.flac") || r->exists("track01.fla")))
 				_musicEnabled = 2;
 		else
