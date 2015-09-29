@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -20,6 +20,8 @@
  *
  */
 
+// Based on the ScummVM (GPLv2+) file of the same name
+
 #include "sci/resource.h"
 #include "sci/engine/kernel.h"
 #include "sci/engine/selector.h"
@@ -28,6 +30,7 @@
 
 #include "backends/audiocd/audiocd.h"
 
+#include "common/config-manager.h"
 #include "common/file.h"
 #include "common/memstream.h"
 #include "common/system.h"
@@ -44,7 +47,7 @@
 namespace Sci {
 
 AudioPlayer::AudioPlayer(ResourceManager *resMan) : _resMan(resMan), _audioRate(11025),
-		_syncResource(NULL), _syncOffset(0), _audioCdStart(0) {
+		_syncResource(NULL), _syncOffset(0), _audioCdStart(0), _initCD(false) {
 
 	_mixer = g_system->getMixer();
 	_wPlayFlag = false;
@@ -472,6 +475,12 @@ void AudioPlayer::stopSoundSync() {
 }
 
 int AudioPlayer::audioCdPlay(int track, int start, int duration) {
+	if (!_initCD) {
+		// Initialize CD mode if we haven't already
+		g_system->getAudioCDManager()->openCD();
+		_initCD = true;
+	}
+
 	if (getSciVersion() == SCI_VERSION_1_1) {
 		// King's Quest VI CD Audio format
 		_audioCdStart = g_system->getMillis();
