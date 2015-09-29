@@ -39,6 +39,7 @@
 #include "common/error.h"
 #include "common/textconsole.h"
 
+#include "backends/audiocd/win32/win32-audiocd.h"
 #include "backends/audiodev/win32/win32_pcspk.h"
 #include "backends/platform/sdl/win32/win32.h"
 #include "backends/platform/sdl/win32/win32-window.h"
@@ -324,6 +325,10 @@ void OSystem_Win32::addSysArchivesToSearchSet(Common::SearchSet &s, int priority
 	s.add("Win32Res", new Win32ResourceArchive(), priority);
 
 	OSystem_SDL::addSysArchivesToSearchSet(s, priority);
+}
+
+AudioCDManager *OSystem_Win32::createAudioCDManager() {
+	return createWin32AudioCDManager();
 }
 
 #endif
