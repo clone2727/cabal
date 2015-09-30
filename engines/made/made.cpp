@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -19,6 +19,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
  */
+
+// Based on the ScummVM (GPLv2+) file of the same name
 
 #include "made/made.h"
 #include "made/console.h"
@@ -67,9 +69,7 @@ MadeEngine::MadeEngine(OSystem *syst, const MadeGameDescription *gameDesc) : Eng
 
 	_console = new MadeConsole(this);
 
-	int cd_num = ConfMan.getInt("cdrom");
-	if (cd_num >= 0)
-		_system->getAudioCDManager()->openCD(cd_num);
+	_system->getAudioCDManager()->openCD();
 
 	_pmvPlayer = new PmvPlayer(this, _mixer);
 	_res = new ResourceReader();

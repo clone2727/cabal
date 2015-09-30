@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -19,6 +19,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
  */
+
+// Based on the ScummVM (GPLv2+) file of the same name
 
 #ifndef BACKENDS_AUDIOCD_DEFAULT_H
 #define BACKENDS_AUDIOCD_DEFAULT_H
@@ -42,6 +44,13 @@ public:
 	void update();
 	virtual Status getStatus() const; // Subclasses should override for better status results
 
+	bool openCD();
+
+	/**
+	 * Open a CD using the specified drive index
+	 * @param drive The index of the drive
+	 * @note The index is implementation-defined, but 0 is always the best choice
+	 */
 	virtual bool openCD(int drive) { return false; }
 	virtual void updateCD() {}
 	virtual bool pollCD() const { return false; }

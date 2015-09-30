@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -20,6 +20,7 @@
  *
  */
 
+// Based on the ScummVM (GPLv2+) file of the same name
 
 // Allow use of stuff in <time.h>
 #define FORBIDDEN_SYMBOL_EXCEPTION_time_h
@@ -715,7 +716,7 @@ void OSystem_DS::deleteMutex(MutexRef mutex) {
 // and should be replaced by an AudioCDManager subclass,
 // see backends/audiocd/ and common/system.h
 
-bool OSystem_DS::openCD(int drive) {
+bool OSystem_DS::openCD() {
 	return DS::CD::checkCD();
 }
 

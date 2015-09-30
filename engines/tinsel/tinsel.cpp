@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -19,6 +19,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
  */
+
+// Based on the ScummVM (GPLv2+) file of the same name
 
 #include "common/debug-channels.h"
 #include "common/endian.h"
@@ -841,9 +843,7 @@ TinselEngine::TinselEngine(OSystem *syst, const TinselGameDescription *gameDesc)
 		if (!scumm_stricmp(g->gameid, gameid))
 			_gameId = g->id;
 
-	int cd_num = ConfMan.getInt("cdrom");
-	if (cd_num >= 0)
-		_system->getAudioCDManager()->openCD(cd_num);
+	_system->getAudioCDManager()->openCD();
 
 	_mousePos.x = 0;
 	_mousePos.y = 0;
