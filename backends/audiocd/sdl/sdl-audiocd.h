@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -19,6 +19,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
  */
+
+// Based on the ScummVM (GPLv2+) file of the same name
 
 #ifndef BACKENDS_AUDIOCD_SDL_H
 #define BACKENDS_AUDIOCD_SDL_H
@@ -39,6 +41,7 @@ public:
 
 protected:
 	virtual bool openCD(int drive);
+	virtual void closeCD();
 	virtual void updateCD();
 	virtual bool pollCD() const;
 	virtual void playCD(int track, int num_loops, int start_frame, int duration);
