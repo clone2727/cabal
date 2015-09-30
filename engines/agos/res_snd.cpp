@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -19,6 +19,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
  */
+
+// Based on the ScummVM (GPLv2+) file of the same name
 
 #include "common/config-manager.h"
 #include "common/file.h"
@@ -228,7 +230,7 @@ void AGOSEngine_Simon1::playMusic(uint16 music, uint16 track) {
 
 	// Support for compressed music from the ScummVM Music Enhancement Project
 	_system->getAudioCDManager()->stop();
-	_system->getAudioCDManager()->play(music + 1, -1, 0, 0);
+	_system->getAudioCDManager()->play(music + 1, -1, 0, 0, true);
 	if (_system->getAudioCDManager()->isPlaying())
 		return;
 
