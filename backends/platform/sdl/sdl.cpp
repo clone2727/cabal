@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -19,6 +19,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
  */
+
+// Based on the ScummVM (GPLv2+) file of the same name
 
 #define FORBIDDEN_SYMBOL_ALLOW_ALL
 
@@ -230,15 +232,7 @@ void OSystem_SDL::initBackend() {
 	if (_timerManager == 0)
 		_timerManager = new SdlTimerManager();
 
-	if (_audiocdManager == 0) {
-		// Audio CD support was removed with SDL 2.0
-#if SDL_VERSION_ATLEAST(2, 0, 0)
-		_audiocdManager = new DefaultAudioCDManager();
-#else
-		_audiocdManager = new SdlAudioCDManager();
-#endif
-
-	}
+	_audiocdManager = createAudioCDManager();
 
 	// Setup a custom program icon.
 	_window->setupIcon();
@@ -456,6 +450,15 @@ SdlMixerManager *OSystem_SDL::getMixerManager() {
 
 Common::TimerManager *OSystem_SDL::getTimerManager() {
 	return _timerManager;
+}
+
+AudioCDManager *OSystem_SDL::createAudioCDManager() {
+	// Audio CD support was removed with SDL 1.3
+#if SDL_VERSION_ATLEAST(1, 3, 0)
+	return new DefaultAudioCDManager();
+#else
+	return new SdlAudioCDManager();
+#endif
 }
 
 #ifdef USE_OPENGL
