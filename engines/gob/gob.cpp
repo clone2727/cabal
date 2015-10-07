@@ -298,7 +298,7 @@ Common::Error GobEngine::run() {
 	if (isCD())
 		checkCD();
 
-	_system->getAudioCDManager()->openCD();
+	_system->getAudioCDManager()->open();
 
 	_global->_debugFlag = 1;
 	_video->_doRangeClamp = true;
