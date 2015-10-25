@@ -50,6 +50,9 @@
 #include "backends/graphics/openglsdl/openglsdl-graphics.h"
 #include "graphics/cursorman.h"
 #endif
+#ifdef USE_FONTCONFIG
+#include "backends/fonts/fontconfig/fontconfig-provider.h"
+#endif
 
 #include <time.h>	// for getTimeAndDate()
 
@@ -231,6 +234,11 @@ void OSystem_SDL::initBackend() {
 		_timerManager = new SdlTimerManager();
 
 	_audiocdManager = createAudioCDManager();
+
+#ifdef USE_FONTCONFIG
+	if (!_systemFontProvider)
+		_systemFontProvider = createFontconfigFontProvider();
+#endif
 
 	// Setup a custom program icon.
 	_window->setupIcon();
