@@ -142,6 +142,7 @@ _iconv=auto
 _taskbar=auto
 _updates=no
 _libunity=auto
+_fontconfig=auto
 # Default option behavior yes/no
 _debug_build=auto
 _release_build=auto
@@ -996,6 +997,9 @@ Optional Libraries:
   --with-sndio-prefix=DIR  Prefix where sndio is installed (optional)
   --disable-sndio          disable sndio MIDI driver [autodetect]
 
+  --with-fontconfig-prefix=DIR   Prefix where fontconfig is installed (optional)
+  --disable-fontconfig           disable fontconfig [autodetect]
+
 Some influential environment variables:
   LDFLAGS        linker flags, e.g. -L<lib dir> if you have libraries in a
                  nonstandard directory <lib dir>
@@ -1051,6 +1055,8 @@ for ac_option in $@; do
 	--disable-faad)           _faad=no        ;;
 	--enable-faad)            _faad=yes       ;;
 	--disable-fluidsynth)     _fluidsynth=no  ;;
+	--disable-fontconfig)     _fontconfig=no  ;;
+	--enable-fontconfig)      _fontconfig=yes ;;
 	--enable-readline)        _readline=yes   ;;
 	--disable-readline)       _readline=no    ;;
 	--enable-freetype2)       _freetype2=yes  ;;
@@ -1147,6 +1153,11 @@ for ac_option in $@; do
 		arg=`echo $ac_option | cut -d '=' -f 2`
 		FAAD_CFLAGS="-I$arg/include"
 		FAAD_LIBS="-L$arg/lib"
+		;;
+	--with-fontconfig-prefix=*)
+		arg=`echo $ac_option | cut -d '=' -f 2`
+		FONTCONFIG_CFLAGS="-I$arg/include"
+		FONTCONFIG_LIBS="-L$arg/lib"
 		;;
 	--with-zlib-prefix=*)
 		arg=`echo $ac_option | cut -d '=' -f 2`
@@ -4145,6 +4156,30 @@ fi
 echocheck "iconv"
 define_in_config_if_yes "$_iconv" 'USE_ICONV'
 echo "$_iconv"
+
+# Check for fontconfig
+#
+echocheck "fontconfig"
+if test "$_freetype2" = no ; then
+	_fontconfig=no
+	echo "no (requires freetype2)"
+else
+	if test "$_fontconfig" = auto ; then
+		_fontconfig=no
+		cat > $TMPC << EOF
+#include <fontconfig/fontconfig.h>
+int main(void) { if (!FcInit()) return 1; FcFini(); return 0; }
+EOF
+		cc_check $FONTCHECK_CFLAGS $FONTCHECK_LIBS -lfontconfig && _fontconfig=yes
+	fi
+	if test "$_fontconfig" = yes ; then
+		append_var LIBS "$FONTCHECK_LIBS -lfontconfig"
+		append_var INCLUDES "$FONTCHECK_CFLAGS"
+	fi
+	echo "$_fontconfig"
+fi
+
+define_in_config_if_yes "$_fontconfig" 'USE_FONTCONFIG'
 
 #
 # Check for OpenGL (ES)
