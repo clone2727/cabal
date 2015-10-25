@@ -33,6 +33,7 @@
 
 #include "backends/audiocd/default/default-audiocd.h"
 #include "backends/fs/fs-factory.h"
+#include "backends/fonts/font-provider.h"
 #include "backends/timer/default/default-timer.h"
 
 OSystem *g_system = 0;
@@ -49,6 +50,7 @@ OSystem::OSystem() {
 	_updateManager = 0;
 #endif
 	_fsFactory = 0;
+	_systemFontProvider = 0;
 }
 
 OSystem::~OSystem() {
@@ -76,6 +78,9 @@ OSystem::~OSystem() {
 
 	delete _fsFactory;
 	_fsFactory = 0;
+
+	delete _systemFontProvider;
+	_systemFontProvider = 0;
 }
 
 void OSystem::initBackend() {

@@ -63,6 +63,7 @@ class KeymapperDefaultBindings;
 class AudioCDManager;
 class FilesystemFactory;
 class PaletteManager;
+class SystemFontProvider;
 
 /**
  * A structure describing time and date. This is a clone of struct tm
@@ -190,6 +191,13 @@ protected:
 	 * @note _fsFactory is deleted by the OSystem destructor.
 	 */
 	FilesystemFactory *_fsFactory;
+
+	/**
+	 * No default value is provided for _systemFontProvider by OSystem.
+	 *
+	 * @note _systemFontProvider is deleted by the OSystem destructor.
+	 */
+	SystemFontProvider *_systemFontProvider;
 
 	//@}
 
@@ -1036,6 +1044,23 @@ public:
 	 */
 	inline AudioCDManager *getAudioCDManager() {
 		return _audiocdManager;
+	}
+
+	//@}
+
+
+
+	/** @name System Fonts */
+	//@{
+
+	/**
+	 * Return the system font provider. For more information, refer to the
+	 * SystemFontProvider documentation.
+	 *
+	 * Returns 0 if there are no system fonts available.
+	 */
+	inline SystemFontProvider *getSystemFontProvider() const {
+		return _systemFontProvider;
 	}
 
 	//@}
