@@ -59,6 +59,12 @@ MODULE_OBJS += \
 	graphics/opengl/texture.o
 endif
 
+# FreeType2 specific source files.
+ifdef USE_FREETYPE2
+MODULE_OBJS += \
+	fonts/ttf/ttf-provider.o
+endif
+
 # SDL specific source files.
 # We cannot just check $BACKEND = sdl, as various other backends
 # derive from the SDL backend, and they all need the following files.
