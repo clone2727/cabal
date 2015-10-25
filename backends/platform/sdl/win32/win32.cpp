@@ -41,6 +41,9 @@
 #include "backends/platform/sdl/win32/win32.h"
 #include "backends/platform/sdl/win32/win32-window.h"
 #include "backends/saves/windows/windows-saves.h"
+#ifdef USE_FREETYPE2
+#include "backends/fonts/win32/win32-font-provider.h"
+#endif
 #include "backends/fs/windows/windows-fs-factory.h"
 #include "backends/taskbar/win32/win32-taskbar.h"
 
@@ -86,6 +89,12 @@ void OSystem_Win32::initBackend() {
 
 	// Register the PC speaker device
 	PCSpeakerFactoryMan.registerFactory("win32", "Win32 Hardware Device", &Audio::createWin32PCSpeaker);
+
+#ifdef USE_FREETYPE2
+	// Create the system font provider
+	if (!_systemFontProvider)
+		_systemFontProvider = createWin32FontProvider();
+#endif
 
 	// Invoke parent implementation of this method
 	OSystem_SDL::initBackend();

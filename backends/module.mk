@@ -69,6 +69,12 @@ ifdef USE_FONTCONFIG
 MODULE_OBJS += \
 	fonts/fontconfig/fontconfig-provider.o
 endif
+
+# Handle the Win32-specific source files
+ifdef WIN32
+MODULE_OBJS += \
+	fonts/win32/win32-font-provider.o
+endif
 endif
 
 # SDL specific source files.
