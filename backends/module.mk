@@ -63,6 +63,12 @@ endif
 ifdef USE_FREETYPE2
 MODULE_OBJS += \
 	fonts/ttf/ttf-provider.o
+
+# Handle fontconfig-specific source files.
+ifdef USE_FONTCONFIG
+MODULE_OBJS += \
+	fonts/fontconfig/fontconfig-provider.o
+endif
 endif
 
 # SDL specific source files.
