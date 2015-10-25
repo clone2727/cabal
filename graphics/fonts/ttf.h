@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -20,6 +20,8 @@
  *
  */
 
+// Based on the ScummVM (GPLv2+) file of the same name
+
 #ifndef GRAPHICS_FONTS_TTF_H
 #define GRAPHICS_FONTS_TTF_H
 
@@ -28,6 +30,10 @@
 #ifdef USE_FREETYPE2
 
 #include "common/stream.h"
+
+namespace Common {
+class FSNode;
+}
 
 namespace Graphics {
 
@@ -94,6 +100,15 @@ enum TTFSizeMode {
  * @return 0 in case loading fails, otherwise a pointer to the Font object.
  */
 Font *loadTTFFont(Common::SeekableReadStream &stream, int size, TTFSizeMode sizeMode = kTTFSizeModeCharacter, uint dpi = 0, TTFRenderMode renderMode = kTTFRenderModeLight, const uint32 *mapping = 0);
+
+/**
+ * Get the font family and style for a TTF font
+ * @param path The path to the font
+ * @param family The family name
+ * @param style The style name
+ * @return true on success, false otherwise
+ */
+bool getTTFDetails(const Common::String &path, Common::String &family, Common::String &style);
 
 void shutdownTTF();
 

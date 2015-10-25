@@ -25,10 +25,12 @@
 #include "common/scummsys.h"
 #ifdef USE_FREETYPE2
 
+#include "graphics/fonts/font-properties.h"
 #include "graphics/fonts/ttf.h"
 #include "graphics/font.h"
 #include "graphics/surface.h"
 
+#include "common/fs.h"
 #include "common/singleton.h"
 #include "common/stream.h"
 #include "common/memstream.h"
@@ -66,6 +68,7 @@ public:
 	bool isInitialized() const { return _initialized; }
 
 	bool loadFont(const uint8 *file, const uint32 size, FT_Face &face);
+	bool loadFont(const Common::String &path, FT_Face &face);
 	void closeFont(FT_Face &face);
 private:
 	FT_Library _library;
@@ -94,6 +97,10 @@ bool TTFLibrary::loadFont(const uint8 *file, const uint32 size, FT_Face &face) {
 	assert(_initialized);
 
 	return (FT_New_Memory_Face(_library, file, size, 0, &face) == 0);
+}
+
+bool TTFLibrary::loadFont(const Common::String &path, FT_Face &face) {
+	return _initialized && FT_New_Face(_library, path.c_str(), 0, &face) == 0;
 }
 
 void TTFLibrary::closeFont(FT_Face &face) {
@@ -662,6 +669,64 @@ Font *loadTTFFont(Common::SeekableReadStream &stream, int size, TTFSizeMode size
 	}
 
 	return font;
+}
+
+bool getTTFDetails(const Common::String &path, Common::String &family, Common::String &style) {
+	FT_Face face;
+	if (!g_ttf.loadFont(path, face))
+		return false;
+
+	if (face->family_name)
+		family = face->family_name;
+	else
+		family.clear();
+
+	if (face->style_name)
+		style = face->style_name;
+	else
+		style.clear();
+
+	g_ttf.closeFont(face);
+	return true;
+}
+
+FontPropertyMap scanDirectoryForTTF(const Common::String &path) {
+	return scanDirectoryForTTF(Common::FSNode(path));
+}
+
+FontPropertyMap scanDirectoryForTTF(const Common::FSNode &node) {
+	FontPropertyMap fontMap;
+
+	// Ensure it actually is a directory node
+	if (!node.exists() || !node.isDirectory())
+		return fontMap;
+
+	// Fetch all the file children for the directory
+	Common::FSList children;
+	if (!node.getChildren(children, Common::FSNode::kListFilesOnly))
+		return fontMap;
+
+	// Look for all children and run them through freetype
+	for (uint32 j = 0; j < children.size(); j++) {
+		// Pull out the stream
+		const Common::FSNode &child = children[j];
+		if (!child.exists() || child.isDirectory())
+			continue;
+
+		// Grab data from freetype2
+		Common::String familyName, styleName;
+		if (!Graphics::getTTFDetails(child.getPath(), familyName, styleName))
+			continue;
+
+		FontProperties properties(familyName, styleName);
+		fontMap[properties] = child.getPath();
+
+		debug("Path: %s", child.getPath().c_str());
+		debug("\tFamily: %s", familyName.empty() ? "<empty>" : familyName.c_str());
+		debug("\tStyle: %s", styleName.empty() ? "<empty>" : styleName.c_str());
+	}
+
+	return fontMap;
 }
 
 } // End of namespace Graphics
