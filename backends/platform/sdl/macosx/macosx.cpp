@@ -27,6 +27,7 @@
 #ifdef MACOSX
 
 #include "backends/audiocd/macosx/macosx-audiocd.h"
+#include "backends/fonts/macosx/macosx-font-provider.h"
 #include "backends/mixer/doublebuffersdl/doublebuffersdl-mixer.h"
 #include "backends/platform/sdl/macosx/appmenu_osx.h"
 #include "backends/platform/sdl/macosx/macosx.h"
@@ -80,6 +81,12 @@ void OSystem_MacOSX::initBackend() {
 #ifdef USE_SPARKLE
 	// Initialize updates manager
 	_updateManager = new MacOSXUpdateManager();
+#endif
+
+#ifdef USE_FREETYPE2
+	// Create the font provider
+	if (!_systemFontProvider)
+		_systemFontProvider = createMacOSXFontProvider();
 #endif
 
 	// Invoke parent implementation of this method

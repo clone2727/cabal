@@ -70,6 +70,12 @@ MODULE_OBJS += \
 	fonts/fontconfig/fontconfig-provider.o
 endif
 
+# Handle the Mac OS X-specific source files
+ifdef MACOSX
+MODULE_OBJS += \
+	fonts/macosx/macosx-font-provider.o
+endif
+
 # Handle the Win32-specific source files
 ifdef WIN32
 MODULE_OBJS += \
