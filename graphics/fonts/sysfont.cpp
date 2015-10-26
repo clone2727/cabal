@@ -43,4 +43,28 @@ Graphics::Font *SystemFontManager::createFont(const Common::String &name, uint s
 	return 0;
 }
 
+// A struct to hold a Windows font name mapping
+struct WindowsFontNameMap {
+	const char *fileName;
+	const char *family;
+	uint32 style;
+};
+
+// TODO: Add more to the table (as needed, only)
+static const WindowsFontNameMap s_windowsFontNameMap[] = {
+	{ "arial.ttf", "Arial", kFontStyleNormal }
+};
+
+bool SystemFontManager::matchWindowsFontName(const Common::String &fileName, Common::String &name, uint32 &style) const {
+	for (uint32 i = 0; i < ARRAYSIZE(s_windowsFontNameMap); i++) {
+		if (fileName.equalsIgnoreCase(s_windowsFontNameMap[i].fileName)) {
+			name = s_windowsFontNameMap[i].family;
+			style = s_windowsFontNameMap[i].style;
+			return true;
+		}
+	}
+
+	return false;
+}
+
 } // End of namespace Graphics

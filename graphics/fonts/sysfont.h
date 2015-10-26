@@ -49,6 +49,18 @@ public:
 	 */
 	Graphics::Font *createFont(const Common::String &name, uint size, uint32 style = kFontStyleNormal, FontRenderMode render = kFontRenderNormal, uint dpi = kDefaultDPI);
 
+	/**
+	 * Find a matching font properties for a Windows font file name.
+	 * This is used for engines like Wintermute which have this file name
+	 * in game data instead of the family name.
+	 *
+	 * @param fileName The name of the Windows font file
+	 * @param name The family name, returned
+	 * @param style The style, returned
+	 * @return true on finding a match, false otherwise
+	 */
+	bool matchWindowsFontName(const Common::String &fileName, Common::String &name, uint32 &style) const;
+
 private:
 	friend class Common::Singleton<SingletonBaseType>;
 	SystemFontManager() {}
