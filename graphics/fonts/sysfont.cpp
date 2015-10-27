@@ -30,7 +30,47 @@ DECLARE_SINGLETON(Graphics::SystemFontManager);
 
 namespace Graphics {
 
+struct SubstituteFont {
+	const char *familyName;
+	uint32 style;
+	const char *subFamilyName;
+	uint32 subStyle;
+};
+
+static const SubstituteFont s_substituteFonts[] = {
+	{ "Arial", kFontStyleNormal, "FreeSans", kFontStyleNormal },
+	{ "Arial", kFontStyleBold, "FreeSans", kFontStyleBold },
+	{ "MS Gothic", kFontStyleNormal, "Ume Gothic", kFontStyleNormal }
+};
+
 Graphics::Font *SystemFontManager::createFont(const Common::String &name, uint size, uint32 style, FontRenderMode render, uint dpi) {
+	// Look for the font directly
+	Graphics::Font *font = createFontIntern(name, size, style, render, dpi);
+	if (font)
+		return font;
+
+	// Look for substitute fonts
+	for (int i = 0; i < ARRAYSIZE(s_substituteFonts); i++) {
+		if (!name.equalsIgnoreCase(s_substituteFonts[i].familyName))
+			continue;
+
+		if (s_substituteFonts[i].style != (style & ~kFontStyleEmulate))
+			continue;
+
+		// Capture the style, and ensure it gets copied
+		uint32 subStyle = s_substituteFonts[i].subStyle;
+		if (style & kFontStyleEmulate)
+			subStyle |= kFontStyleEmulate;
+
+		font = createFontIntern(s_substituteFonts[i].subFamilyName, size, subStyle, render, dpi);
+		if (font)
+			return font;
+	}
+
+	return 0;
+}
+
+Graphics::Font *SystemFontManager::createFontIntern(const Common::String &name, uint size, uint32 style, FontRenderMode render, uint dpi) {
 	SystemFontProvider *provider = g_system->getSystemFontProvider();
 
 	if (provider) {

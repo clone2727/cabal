@@ -65,6 +65,11 @@ private:
 	friend class Common::Singleton<SingletonBaseType>;
 	SystemFontManager() {}
 	~SystemFontManager() {}
+
+	/**
+	 * Internal function for creating a font; called by createFont()
+	 */
+	Graphics::Font *createFontIntern(const Common::String &name, uint size, uint32 style = kFontStyleNormal, FontRenderMode render = kFontRenderNormal, uint dpi = kDefaultDPI);
 };
 
 } // End of namespace Graphics
