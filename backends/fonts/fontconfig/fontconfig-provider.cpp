@@ -107,6 +107,16 @@ Common::SeekableReadStream *FontconfigFontProvider::createReadStreamForFont(cons
 	for (int i = 0; i < fontSet->nfont; i++) {
 		FcPattern *foundPattern = fontSet->fonts[i];
 
+		// Get the family name of the font
+		FcChar8 *familyName;
+		if (FcPatternGetString(foundPattern, FC_FAMILY, 0, &familyName) != FcResultMatch)
+			continue;
+
+		// If we don't actually match, bail out. We don't want to end
+		// up with the default fontconfig font, which would look horrible.
+		if (!name.equalsIgnoreCase(reinterpret_cast<const char *>(familyName)))
+			continue;
+
 		// Get the name of the font
 		FcChar8 *fileName;
 		if (FcPatternGetString(foundPattern, FC_FILE, 0, &fileName) != FcResultMatch)
