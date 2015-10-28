@@ -40,7 +40,7 @@ class SeekableReadStream;
 class TTFFontProvider : public SystemFontProvider {
 public:
 	// SystemFontProvider API
-	Graphics::Font *createFont(const Common::String &name, uint size, uint32 style = kFontStyleNormal, FontRenderMode render = kFontRenderNormal, uint dpi = kDefaultDPI);
+	Graphics::Font *createFont(const Common::String &name, uint size, uint32 style = kFontStyleNormal, Graphics::FontRenderMode render = Graphics::kFontRenderNormal, uint dpi = Graphics::kFontDefaultDPI);
 
 protected:
 	/**

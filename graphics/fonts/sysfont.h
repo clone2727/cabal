@@ -47,7 +47,7 @@ public:
 	 * @param dpi
 	 *     The dots per inch to render the font with.
 	 */
-	Graphics::Font *createFont(const Common::String &name, uint size, uint32 style = kFontStyleNormal, FontRenderMode render = kFontRenderNormal, uint dpi = kDefaultDPI);
+	Graphics::Font *createFont(const Common::String &name, uint size, uint32 style = kFontStyleNormal, FontRenderMode render = kFontRenderNormal, uint dpi = kFontDefaultDPI);
 
 	/**
 	 * Find a matching font properties for a Windows font file name.
@@ -69,7 +69,7 @@ private:
 	/**
 	 * Internal function for creating a font; called by createFont()
 	 */
-	Graphics::Font *createFontIntern(const Common::String &name, uint size, uint32 style = kFontStyleNormal, FontRenderMode render = kFontRenderNormal, uint dpi = kDefaultDPI);
+	Graphics::Font *createFontIntern(const Common::String &name, uint size, uint32 style = kFontStyleNormal, FontRenderMode render = kFontRenderNormal, uint dpi = kFontDefaultDPI);
 };
 
 } // End of namespace Graphics

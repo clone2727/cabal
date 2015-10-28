@@ -30,36 +30,13 @@
 #ifdef USE_FREETYPE2
 
 #include "common/stream.h"
+#include "graphics/font.h"
 
 namespace Common {
 class FSNode;
 }
 
 namespace Graphics {
-
-class Font;
-
-/**
- * This specifies the mode in which TTF glyphs are rendered. This, for example,
- * allows to render glyphs fully monochrome, i.e. without any anti-aliasing.
- */
-enum TTFRenderMode {
-	/**
-	 * Standard render mode. Equivalent of FreeType2's FT_RENDER_MODE_NORMAL.
-	 */
-	kTTFRenderModeNormal,
-
-	/**
-	 * Use lighter hinting. Equivalent of FreeType2's FT_RENDER_MODE_LIGHT.
-	 */
-	kTTFRenderModeLight,
-
-	/**
-	 * Render fully monochrome. This makes glyph pixels either be fully opaque
-	 * or fully transparent.
-	 */
-	kTTFRenderModeMonochrome
-};
 
 /**
  * This specifies how the font size is defined.
@@ -90,7 +67,7 @@ enum TTFSizeMode {
  * @param sizeMode   The point size definition used for the size parameter.
  * @param dpi        The dpi to use for size calculations, by default 72dpi
  *                   are used.
- * @param renderMode FreeType2 mode used to render glyphs. @see TTFRenderMode
+ * @param renderMode FreeType2 mode used to render glyphs. @see FontRenderMode
  * @param mapping    A mapping from code points 0-255 into UTF-32 code points.
  *                   This can be used to support various 8bit character sets.
  *                   In case the msb of the UTF-32 code point is set the font
@@ -99,7 +76,7 @@ enum TTFSizeMode {
  *                   supported.
  * @return 0 in case loading fails, otherwise a pointer to the Font object.
  */
-Font *loadTTFFont(Common::SeekableReadStream &stream, int size, TTFSizeMode sizeMode = kTTFSizeModeCharacter, uint dpi = 0, TTFRenderMode renderMode = kTTFRenderModeLight, const uint32 *mapping = 0);
+Font *loadTTFFont(Common::SeekableReadStream &stream, int size, TTFSizeMode sizeMode = kTTFSizeModeCharacter, uint dpi = kFontDefaultDPI, FontRenderMode renderMode = kFontRenderLight, const uint32 *mapping = 0);
 
 /**
  * Get the font family and style for a TTF font

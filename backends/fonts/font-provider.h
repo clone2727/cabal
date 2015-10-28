@@ -23,12 +23,10 @@
 #ifndef BACKENDS_FONTS_PROVIDER_H
 #define BACKENDS_FONTS_PROVIDER_H
 
+#include "graphics/font.h"
+
 namespace Common {
 class String;
-}
-
-namespace Graphics {
-class Font;
 }
 
 /**
@@ -58,35 +56,6 @@ enum FontStyle {
 };
 
 /**
- * The render style of the font.
- * @sa Graphics::TTFRenderMode
- */
-enum FontRenderMode {
-	/**
-	 * Standard render mode
-	 */
-	kFontRenderNormal = 0,
-
-	/**
-	 * Use lighter hinting
-	 */
-	kFontRenderLight = 1,
-
-	/**
-	 * Render fully monochrome. This makes glyph pixels either be fully opaque
-	 * or fully transparent.
-	 */
-	kFontRenderMonochrome = 2
-};
-
-enum {
-	/**
-	 * The default dpi to load the font in
-	 */
-	kDefaultDPI = 72
-};
-
-/**
  * A class providing access to system fonts
  */
 class SystemFontProvider {
@@ -104,7 +73,7 @@ public:
 	 * @param dpi The DPI to load the font in
 	 * @return A pointer to the font, or 0 if it could not be found
 	 */
-	virtual Graphics::Font *createFont(const Common::String &name, uint size, uint32 style = kFontStyleNormal, FontRenderMode render = kFontRenderNormal, uint dpi = kDefaultDPI) = 0;
+	virtual Graphics::Font *createFont(const Common::String &name, uint size, uint32 style = kFontStyleNormal, Graphics::FontRenderMode render = Graphics::kFontRenderNormal, uint dpi = Graphics::kFontDefaultDPI) = 0;
 };
 
 #endif

@@ -114,7 +114,7 @@ public:
 	TTFFont();
 	virtual ~TTFFont();
 
-	bool load(Common::SeekableReadStream &stream, int size, TTFSizeMode sizeMode, uint dpi, TTFRenderMode renderMode, const uint32 *mapping);
+	bool load(Common::SeekableReadStream &stream, int size, TTFSizeMode sizeMode, uint dpi, FontRenderMode renderMode, const uint32 *mapping);
 
 	virtual int getFontHeight() const;
 
@@ -181,7 +181,7 @@ TTFFont::~TTFFont() {
 	}
 }
 
-bool TTFFont::load(Common::SeekableReadStream &stream, int size, TTFSizeMode sizeMode, uint dpi, TTFRenderMode renderMode, const uint32 *mapping) {
+bool TTFFont::load(Common::SeekableReadStream &stream, int size, TTFSizeMode sizeMode, uint dpi, FontRenderMode renderMode, const uint32 *mapping) {
 	if (!g_ttf.isInitialized())
 		return false;
 
@@ -227,17 +227,17 @@ bool TTFFont::load(Common::SeekableReadStream &stream, int size, TTFSizeMode siz
 	}
 
 	switch (renderMode) {
-	case kTTFRenderModeNormal:
+	case kFontRenderNormal:
 		_loadFlags = FT_LOAD_TARGET_NORMAL;
 		_renderMode = FT_RENDER_MODE_NORMAL;
 		break;
 
-	case kTTFRenderModeLight:
+	case kFontRenderLight:
 		_loadFlags = FT_LOAD_TARGET_LIGHT;
 		_renderMode = FT_RENDER_MODE_LIGHT;
 		break;
 
-	case kTTFRenderModeMonochrome:
+	case kFontRenderMonochrome:
 		_loadFlags = FT_LOAD_TARGET_MONO;
 		_renderMode = FT_RENDER_MODE_MONO;
 		break;
@@ -660,7 +660,7 @@ void TTFFont::assureCached(uint32 chr) const {
 	}
 }
 
-Font *loadTTFFont(Common::SeekableReadStream &stream, int size, TTFSizeMode sizeMode, uint dpi, TTFRenderMode renderMode, const uint32 *mapping) {
+Font *loadTTFFont(Common::SeekableReadStream &stream, int size, TTFSizeMode sizeMode, uint dpi, FontRenderMode renderMode, const uint32 *mapping) {
 	TTFFont *font = new TTFFont();
 
 	if (!font->load(stream, size, sizeMode, dpi, renderMode, mapping)) {

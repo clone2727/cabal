@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -19,6 +19,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
  */
+
+// Based on the ScummVM (GPLv2+) file of the same name
 
 #ifndef GRAPHICS_FONT_H
 #define GRAPHICS_FONT_H
@@ -41,6 +43,36 @@ enum TextAlign {
 	kTextAlignLeft,     ///< Text should be aligned to the left
 	kTextAlignCenter,   ///< Text should be centered
 	kTextAlignRight     ///< Text should be aligned to the right
+};
+
+/**
+ * The render style of the font. Currently only used for TTF.
+ */
+enum FontRenderMode {
+	/**
+	 * Standard render mode
+	 * Equivalent of FreeType2's FT_RENDER_MODE_NORMAL.
+	 */
+	kFontRenderNormal = 0,
+
+	/**
+	 * Use lighter hinting
+	 * Equivalent of FreeType2's FT_RENDER_MODE_LIGHT.
+	 */
+	kFontRenderLight = 1,
+
+	/**
+	 * Render fully monochrome. This makes glyph pixels either be fully opaque
+	 * or fully transparent.
+	 */
+	kFontRenderMonochrome = 2
+};
+
+enum {
+	/**
+	 * The default dpi to load the font in
+	 */
+	kFontDefaultDPI = 72
 };
 
 /**

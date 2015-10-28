@@ -25,10 +25,10 @@
 #include "common/ptr.h"
 #include "graphics/fonts/ttf.h"
 
-Graphics::Font *TTFFontProvider::createFont(const Common::String &name, uint size, uint32 style, FontRenderMode render, uint dpi) {
+Graphics::Font *TTFFontProvider::createFont(const Common::String &name, uint size, uint32 style, Graphics::FontRenderMode render, uint dpi) {
 	Common::ScopedPtr<Common::SeekableReadStream> stream(createReadStreamForFont(name, style));
 	bool emulateMode = false;
-	if (!stream && (style & kFontStyleEmulate) != 0) {		
+	if (!stream && (style & kFontStyleEmulate) != 0) {
 		stream.reset(createReadStreamForFont(name, kFontStyleNormal));
 		emulateMode = true;
 	}
@@ -36,30 +36,16 @@ Graphics::Font *TTFFontProvider::createFont(const Common::String &name, uint siz
 	if (!stream)
 		return 0;
 
-	// Remap the render mode
-	Graphics::TTFRenderMode ttfRender;
-	switch (render) {
-	case kFontRenderNormal:
-		ttfRender = Graphics::kTTFRenderModeNormal;
-		break;
-	case kFontRenderLight:
-		ttfRender = Graphics::kTTFRenderModeLight;
-		break;
-	case kFontRenderMonochrome:
-		ttfRender = Graphics::kTTFRenderModeMonochrome;
-		break;
-	}
-
 	// TODO: Emulate if necessary
 
-	return Graphics::loadTTFFont(*stream, size, dpi, ttfRender);
+	return Graphics::loadTTFFont(*stream, size, Graphics::kTTFSizeModeCharacter, dpi, render);
 }
 
 Common::String TTFFontProvider::makeStyleString(uint32 style) {
 	// Ignore force
 	style &= ~kFontStyleEmulate;
 
-	switch (style & ~kFontStyleEmulate) {
+	switch (style) {
 	case kFontStyleNormal:
 		return "Regular";
 	case kFontStyleBold:
