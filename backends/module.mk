@@ -220,11 +220,5 @@ MODULE_OBJS += \
 	plugins/wii/wii-provider.o
 endif
 
-ifdef ENABLE_EVENTRECORDER
-MODULE_OBJS += \
-	mixer/nullmixer/nullsdl-mixer.o \
-	saves/recorder/recorder-saves.o
-endif
-
 # Include common rules
 include $(srcdir)/rules.mk

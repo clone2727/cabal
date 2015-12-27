@@ -22,7 +22,6 @@
 
 #include "common/random.h"
 #include "common/system.h"
-#include "gui/EventRecorder.h"
 
 
 namespace Common {
@@ -32,11 +31,7 @@ RandomSource::RandomSource(const String &name) {
 	// a RNG for security purposes, but good enough for our purposes.
 	assert(g_system);
 
-#ifdef ENABLE_EVENTRECORDER
-	setSeed(g_eventRec.getRandomSeed(name));
-#else
 	setSeed(g_system->getMillis());
-#endif
 }
 
 void RandomSource::setSeed(uint32 seed) {

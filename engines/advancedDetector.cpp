@@ -29,7 +29,6 @@
 #include "common/system.h"
 #include "common/textconsole.h"
 #include "common/translation.h"
-#include "gui/EventRecorder.h"
 #include "engines/advancedDetector.h"
 #include "engines/obsolete.h"
 
@@ -609,9 +608,4 @@ AdvancedMetaEngine::AdvancedMetaEngine(const void *descs, uint descItemSize, con
 }
 
 void AdvancedMetaEngine::initSubSystems(const ADGameDescription *gameDesc) const {
-#ifdef ENABLE_EVENTRECORDER
-	if (gameDesc) {
-		g_eventRec.processGameDescription(gameDesc);
-	}
-#endif
 }

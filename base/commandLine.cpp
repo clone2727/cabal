@@ -118,13 +118,6 @@ static const char HELP_STRING[] =
 	"  --aspect-ratio           Enable aspect ratio correction\n"
 	"  --render-mode=MODE       Enable additional render modes (cga, ega, hercGreen,\n"
 	"                           hercAmber, amiga)\n"
-#ifdef ENABLE_EVENTRECORDER
-	"  --record-mode=MODE       Specify record mode for event recorder (record, playback,\n"
-	"                           passthrough [default])\n"
-	"  --record-file-name=FILE  Specify record file name\n"
-	"  --disable-display        Disable any gfx output. Used for headless events\n"
-	"                           playback by Event Recorder\n"
-#endif
 	"\n"
 #if defined(ENABLE_SKY) || defined(ENABLE_QUEEN)
 	"  --alt-intro              Use alternative intro for CD versions of Beneath a\n"
@@ -429,17 +422,6 @@ Common::String parseCommandLine(Common::StringMap &settings, int argc, const cha
 
 			DO_OPTION_BOOL('f', "fullscreen")
 			END_OPTION
-
-#ifdef ENABLE_EVENTRECORDER
-			DO_LONG_OPTION_INT("disable-display")
-			END_OPTION
-
-			DO_LONG_OPTION("record-mode")
-			END_OPTION
-
-			DO_LONG_OPTION("record-file-name")
-			END_OPTION
-#endif
 
 			DO_LONG_OPTION("opl-driver")
 			END_OPTION

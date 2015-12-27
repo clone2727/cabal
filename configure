@@ -153,10 +153,9 @@ _build_hq_scalers=yes
 _enable_prof=no
 _global_constructors=no
 _bink=yes
-# Default vkeybd/keymapper/eventrec options
+# Default vkeybd/keymapper options
 _vkeybd=no
 _keymapper=no
-_eventrec=auto
 # GUI translation options
 _translation=yes
 # Default platform settings
@@ -922,8 +921,6 @@ Optional Features:
   --disable-taskbar        don't build support for taskbar and launcher integration
   --enable-vkeybd          build virtual keyboard support
   --enable-keymapper       build key mapper support
-  --enable-eventrecorder   enable event recording functionality
-  --disable-eventrecorder  disable event recording functionality
   --enable-updates         build support for updates
   --enable-text-console    use text console instead of graphical console
   --enable-verbose-build   enable regular echoing of commands during build
@@ -1073,8 +1070,6 @@ for ac_option in $@; do
 	--disable-vkeybd)         _vkeybd=no      ;;
 	--enable-keymapper)       _keymapper=yes  ;;
 	--disable-keymapper)      _keymapper=no   ;;
-	--enable-eventrecorder)   _eventrec=yes  ;;
-	--disable-eventrecorder)  _eventrec=no   ;;
 	--enable-text-console)    _text_console=yes ;;
 	--disable-text-console)   _text_console=no ;;
 	--with-fluidsynth-prefix=*)
@@ -2603,7 +2598,6 @@ if test -n "$_host"; then
 			# This is so optional OpenGL ES includes are found.
 			append_var CXXFLAGS "-I$RPI_ROOT/opt/vc/include"
 			_savegame_timestamp=no
-			_eventrec=no
 			_build_scalers=no
 			_build_hq_scalers=no
 			# We prefer SDL2 on the Raspberry Pi: acceleration now depends on it 
@@ -2900,7 +2894,7 @@ if test -n "$_host"; then
 			_mt32emu=no
 			_timidity=no
 			_vkeybd=yes
-			_eventrec=no
+
 			_port_mk="backends/platform/sdl/ps3/ps3.mk"
 			;;
 		psp)
@@ -3155,20 +3149,6 @@ case $_backend in
 		;;
 	*)
 		_16bit=no
-		;;
-esac
-
-#
-# Enable Event Recorder only for backends that support it
-#
-case $_backend in
-	sdl)
-		if test "$_eventrec" = auto ; then
-			_eventrec=yes
-		fi
-		;;
-	*)
-		_eventrec=no
 		;;
 esac
 
@@ -4195,17 +4175,6 @@ define_in_config_if_yes $_nasm 'USE_NASM'
 #
 define_in_config_if_yes $_vkeybd 'ENABLE_VKEYBD'
 define_in_config_if_yes $_keymapper 'ENABLE_KEYMAPPER'
-define_in_config_if_yes $_eventrec 'ENABLE_EVENTRECORDER'
-
-#
-# Check if the keymapper and the event recorder are enabled simultaneously
-#
-if test "$_keymapper" = yes ; then
-	if test "$_eventrec" = yes ; then
-		echo "ERROR: The keymapper and the event recorder cannot be enabled simultaneously currently, please disable one of the two"
-		exit 1
-	fi
-fi
 
 # Check whether to build translation support
 #
@@ -4370,12 +4339,6 @@ fi
 
 if test "$_keymapper" = yes ; then
 	echo_n ", keymapper"
-fi
-
-if test "$_eventrec" = yes ; then
-	echo ", event recorder"
-else
-	echo
 fi
 
 #

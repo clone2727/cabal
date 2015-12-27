@@ -38,11 +38,6 @@
 #include "gui/message.h"
 #include "gui/gui-manager.h"
 #include "gui/options.h"
-#ifdef ENABLE_EVENTRECORDER
-#include "gui/onscreendialog.h"
-#include "gui/recorderdialog.h"
-#include "gui/EventRecorder.h"
-#endif
 #include "gui/saveload.h"
 #include "gui/widgets/edittext.h"
 #include "gui/widgets/list.h"
@@ -980,47 +975,8 @@ void LauncherDialog::editGame(int item) {
 }
 
 void LauncherDialog::loadGameButtonPressed(int item) {
-#ifdef ENABLE_EVENTRECORDER
-	const bool shiftPressed = checkModifier(Common::KBD_SHIFT);
-	if (shiftPressed) {
-		recordGame(item);
-	} else {
-		loadGame(item);
-	}
-	updateButtons();
-#else
 	loadGame(item);
-#endif
 }
-
-#ifdef ENABLE_EVENTRECORDER
-void LauncherDialog::recordGame(int item) {
-	RecorderDialog recorderDialog;
-	MessageDialog alert(_("Do you want to load saved game?"),
-		_("Yes"), _("No"));
-	switch(recorderDialog.runModal(_domains[item])) {
-	case RecorderDialog::kRecordDialogClose:
-		break;
-	case RecorderDialog::kRecordDialogPlayback:
-		ConfMan.setActiveDomain(_domains[item]);
-		close();
-		ConfMan.set("record_mode", "playback", ConfigManager::kTransientDomain);
-		ConfMan.set("record_file_name", recorderDialog.getFileName(), ConfigManager::kTransientDomain);
-		break;
-	case RecorderDialog::kRecordDialogRecord:
-		ConfMan.setActiveDomain(_domains[item]);
-		if (alert.runModal() == GUI::kMessageOK) {
-			loadGame(item);
-		}
-		close();
-		g_eventRec.setAuthor(recorderDialog._author);
-		g_eventRec.setName(recorderDialog._name);
-		g_eventRec.setNotes(recorderDialog._notes);
-		ConfMan.set("record_mode", "record", ConfigManager::kTransientDomain);
-		break;
-	}
-}
-#endif
 
 void LauncherDialog::loadGame(int item) {
 	String gameId = ConfMan.get("gameid", _domains[item]);
@@ -1157,9 +1113,6 @@ void LauncherDialog::updateButtons() {
 		_loadButton->draw();
 	}
 	switchButtonsText(_addButton, "~A~dd Game...", _s("Mass Add..."));
-#ifdef ENABLE_EVENTRECORDER
-	switchButtonsText(_loadButton, "~L~oad...", _s("Record..."));
-#endif
 }
 
 // Update the label of the button depending on whether shift is pressed or not

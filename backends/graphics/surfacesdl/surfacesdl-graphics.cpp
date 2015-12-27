@@ -41,7 +41,6 @@
 #include "graphics/scaler.h"
 #include "graphics/scaler/aspect.h"
 #include "graphics/surface.h"
-#include "gui/EventRecorder.h"
 
 static const OSystem::GraphicsMode s_supportedGraphicsModes[] = {
 	{"1x", _s("Normal (no scaling)"), GFX_NORMAL},
@@ -792,27 +791,16 @@ bool SurfaceSdlGraphicsManager::loadGFXMode() {
 		fixupResolutionForAspectRatio(_videoMode.desiredAspectRatio, _videoMode.hardwareWidth, _videoMode.hardwareHeight);
 	}
 
-
-#ifdef ENABLE_EVENTRECORDER
-	_displayDisabled = ConfMan.getBool("disable_display");
-
-	if (_displayDisabled) {
-		_hwscreen = g_eventRec.getSurface(_videoMode.hardwareWidth, _videoMode.hardwareHeight);
-	} else
-#endif
-	{
-		// Save the original bpp to be able to restore the video mode on unload
+	// Save the original bpp to be able to restore the video mode on unload
 #if !SDL_VERSION_ATLEAST(2, 0, 0)
-		if (_originalBitsPerPixel == 0) {
-			const SDL_VideoInfo *videoInfo = SDL_GetVideoInfo();
-			_originalBitsPerPixel = videoInfo->vfmt->BitsPerPixel;
-		}
+	if (_originalBitsPerPixel == 0) {
+		const SDL_VideoInfo *videoInfo = SDL_GetVideoInfo();
+		_originalBitsPerPixel = videoInfo->vfmt->BitsPerPixel;
+	}
 #endif
 
-		_hwscreen = SDL_SetVideoMode(_videoMode.hardwareWidth, _videoMode.hardwareHeight, 16,
-			_videoMode.fullscreen ? (SDL_FULLSCREEN|SDL_SWSURFACE) : SDL_SWSURFACE
-			);
-	}
+	_hwscreen = SDL_SetVideoMode(_videoMode.hardwareWidth, _videoMode.hardwareHeight, 16,
+		_videoMode.fullscreen ? (SDL_FULLSCREEN|SDL_SWSURFACE) : SDL_SWSURFACE);
 
 #ifdef USE_RGB_COLOR
 	detectSupportedFormats();

@@ -279,7 +279,6 @@ int main(int argc, char *argv[]) {
 	// When building tests, disable some features
 	if (setup.tests) {
 		setFeatureBuildState("mt32emu", setup.features, false);
-		setFeatureBuildState("eventrecorder", setup.features, false);
 
 		for (EngineDescList::iterator j = setup.engines.begin(); j != setup.engines.end(); ++j)
 			j->enable = false;
@@ -308,17 +307,6 @@ int main(int argc, char *argv[]) {
 	for (FeatureList::const_iterator i = setup.features.begin(); i != setup.features.end(); ++i) {
 		if (!i->enable)
 			cout << "    " << i->description << '\n';
-	}
-
-	// Check if the keymapper and the event recorder are enabled simultaneously
-	bool keymapperEnabled = false;
-	for (FeatureList::const_iterator i = setup.features.begin(); i != setup.features.end(); ++i) {
-		if (i->enable && !strcmp(i->name, "keymapper"))
-			keymapperEnabled = true;
-		if (i->enable && !strcmp(i->name, "eventrecorder") && keymapperEnabled) {
-			std::cerr << "ERROR: The keymapper and the event recorder cannot be enabled simultaneously currently, please disable one of the two\n";
-			return -1;
-		}
 	}
 
 	// Check if tools and tests are enabled simultaneously
@@ -952,7 +940,6 @@ const Feature s_features[] = {
 	{     "translation",      "USE_TRANSLATION",         "", true,  "Translation support" },
 	{          "vkeybd",        "ENABLE_VKEYBD",         "", false, "Virtual keyboard support"},
 	{       "keymapper",     "ENABLE_KEYMAPPER",         "", false, "Keymapper support"},
-	{   "eventrecorder", "ENABLE_EVENTRECORDER",         "", false, "Event recorder support"},
 	{      "langdetect",       "USE_DETECTLANG",         "", true,  "System language detection support" } // This feature actually depends on "translation", there
 	                                                                                                      // is just no current way of properly detecting this...
 };
