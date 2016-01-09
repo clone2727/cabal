@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -20,6 +20,8 @@
  *
  */
 
+// Based on the ScummVM (GPLv2+) file of the same name
+
 #include "scumm/imuse/pcspk.h"
 
 #include "common/util.h"
@@ -27,7 +29,7 @@
 namespace Scumm {
 
 PcSpkDriver::PcSpkDriver(Audio::Mixer *mixer)
-	: MidiDriver_Emulated(mixer), _pcSpk(mixer->getOutputRate()) {
+	: MidiDriver_Emulated(mixer) {
 }
 
 PcSpkDriver::~PcSpkDriver() {

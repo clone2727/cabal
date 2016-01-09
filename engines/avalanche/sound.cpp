@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -20,6 +20,8 @@
  *
  */
 
+// Based on the ScummVM (GPLv2+) file of the same name
+
 #include "avalanche/avalanche.h"
 #include "avalanche/sound.h"
 
@@ -30,7 +32,7 @@ namespace Avalanche {
 
 SoundHandler::SoundHandler(AvalancheEngine *vm) : _vm(vm) {
 	_soundFl = true;
-	_speakerStream = new Audio::PCSpeaker(_vm->_mixer->getOutputRate());
+	_speakerStream = new Audio::PCSpeaker();
 	_vm->_mixer->playStream(Audio::Mixer::kSFXSoundType, &_speakerHandle,
 						_speakerStream, -1, Audio::Mixer::kMaxChannelVolume, 0, DisposeAfterUse::YES, true);
 }

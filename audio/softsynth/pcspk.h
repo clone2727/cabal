@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -20,6 +20,8 @@
  *
  */
 
+// Based on the ScummVM (GPLv2+) file of the same name
+
 #ifndef AUDIO_SOFTSYNTH_PCSPK_H
 #define AUDIO_SOFTSYNTH_PCSPK_H
 
@@ -37,7 +39,7 @@ public:
 		kWaveFormTriangle
 	};
 
-	PCSpeaker(int rate = 44100);
+	PCSpeaker();
 	~PCSpeaker();
 
 	/** Play a note for length ms.
@@ -57,7 +59,7 @@ public:
 	bool isStereo() const	{ return false; }
 	bool endOfData() const	{ return false; }
 	bool endOfStream() const { return false; }
-	int getRate() const	{ return _rate; }
+	int getRate() const;
 
 protected:
 	Common::Mutex _mutex;

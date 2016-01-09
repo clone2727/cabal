@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -20,6 +20,9 @@
  *
  */
 
+// Based on the ScummVM (GPLv2+) file of the same name
+
+#include "audio/mixer.h"
 #include "audio/softsynth/pcspk.h"
 #include "audio/null.h"
 
@@ -29,8 +32,7 @@ const PCSpeaker::generatorFunc PCSpeaker::generateWave[] =
 	{&PCSpeaker::generateSquare, &PCSpeaker::generateSine,
 	 &PCSpeaker::generateSaw,    &PCSpeaker::generateTriangle};
 
-PCSpeaker::PCSpeaker(int rate) {
-	_rate = rate;
+PCSpeaker::PCSpeaker() {
 	_wave = kWaveFormSquare;
 	_playForever = false;
 	_oscLength = 0;
@@ -49,13 +51,13 @@ void PCSpeaker::play(WaveForm wave, int freq, int32 length) {
 	assert((wave >= kWaveFormSquare) && (wave <= kWaveFormTriangle));
 
 	_wave = wave;
-	_oscLength = _rate / freq;
+	_oscLength = getRate() / freq;
 	_oscSamples = 0;
 	if (length == -1) {
 		_remainingSamples = 1;
 		_playForever = true;
 	} else {
-		_remainingSamples = (_rate * length) / 1000;
+		_remainingSamples = (getRate() * length) / 1000;
 		_playForever = false;
 	}
 	_mixedSamples = 0;
@@ -64,7 +66,7 @@ void PCSpeaker::play(WaveForm wave, int freq, int32 length) {
 void PCSpeaker::stop(int32 delay) {
 	Common::StackLock lock(_mutex);
 
-	_remainingSamples = (_rate * delay) / 1000;
+	_remainingSamples = (getRate() * delay) / 1000;
 	_playForever = false;
 }
 
@@ -95,6 +97,10 @@ int PCSpeaker::readBuffer(int16 *buffer, const int numSamples) {
 		memset(buffer + i, 0, (numSamples - i) * sizeof(int16));
 
 	return numSamples;
+}
+
+int PCSpeaker::getRate() const {
+	return g_system->getMixer()->getOutputRate();
 }
 
 int8 PCSpeaker::generateSquare(uint32 x, uint32 oscLength) {

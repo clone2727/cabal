@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -20,13 +20,15 @@
  *
  */
 
+// Based on the ScummVM (GPLv2+) file of the same name
+
 #include "gob/sound/pcspeaker.h"
 
 namespace Gob {
 
 PCSpeaker::PCSpeaker(Audio::Mixer &mixer) : _mixer(&mixer) {
 
-	_stream = new Audio::PCSpeaker(_mixer->getOutputRate());
+	_stream = new Audio::PCSpeaker();
 	_mixer->playStream(Audio::Mixer::kSFXSoundType,
 			&_handle, _stream, -1, 50, 0, DisposeAfterUse::NO, true);
 }

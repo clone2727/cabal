@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -20,6 +20,8 @@
  *
  */
 
+// Based on the ScummVM (GPLv2+) file of the same name
+
 #include "kyra/sound_intern.h"
 
 #include "audio/mixer.h"
@@ -36,8 +38,7 @@ MidiDriver_PCSpeaker::MidiDriver_PCSpeaker(Audio::Mixer *mixer)
 	for (int i = 0; i < 2; ++i)
 		_note[i].hardwareChannel = 0xFF;
 
-	_speaker = new Audio::PCSpeaker(_rate);
-	assert(_speaker);
+	_speaker = new Audio::PCSpeaker();
 	_mixer->playStream(Audio::Mixer::kMusicSoundType, &_mixerSoundHandle, this, -1, Audio::Mixer::kMaxChannelVolume, 0, DisposeAfterUse::NO, true);
 
 	_countdown = 0xFFFF;

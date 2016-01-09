@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -19,6 +19,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
  */
+
+// Based on the ScummVM (GPLv2+) file of the same name
 
 #include "audio/softsynth/pcspk.h"
 
@@ -209,6 +211,7 @@ TestExitStatus SoundSubsystem::audiocdOutput() {
 }
 
 TestExitStatus SoundSubsystem::sampleRates() {
+	// FIXME: Rewrite this crap
 
 	Common::String info = "Testing Multiple Sample Rates.\n"
 						  "Here we try to play sounds at three different sample rates.";
@@ -221,36 +224,16 @@ TestExitStatus SoundSubsystem::sampleRates() {
 	TestExitStatus passed = kTestPassed;
 	Audio::Mixer *mixer = g_system->getMixer();
 
-	Audio::PCSpeaker *s1 = new Audio::PCSpeaker();
-	// Stream at half sampling rate
-	Audio::PCSpeaker *s2 = new Audio::PCSpeaker(s1->getRate() - 10000);
-	// Stream at twice sampling rate
-	Audio::PCSpeaker *s3 = new Audio::PCSpeaker(s1->getRate() + 10000);
-
-	s1->play(Audio::PCSpeaker::kWaveFormSine, 1000, -1);
-	s2->play(Audio::PCSpeaker::kWaveFormSine, 1000, -1);
-	s3->play(Audio::PCSpeaker::kWaveFormSine, 1000, -1);
+	Audio::PCSpeaker *spk = new Audio::PCSpeaker();
+	spk->play(Audio::PCSpeaker::kWaveFormSine, 1000, -1);
 
 	Audio::SoundHandle handle;
 	Common::Point pt(0, 100);
 
-	mixer->playStream(Audio::Mixer::kPlainSoundType, &handle, s1);
-	Testsuite::writeOnScreen(Common::String::format("Playing at sample rate: %d", s1->getRate()), pt);
+	mixer->playStream(Audio::Mixer::kPlainSoundType, &handle, spk);
+	Testsuite::writeOnScreen(Common::String::format("Playing at sample rate: %d", spk->getRate()), pt);
 	g_system->delayMillis(1000);
 	mixer->stopHandle(handle);
-	g_system->delayMillis(1000);
-
-	mixer->playStream(Audio::Mixer::kSpeechSoundType, &handle, s2);
-	Testsuite::writeOnScreen(Common::String::format("Playing at sample rate : %d", s2->getRate()), pt);
-	g_system->delayMillis(1000);
-	mixer->stopHandle(handle);
-	g_system->delayMillis(1000);
-
-	mixer->playStream(Audio::Mixer::kSFXSoundType, &handle, s3);
-	Testsuite::writeOnScreen(Common::String::format("Playing at sample rate : %d", s3->getRate()), pt);
-	g_system->delayMillis(1000);
-	mixer->stopHandle(handle);
-	g_system->delayMillis(1000);
 
 	Testsuite::clearScreen();
 	if (Testsuite::handleInteractiveInput("Was the mixer able to play beeps with variable sample rates?", "Yes", "No", kOptionRight)) {
