@@ -301,7 +301,7 @@ void MidiDriver_PCSpeaker::setupTone(int note) {
 		if (countdown != _countdown)
 			_countdown = countdown;
 
-		_speaker->play(Audio::PCSpeaker::kWaveFormSquare, 1193180 / _countdown, -1);
+		_speaker->play(1193180 / _countdown, -1);
 	}
 
 	_note[note].flags &= 0xFE;

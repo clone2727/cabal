@@ -369,7 +369,7 @@ void SoundHandler::pcspkr_player() {
 			count *= (1 << (3 - _pcspkrOctave));
 
 		// Start a note playing (we will stop it when the timer expires).
-		_speakerStream->play(Audio::PCSpeaker::kWaveFormSquare, kHugoCNT / count, -1);
+		_speakerStream->play(kHugoCNT / count, -1);
 		_pcspkrTimer = _pcspkrNoteDuration;
 		_DOSSongPtr++;
 		break;

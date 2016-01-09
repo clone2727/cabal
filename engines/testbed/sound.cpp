@@ -58,9 +58,9 @@ SoundSubsystemDialog::SoundSubsystemDialog() : TestbedInteractionDialog(80, 60, 
 	Audio::PCSpeaker *s2 = new Audio::PCSpeaker();
 	Audio::PCSpeaker *s3 = new Audio::PCSpeaker();
 
-	s1->play(Audio::PCSpeaker::kWaveFormSine, 1000, -1);
-	s2->play(Audio::PCSpeaker::kWaveFormSine, 1200, -1);
-	s3->play(Audio::PCSpeaker::kWaveFormSine, 1400, -1);
+	s1->play(1000, -1);
+	s2->play(1200, -1);
+	s3->play(1400, -1);
 
 	_mixer->playStream(Audio::Mixer::kPlainSoundType, &_h1, s1);
 	_mixer->pauseHandle(_h1, true);
@@ -132,7 +132,7 @@ TestExitStatus SoundSubsystem::playBeeps() {
 	// Left Beep
 	Testsuite::writeOnScreen("Left Beep", Common::Point(0, 100));
 	mixer->setChannelBalance(handle, -127);
-	speaker->play(Audio::PCSpeaker::kWaveFormSine, 1000, -1);
+	speaker->play(1000, -1);
 	g_system->delayMillis(500);
 	mixer->pauseHandle(handle, true);
 
@@ -225,7 +225,7 @@ TestExitStatus SoundSubsystem::sampleRates() {
 	Audio::Mixer *mixer = g_system->getMixer();
 
 	Audio::PCSpeaker *spk = new Audio::PCSpeaker();
-	spk->play(Audio::PCSpeaker::kWaveFormSine, 1000, -1);
+	spk->play(1000, -1);
 
 	Audio::SoundHandle handle;
 	Common::Point pt(0, 100);

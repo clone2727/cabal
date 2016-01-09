@@ -32,13 +32,6 @@ namespace Audio {
 
 class PCSpeaker : public AudioStream {
 public:
-	enum WaveForm {
-		kWaveFormSquare = 0,
-		kWaveFormSine,
-		kWaveFormSaw,
-		kWaveFormTriangle
-	};
-
 	PCSpeaker();
 	~PCSpeaker();
 
@@ -46,7 +39,7 @@ public:
 	 *
 	 *  If length is negative, play until told to stop.
 	 */
-	void play(WaveForm wave, int freq, int32 length);
+	void play(int freq, int32 length);
 	/** Stop the currently playing note after delay ms. */
 	void stop(int32 delay = 0);
 	/** Adjust the volume. */
@@ -65,7 +58,6 @@ protected:
 	Common::Mutex _mutex;
 
 	int _rate;
-	WaveForm _wave;
 	bool _playForever;
 	uint32 _oscLength;
 	uint32 _oscSamples;
@@ -73,13 +65,7 @@ protected:
 	uint32 _mixedSamples;
 	byte _volume;
 
-	typedef int8 (*generatorFunc)(uint32, uint32);
-	static const generatorFunc generateWave[];
-
-	static int8 generateSquare(uint32 x, uint32 oscLength);
-	static int8 generateSine(uint32 x, uint32 oscLength);
-	static int8 generateSaw(uint32 x, uint32 oscLength);
-	static int8 generateTriangle(uint32 x, uint32 oscLength);
+	static int8 generateWave(uint32 x, uint32 oscLength);
 };
 
 } // End of namespace Audio

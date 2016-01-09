@@ -73,7 +73,7 @@ void SoundHandler::playNote(int freq, int length) {
 		return;
 
 	// Start a note playing (we will stop it when the timer expires).
-	_speakerStream->play(Audio::PCSpeaker::kWaveFormSquare, freq, length);
+	_speakerStream->play(freq, length);
 }
 
 void SoundHandler::click() {

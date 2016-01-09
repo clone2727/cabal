@@ -167,7 +167,7 @@ void PcSpkDriver::output(uint16 out) {
 	// This is not faithful to the original. Since our timings differ we would
 	// get distorted sound otherwise though.
 	if (_lastActiveChannel != _activeChannel || _lastActiveOut != out) {
-		_pcSpk.play(Audio::PCSpeaker::kWaveFormSquare, 1193180 / frequency, -1);
+		_pcSpk.play(1193180 / frequency, -1);
 		_lastActiveChannel = _activeChannel;
 		_lastActiveOut = out;
 	}

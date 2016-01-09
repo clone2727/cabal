@@ -39,7 +39,7 @@ PCSpeaker::~PCSpeaker() {
 }
 
 void PCSpeaker::speakerOn(int16 frequency, int32 length) {
-	_stream->play(Audio::PCSpeaker::kWaveFormSquare, frequency, length);
+	_stream->play(frequency, length);
 }
 
 void PCSpeaker::speakerOff() {

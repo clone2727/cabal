@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -19,6 +19,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
  */
+
+// Based on the ScummVM (GPLv2+) file of the same name
 
 #include "made/scriptfuncs.h"
 #include "made/made.h"
@@ -346,7 +348,7 @@ int16 ScriptFunctions::sfPlayNote(int16 argc, int16 *argv) {
 
 	debug(4, "sfPlayNote: Note = %d, Volume(?) = %d", argv[0] - 1, argv[1]);
 
-	_pcSpeaker1->play(Audio::PCSpeaker::kWaveFormSine, freqTable[argv[0] - 1], -1);
+	_pcSpeaker1->play(freqTable[argv[0] - 1], -1);
 
 	// TODO: Figure out what to do with the second parameter
 	//_pcSpeaker1->setVolume(argv[1]);
@@ -383,8 +385,8 @@ int16 ScriptFunctions::sfPlayTele(int16 argc, int16 *argv) {
 
 	debug(4, "sfPlayTele: Button = %d", argv[0]);
 
-	_pcSpeaker1->play(Audio::PCSpeaker::kWaveFormSine, freqTable1[argv[0]], -1);
-	_pcSpeaker2->play(Audio::PCSpeaker::kWaveFormSine, freqTable2[argv[0]], -1);
+	_pcSpeaker1->play(freqTable1[argv[0]], -1);
+	_pcSpeaker2->play(freqTable2[argv[0]], -1);
 	return 0;
 }
 

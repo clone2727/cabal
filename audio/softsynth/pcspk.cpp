@@ -28,12 +28,7 @@
 
 namespace Audio {
 
-const PCSpeaker::generatorFunc PCSpeaker::generateWave[] =
-	{&PCSpeaker::generateSquare, &PCSpeaker::generateSine,
-	 &PCSpeaker::generateSaw,    &PCSpeaker::generateTriangle};
-
 PCSpeaker::PCSpeaker() {
-	_wave = kWaveFormSquare;
 	_playForever = false;
 	_oscLength = 0;
 	_oscSamples = 0;
@@ -45,12 +40,9 @@ PCSpeaker::PCSpeaker() {
 PCSpeaker::~PCSpeaker() {
 }
 
-void PCSpeaker::play(WaveForm wave, int freq, int32 length) {
+void PCSpeaker::play(int freq, int32 length) {
 	Common::StackLock lock(_mutex);
 
-	assert((wave >= kWaveFormSquare) && (wave <= kWaveFormTriangle));
-
-	_wave = wave;
 	_oscLength = getRate() / freq;
 	_oscSamples = 0;
 	if (length == -1) {
@@ -84,7 +76,7 @@ int PCSpeaker::readBuffer(int16 *buffer, const int numSamples) {
 	int i;
 
 	for (i = 0; _remainingSamples && (i < numSamples); i++) {
-		buffer[i] = generateWave[_wave](_oscSamples, _oscLength) * _volume;
+		buffer[i] = generateWave(_oscSamples, _oscLength) * _volume;
 		if (_oscSamples++ >= _oscLength)
 			_oscSamples = 0;
 		if (!_playForever)
@@ -103,32 +95,8 @@ int PCSpeaker::getRate() const {
 	return g_system->getMixer()->getOutputRate();
 }
 
-int8 PCSpeaker::generateSquare(uint32 x, uint32 oscLength) {
+int8 PCSpeaker::generateWave(uint32 x, uint32 oscLength) {
 	return (x < (oscLength / 2)) ? 127 : -128;
-}
-
-int8 PCSpeaker::generateSine(uint32 x, uint32 oscLength) {
-	if (oscLength == 0)
-		return 0;
-
-	// TODO: Maybe using a look-up-table would be better?
-	return CLIP<int16>((int16) (128 * sin(2.0 * M_PI * x / oscLength)), -128, 127);
-}
-
-int8 PCSpeaker::generateSaw(uint32 x, uint32 oscLength) {
-	if (oscLength == 0)
-		return 0;
-
-	return ((x * (65536 / oscLength)) >> 8) - 128;
-}
-
-int8 PCSpeaker::generateTriangle(uint32 x, uint32 oscLength) {
-	if (oscLength == 0)
-		return 0;
-
-	int y = ((x * (65536 / (oscLength / 2))) >> 8) - 128;
-
-	return (x <= (oscLength / 2)) ? y : (256 - y);
 }
 
 } // End of namespace Audio
