@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -20,18 +20,15 @@
  *
  */
 
+// Based on the ScummVM (GPLv2+) file of the same name
+
 #ifndef AUDIO_FMOPL_H
 #define AUDIO_FMOPL_H
 
-#include "audio/audiostream.h"
-
+#include "audio/audiodevice.h"
 #include "common/func.h"
 #include "common/ptr.h"
 #include "common/scummsys.h"
-
-namespace Audio {
-class SoundHandle;
-}
 
 namespace Common {
 class String;
@@ -107,31 +104,14 @@ private:
 };
 
 /**
- * The type of the OPL timer callback functor.
- */
-typedef Common::Functor0<void> TimerCallback;
-
-/**
  * A representation of a Yamaha OPL chip.
  */
-class OPL {
+class OPL : public virtual Audio::AudioDevice {
 private:
 	static bool _hasInstance;
 public:
 	OPL();
 	virtual ~OPL() { _hasInstance = false; }
-
-	/**
-	 * Initializes the OPL emulator.
-	 *
-	 * @return		true on success, false on failure
-	 */
-	virtual bool init() = 0;
-
-	/**
-	 * Reinitializes the OPL emulator
-	 */
-	virtual void reset() = 0;
 
 	/**
 	 * Writes a byte to the given I/O port.
@@ -159,45 +139,6 @@ public:
 	 * @param v		value, which will be written
 	 */
 	virtual void writeReg(int r, int v) = 0;
-
-	/**
-	 * Start the OPL with callbacks.
-	 */
-	void start(TimerCallback *callback, int timerFrequency = kDefaultCallbackFrequency);
-
-	/**
-	 * Stop the OPL
-	 */
-	void stop();
-
-	/**
-	 * Change the callback frequency. This must only be called from a
-	 * timer proc.
-	 */
-	virtual void setCallbackFrequency(int timerFrequency) = 0;
-
-	enum {
-		/**
-		 * The default callback frequency that start() uses
-		 */
-		kDefaultCallbackFrequency = 250
-	};
-
-protected:
-	/**
-	 * Start the callbacks.
-	 */
-	virtual void startCallbacks(int timerFrequency) = 0;
-
-	/**
-	 * Stop the callbacks.
-	 */
-	virtual void stopCallbacks() = 0;
-
-	/**
-	 * The functor for callbacks.
-	 */
-	Common::ScopedPtr<TimerCallback> _callback;
 };
 
 /**
@@ -206,29 +147,7 @@ protected:
  * This will use an actual timer instead of using one calculated from
  * the number of samples in an AudioStream::readBuffer call.
  */
-class RealOPL : public OPL {
-public:
-	RealOPL();
-	virtual ~RealOPL();
-
-	// OPL API
-	void setCallbackFrequency(int timerFrequency);
-
-protected:
-	// OPL API
-	void startCallbacks(int timerFrequency);
-	void stopCallbacks();
-
-private:
-	static void timerProc(void *refCon);
-	void onTimer();
-
-	uint _baseFreq;
-	uint _remainingTicks;
-
-	enum {
-		kMaxFreq = 100
-	};
+class RealOPL : public virtual OPL, protected virtual Audio::HardwareAudioDevice {
 };
 
 /**
@@ -237,47 +156,7 @@ private:
  * This will send callbacks based on the number of samples
  * decoded in readBuffer().
  */
-class EmulatedOPL : public OPL, protected Audio::AudioStream {
-public:
-	EmulatedOPL();
-	virtual ~EmulatedOPL();
-
-	// OPL API
-	void setCallbackFrequency(int timerFrequency);
-
-	// AudioStream API
-	int readBuffer(int16 *buffer, const int numSamples);
-	int getRate() const;
-	bool endOfData() const { return false; }
-
-protected:
-	// OPL API
-	void startCallbacks(int timerFrequency);
-	void stopCallbacks();
-
-	/**
-	 * Read up to 'length' samples.
-	 *
-	 * Data will be in native endianess, 16 bit per sample, signed.
-	 * For stereo OPL, buffer will be filled with interleaved
-	 * left and right channel samples, starting with a left sample.
-	 * Furthermore, the samples in the left and right are summed up.
-	 * So if you request 4 samples from a stereo OPL, you will get
-	 * a total of two left channel and two right channel samples.
-	 */
-	virtual void generateSamples(int16 *buffer, int numSamples) = 0;
-
-private:
-	int _baseFreq;
-
-	enum {
-		FIXP_SHIFT = 16
-	};
-
-	int _nextTick;
-	int _samplesPerTick;
-
-	Audio::SoundHandle *_handle;
+class EmulatedOPL : public virtual OPL, protected virtual Audio::EmulatedAudioDevice {
 };
 
 } // End of namespace OPL
