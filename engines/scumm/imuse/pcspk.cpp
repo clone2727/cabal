@@ -24,12 +24,15 @@
 
 #include "scumm/imuse/pcspk.h"
 
+#include "audio/softsynth/pcspk.h"
 #include "common/util.h"
 
 namespace Scumm {
 
-PcSpkDriver::PcSpkDriver(Audio::Mixer *mixer)
-	: MidiDriver_Emulated(mixer) {
+PcSpkDriver::PcSpkDriver() {
+	_isOpen = false;
+	_timerProc = 0;
+	_timerParam = 0;
 }
 
 PcSpkDriver::~PcSpkDriver() {
@@ -40,7 +43,7 @@ int PcSpkDriver::open() {
 	if (_isOpen)
 		return MERR_ALREADY_OPEN;
 
-	MidiDriver_Emulated::open();
+	_isOpen = true;
 
 	for (uint i = 0; i < 6; ++i)
 		_channels[i].init(this, i);
@@ -54,11 +57,9 @@ int PcSpkDriver::open() {
 	_lastActiveChannel = 0;
 	_lastActiveOut = 0;
 
-	// We set the output sound type to music here to allow sound volume
-	// adjustment. The drawback here is that we can not control the music and
-	// sfx separately here. But the AdLib output has the same issue so it
-	// should not be that bad.
-	_mixer->playStream(Audio::Mixer::kMusicSoundType, &_mixerSoundHandle, this, -1, Audio::Mixer::kMaxChannelVolume, 0, DisposeAfterUse::NO, true);
+	_pcSpk = new Audio::EmulatedPCSpeaker();
+	_pcSpk->init();
+	_pcSpk->start(new Common::Functor0Mem<void, PcSpkDriver>(this, &PcSpkDriver::onTimer));
 	return 0;
 }
 
@@ -67,7 +68,10 @@ void PcSpkDriver::close() {
 		return;
 	_isOpen = false;
 
-	_mixer->stopHandle(_mixerSoundHandle);
+	// Shutdown the PC speaker
+	_pcSpk->stop();
+	delete _pcSpk;
+	_pcSpk = 0;
 }
 
 void PcSpkDriver::send(uint32 d) {
@@ -90,11 +94,19 @@ MidiChannel *PcSpkDriver::allocateChannel() {
 	return 0;
 }
 
-void PcSpkDriver::generateSamples(int16 *buf, int len) {
-	_pcSpk.readBuffer(buf, len);
+void PcSpkDriver::setTimerCallback(void *timerParam, Common::TimerManager::TimerProc timerProc) {
+	_timerProc = timerProc;
+	_timerParam = timerParam;
+}
+
+uint32 PcSpkDriver::getBaseTempo() {
+	return 1000000 / Audio::AudioDevice::kDefaultCallbackFrequency;
 }
 
 void PcSpkDriver::onTimer() {
+	if (_timerProc)
+		(*_timerProc)(_timerParam);
+
 	if (!_activeChannel)
 		return;
 
@@ -130,7 +142,7 @@ void PcSpkDriver::onTimer() {
 	if (_activeChannel->_tl) {
 		output((_activeChannel->_out.note << 7) + _activeChannel->_pitchBend + _activeChannel->_out.unk60 + _activeChannel->_out.unkE);
 	} else {
-		_pcSpk.stop();
+		_pcSpk->stopOutput();
 		_lastActiveChannel = 0;
 		_lastActiveOut = 0;
 	}
@@ -147,7 +159,7 @@ void PcSpkDriver::updateNote() {
 	}
 
 	if (_activeChannel == 0 || _activeChannel->_tl == 0) {
-		_pcSpk.stop();
+		_pcSpk->stopOutput();
 		_lastActiveChannel = 0;
 		_lastActiveOut = 0;
 	} else {
@@ -167,7 +179,7 @@ void PcSpkDriver::output(uint16 out) {
 	// This is not faithful to the original. Since our timings differ we would
 	// get distorted sound otherwise though.
 	if (_lastActiveChannel != _activeChannel || _lastActiveOut != out) {
-		_pcSpk.play(1193180 / frequency, -1);
+		_pcSpk->startOutputTicks(frequency);
 		_lastActiveChannel = _activeChannel;
 		_lastActiveOut = out;
 	}
@@ -316,7 +328,7 @@ void PcSpkDriver::MidiChannel_PcSpk::controlChange(byte control, byte value) {
 			if (_tl == 0) {
 				_owner->_lastActiveChannel = 0;
 				_owner->_lastActiveOut = 0;
-				_owner->_pcSpk.stop();
+				_owner->_pcSpk->stopOutput();
 			} else {
 				_owner->output((_out.note << 7) + _pitchBend + _out.unk60 + _out.unkE);
 			}

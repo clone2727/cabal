@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -20,17 +20,22 @@
  *
  */
 
+// Based on the ScummVM (GPLv2+) file of the same name
+
 #ifndef SCUMM_IMUSE_PCSPK_H
 #define SCUMM_IMUSE_PCSPK_H
 
 #include "audio/softsynth/emumidi.h"
-#include "audio/softsynth/pcspk.h"
+
+namespace Audio {
+class PCSpeakerDevice;
+} // End of namespace Audio
 
 namespace Scumm {
 
-class PcSpkDriver : public MidiDriver_Emulated {
+class PcSpkDriver : public MidiDriver {
 public:
-	PcSpkDriver(Audio::Mixer *mixer);
+	PcSpkDriver();
 	~PcSpkDriver();
 
 	virtual int open();
@@ -42,16 +47,22 @@ public:
 	virtual MidiChannel *allocateChannel();
 	virtual MidiChannel *getPercussionChannel() { return 0; }
 
-	bool isStereo() const { return _pcSpk.isStereo(); }
-	int getRate() const { return _pcSpk.getRate(); }
+	bool isOpen() const { return _isOpen; }
+	void setTimerCallback(void *timerParam, Common::TimerManager::TimerProc timerProc);
+	uint32 getBaseTempo();
+
 protected:
 	void generateSamples(int16 *buf, int len);
 	void onTimer();
 
 private:
-	Audio::PCSpeaker _pcSpk;
+	Audio::PCSpeakerDevice *_pcSpk;
 	int _effectTimer;
 	uint8 _randBase;
+	bool _isOpen;
+
+	Common::TimerManager::TimerProc _timerProc;
+	void *_timerParam;
 
 	void updateNote();
 	void output(uint16 out);
