@@ -25,6 +25,7 @@
 #ifndef AUDIO_SOFTSYNTH_PCSPK_H
 #define AUDIO_SOFTSYNTH_PCSPK_H
 
+#include "audio/audiodevice.h"
 #include "audio/audiostream.h"
 #include "common/mutex.h"
 
@@ -66,6 +67,61 @@ protected:
 	byte _volume;
 
 	static int8 generateWave(uint32 x, uint32 oscLength);
+};
+
+/**
+ * An abstract PC speaker
+ */
+class PCSpeakerDevice : public virtual AudioDevice {
+public:
+	/**
+	 * Begin playback at the given frequency
+	 */
+	virtual void startOutput(int freq) = 0;
+
+	/**
+	 * Begin playback with the given ticks
+	 */
+	virtual void startOutputTicks(int ticks) = 0;
+
+	/**
+	 * Stop playing the note
+	 */
+	virtual void stopOutput() = 0;
+
+	/**
+	 * The frequency of the device
+	 */
+	static const int kDeviceFreq = 1193180;
+};
+
+/**
+ * An emulated PC speaker
+ */
+class EmulatedPCSpeaker : public virtual PCSpeakerDevice, protected virtual EmulatedAudioDevice {
+public:
+	EmulatedPCSpeaker();
+	~EmulatedPCSpeaker();
+
+	// AudioDevice API
+	bool init();
+	void reset();
+
+	// PCSpeakerDevice API
+	void startOutput(int freq);
+	void startOutputTicks(int ticks);
+	void stopOutput();
+
+	// AudioStream API
+	bool isStereo() const { return false; }
+
+protected:
+	// EmulatedAudioDevice API
+	void generateSamples(int16 *buffer, int numSamples);
+
+private:
+	int _oscLength;
+	int _oscPos;
 };
 
 } // End of namespace Audio

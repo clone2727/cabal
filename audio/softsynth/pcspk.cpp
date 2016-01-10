@@ -99,6 +99,57 @@ int8 PCSpeaker::generateWave(uint32 x, uint32 oscLength) {
 	return (x < (oscLength / 2)) ? 127 : -128;
 }
 
+EmulatedPCSpeaker::EmulatedPCSpeaker() : _oscLength(0) {
+}
+
+EmulatedPCSpeaker::~EmulatedPCSpeaker() {
+	stop();
+}
+
+bool EmulatedPCSpeaker::init() {
+	_oscLength = 0;
+	_oscPos = 0;
+	return true;
+}
+
+void EmulatedPCSpeaker::reset() {
+	init();
+}
+
+void EmulatedPCSpeaker::startOutput(int freq) {
+	if (freq == 0) {
+		stopOutput();
+		return;
+	}
+
+	_oscLength = getRate() / freq;
+	_oscPos = 0;
+}
+
+void EmulatedPCSpeaker::startOutputTicks(int ticks) {
+	if (ticks == 0)
+		stopOutput();
+	else
+		startOutput(kDeviceFreq / ticks);
+}
+
+void EmulatedPCSpeaker::stopOutput() {
+	_oscLength = 0;
+	_oscPos = 0;
+}
+
+void EmulatedPCSpeaker::generateSamples(int16 *buffer, int numSamples) {
+	if (_oscLength == 0) {
+		// No note playing: silence
+		memset(buffer, 0, numSamples * 2);
+	} else {
+		for (int i = 0; i < numSamples; i++) {
+			buffer[i] = (_oscPos < _oscLength / 2) ? 32767 : -32768;
+			_oscPos = (_oscPos + 1) % _oscLength;
+		}
+	}
+}
+
 } // End of namespace Audio
 
 
