@@ -20,10 +20,10 @@
  *
  */
 
-// Based on the ScummVM (GPLv2+) file of the same name
+// Based on the ScummVM (GPLv2+) OPL code (originally at audio/fmopl.h)
 
-#ifndef AUDIO_FMOPL_H
-#define AUDIO_FMOPL_H
+#ifndef AUDIO_AUDIODEV_OPL_H
+#define AUDIO_AUDIODEV_OPL_H
 
 #include "audio/audiodev/audiodev.h"
 #include "common/func.h"

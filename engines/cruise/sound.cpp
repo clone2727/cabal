@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -20,6 +20,8 @@
  *
  */
 
+// Based on the ScummVM (GPLv2+) file of the same name
+
 #include "common/endian.h"
 #include "common/system.h"
 #include "common/textconsole.h"
@@ -30,8 +32,8 @@
 #include "cruise/volume.h"
 
 #include "audio/audiostream.h"
-#include "audio/fmopl.h"
 #include "audio/mixer.h"
+#include "audio/audiodev/opl.h"
 #include "audio/mods/soundfx.h"
 
 namespace Cruise {

@@ -35,7 +35,7 @@
 
 #include "common/debug.h"
 #include "common/str.h"
-#include "audio/fmopl.h"
+#include "audio/audiodev/opl.h"
 
 #include <sys/ioctl.h>
 #include <alsa/asoundlib.h>

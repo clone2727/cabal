@@ -20,9 +20,9 @@
  *
  */
 
-// Based on the ScummVM (GPLv2+) file of the same name
+// Based on the ScummVM (GPLv2+) OPL code (originally at audio/fmopl.cpp)
 
-#include "audio/fmopl.h"
+#include "audio/audiodev/opl.h"
 
 #include "audio/mixer.h"
 #include "audio/softsynth/opl/dosbox.h"

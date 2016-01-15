@@ -3,7 +3,6 @@ MODULE := audio
 MODULE_OBJS := \
 	adlib.o \
 	audiostream.o \
-	fmopl.o \
 	mididrv.o \
 	midiparser_qt.o \
 	midiparser_smf.o \
@@ -18,6 +17,7 @@ MODULE_OBJS := \
 	null.o \
 	timestamp.o \
 	audiodev/audiodev.o \
+	audiodev/opl.o \
 	decoders/3do.o \
 	decoders/aac.o \
 	decoders/adpcm.o \

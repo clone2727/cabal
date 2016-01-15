@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -20,12 +20,14 @@
  *
  */
 
+// Based on the ScummVM (GPLv2+) file of the same name
+
 #include "common/debug.h"
 #include "common/system.h"
 
-#include "audio/fmopl.h"
 #include "audio/mpu401.h"
 #include "audio/mididrv.h"
+#include "audio/audiodev/opl.h"
 
 namespace Parallaction {
 
