@@ -93,6 +93,11 @@ MODULE_OBJS += \
 	taskbar/unity/unity-taskbar.o
 endif
 
+ifdef LINUX
+MODULE_OBJS += \
+	audiodev/linux/linux_pcspk.o
+endif
+
 ifdef MACOSX
 MODULE_OBJS += \
 	midi/coreaudio.o \

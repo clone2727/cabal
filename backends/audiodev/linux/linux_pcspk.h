@@ -20,46 +20,22 @@
  *
  */
 
-#ifndef AUDIO_AUDIODEV_PCSPK_H
-#define AUDIO_AUDIODEV_PCSPK_H
+#ifndef BACKENDS_AUDIODEV_LINUX_PCSPK_H
+#define BACKENDS_AUDIODEV_LINUX_PCSPK_H
 
-#include "audio/audiodev/audiodev.h"
+#ifdef LINUX
 
 namespace Audio {
 
-/**
- * An abstract PC speaker
- */
-class PCSpeakerDevice : public virtual AudioDevice {
-public:
-	/**
-	 * Begin playback at the given frequency
-	 */
-	virtual void startOutput(int freq) = 0;
-
-	/**
-	 * Begin playback with the given ticks
-	 */
-	virtual void startOutputTicks(int ticks) = 0;
-
-	/**
-	 * Stop playing the note
-	 */
-	virtual void stopOutput() = 0;
-
-	/**
-	 * The frequency of the device
-	 */
-	static const int kDeviceFreq = 1193180;
-};
+class PCSpeakerDevice;
 
 /**
- * An abstract hardware PC speaker
+ * Create a PC speaker device using the Linux API
  */
-class HardwarePCSpeaker : public virtual PCSpeakerDevice, protected virtual HardwareAudioDevice {
-};
+PCSpeakerDevice *createLinuxPCSpeaker();
 
 } // End of namespace Audio
 
 #endif
 
+#endif
