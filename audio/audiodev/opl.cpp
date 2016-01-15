@@ -44,13 +44,20 @@ namespace ALSA {
 } // End of namespace ALSA
 #endif // USE_ALSA
 
+#ifdef WIN32
+namespace InpOut {
+OPL *create(Config::OplType type);
+} // End of namespace InpOut
+#endif
+
 // Config implementation
 
 enum OplEmulator {
 	kAuto = 0,
 	kMame = 1,
 	kDOSBox = 2,
-	kALSA = 3
+	kALSA = 3,
+	kInpOut = 4
 };
 
 OPL::OPL() {
@@ -67,6 +74,9 @@ const Config::EmulatorDescription Config::_drivers[] = {
 #endif
 #ifdef USE_ALSA
 	{ "alsa", _s("ALSA Direct FM"), kALSA, kFlagOpl2 | kFlagDualOpl2 | kFlagOpl3 },
+#endif
+#ifdef WIN32
+	{ "inpout", _s("Win32 InpOut Direct FM"), kInpOut, kFlagOpl2 | kFlagDualOpl2 | kFlagOpl3 },
 #endif
 	{ 0, 0, 0, 0 }
 };
@@ -183,6 +193,11 @@ OPL *Config::create(DriverId driver, OplType type) {
 #ifdef USE_ALSA
 	case kALSA:
 		return ALSA::create(type);
+#endif
+
+#ifdef WIN32
+	case kInpOut:
+		return InpOut::create(type);
 #endif
 
 	default:

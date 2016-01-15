@@ -76,5 +76,10 @@ MODULE_OBJS += \
 	rate_arm_asm.o
 endif
 
+ifdef WIN32
+MODULE_OBJS += \
+	inpout_opl.o
+endif
+
 # Include common rules
 include $(srcdir)/rules.mk
