@@ -2389,6 +2389,9 @@ case $_host_os in
 		if test -z "$_host"; then
 			append_var CXXFLAGS "`getconf LFS_CFLAGS 2>/dev/null`"
 		fi
+
+		append_var DEFINES "-DLINUX"
+		add_line_to_config_mk 'LINUX = 1'
 		;;
 	maemo)
 		append_var DEFINES "-DMAEMO"
