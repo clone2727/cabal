@@ -108,6 +108,7 @@ endif
 
 ifdef WIN32
 MODULE_OBJS += \
+	audiodev/win32/win32_pcspk.o \
 	fs/windows/windows-fs.o \
 	fs/windows/windows-fs-factory.o \
 	midi/windows.o \
