@@ -22,7 +22,7 @@
 
 // Based on the ScummVM (GPLv2+) file of the same name
 
-#include "audio/softsynth/pcspk.h"
+#include "audio/softsynth/emu_pcspk.h"
 
 #include "backends/audiocd/audiocd.h"
 

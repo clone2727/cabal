@@ -25,7 +25,7 @@
 #include "kyra/sound_intern.h"
 
 #include "audio/mixer.h"
-#include "audio/softsynth/pcspk.h"
+#include "audio/softsynth/emu_pcspk.h"
 
 namespace Kyra {
 

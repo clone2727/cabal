@@ -20,10 +20,10 @@
  *
  */
 
-// Based on the ScummVM (GPLv2+) file of the same name
+// Based on the ScummVM (GPLv2+) emulated PC Speaker code (originally at audio/softsynth/pcspk.h)
 
 #include "audio/mixer.h"
-#include "audio/softsynth/pcspk.h"
+#include "audio/softsynth/emu_pcspk.h"
 #include "audio/null.h"
 
 namespace Audio {
@@ -33,6 +33,7 @@ PCSpeaker::PCSpeaker() {
 	_oscLength = 0;
 	_oscSamples = 0;
 	_remainingSamples = 0;
+
 	_mixedSamples = 0;
 	_volume = 255;
 }

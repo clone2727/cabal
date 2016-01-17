@@ -24,7 +24,7 @@
 
 #include "scumm/imuse/pcspk.h"
 
-#include "audio/softsynth/pcspk.h"
+#include "audio/softsynth/emu_pcspk.h"
 #include "common/util.h"
 
 namespace Scumm {

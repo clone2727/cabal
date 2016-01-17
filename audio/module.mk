@@ -41,7 +41,14 @@ MODULE_OBJS := \
 	mods/rjp1.o \
 	mods/soundfx.o \
 	mods/tfmx.o \
+	softsynth/appleiigs.o \
 	softsynth/cms.o \
+	softsynth/eas.o \
+	softsynth/emu_pcspk.o \
+	softsynth/fluidsynth.o \
+	softsynth/mt32.o \
+	softsynth/sid.o \
+	softsynth/wave6581.o \
 	softsynth/opl/dbopl.o \
 	softsynth/opl/dosbox.o \
 	softsynth/opl/mame.o \
@@ -50,14 +57,7 @@ MODULE_OBJS := \
 	softsynth/fmtowns_pc98/towns_midi.o \
 	softsynth/fmtowns_pc98/towns_pc98_driver.o \
 	softsynth/fmtowns_pc98/towns_pc98_fmsynth.o \
-	softsynth/fmtowns_pc98/towns_pc98_plugins.o \
-	softsynth/appleiigs.o \
-	softsynth/fluidsynth.o \
-	softsynth/mt32.o \
-	softsynth/eas.o \
-	softsynth/pcspk.o \
-	softsynth/sid.o \
-	softsynth/wave6581.o
+	softsynth/fmtowns_pc98/towns_pc98_plugins.o
 
 ifdef USE_ALSA
 MODULE_OBJS += \

@@ -20,7 +20,7 @@
  *
  */
 
-// Based on the ScummVM (GPLv2+) file of the same name
+// Based on the ScummVM (GPLv2+) emulated PC Speaker code (originally at audio/softsynth/pcspk.h)
 
 #ifndef AUDIO_SOFTSYNTH_PCSPK_H
 #define AUDIO_SOFTSYNTH_PCSPK_H

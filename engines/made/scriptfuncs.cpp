@@ -29,7 +29,7 @@
 #include "made/database.h"
 #include "made/pmvplayer.h"
 
-#include "audio/softsynth/pcspk.h"
+#include "audio/softsynth/emu_pcspk.h"
 
 #include "backends/audiocd/audiocd.h"
 
