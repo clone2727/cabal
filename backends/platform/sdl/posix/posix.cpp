@@ -37,6 +37,11 @@
 #include "backends/fs/posix/posix-fs-factory.h"
 #include "backends/taskbar/unity/unity-taskbar.h"
 
+#ifdef LINUX
+#include "audio/audiodev/pcspk.h"
+#include "backends/audiodev/linux/linux_pcspk.h"
+#endif
+
 #include <errno.h>
 #include <sys/stat.h>
 #include <sys/wait.h>
@@ -65,6 +70,11 @@ void OSystem_POSIX::initBackend() {
 	// Create the savefile manager
 	if (_savefileManager == 0)
 		_savefileManager = new POSIXSaveFileManager();
+
+#ifdef LINUX
+	// Register the Linux PC speaker device
+	PCSpeakerFactoryMan.registerFactory("linux", "Linux Hardware Device", &Audio::createLinuxPCSpeaker);
+#endif
 
 	// Invoke parent implementation of this method
 	OSystem_SDL::initBackend();

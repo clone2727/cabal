@@ -32,11 +32,14 @@
 #undef ARRAYSIZE // winnt.h defines ARRAYSIZE, but we want our own one...
 #include <shellapi.h>
 
+#include "audio/audiodev/pcspk.h"
+
 #include "common/scummsys.h"
 #include "common/config-manager.h"
 #include "common/error.h"
 #include "common/textconsole.h"
 
+#include "backends/audiodev/win32/win32_pcspk.h"
 #include "backends/platform/sdl/win32/win32.h"
 #include "backends/platform/sdl/win32/win32-window.h"
 #include "backends/saves/windows/windows-saves.h"
@@ -82,6 +85,9 @@ void OSystem_Win32::initBackend() {
 	// Create the savefile manager
 	if (_savefileManager == 0)
 		_savefileManager = new WindowsSaveFileManager();
+
+	// Register the PC speaker device
+	PCSpeakerFactoryMan.registerFactory("win32", "Win32 Hardware Device", &Audio::createWin32PCSpeaker);
 
 	// Invoke parent implementation of this method
 	OSystem_SDL::initBackend();
