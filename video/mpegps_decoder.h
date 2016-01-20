@@ -62,12 +62,12 @@ public:
 
 protected:
 	void readNextPacket();
-	bool useAudioSync() const { return false; }
 
 private:
 	// Base class for handling MPEG streams
 	class MPEGStream {
 	public:
+		MPEGStream(int startCode) : _startCode(startCode), _lastPTS(0), _lastDTS(0), _nextStartOffset(0), _endOfStream(false) {}
 		virtual ~MPEGStream() {}
 
 		enum StreamType {
@@ -75,31 +75,73 @@ private:
 			kStreamTypeAudio
 		};
 
-		virtual bool sendPacket(Common::SeekableReadStream *firstPacket, uint32 pts, uint32 dts) = 0;
+		bool sendPacket(Common::SeekableReadStream *packet, uint32 offset, uint32 pts, uint32 dts);
 		virtual StreamType getStreamType() const = 0;
+		uint32 getLastPTS() const { return _lastPTS; }
+		uint32 getLastDTS() const { return _lastDTS; }
+		uint32 getNextStartOffset() const { return _nextStartOffset; }
+		int getStartCode() const { return _startCode; }
+		void setEndOfStream() { _endOfStream = true; }
+		bool isEndOfStream() const { return _endOfStream; }
+
+	protected:
+		virtual bool decodePacket(Common::SeekableReadStream *packet) = 0;
+
+	private:
+		int _startCode;
+		uint32 _lastPTS;
+		uint32 _lastDTS;
+		uint32 _nextStartOffset;
+		bool _endOfStream;
+	};
+
+	// Base class for all MPEG video streams
+	class MPEGVideoStream : public VideoTrack, public MPEGStream {
+	public:
+		MPEGVideoStream(int startCode) : MPEGStream(startCode) {}
+
+		/**
+		 * Get the timestamp of the next frame
+		 */
+		virtual Audio::Timestamp getNextFrameStartTimestamp() const = 0;
+
+		// MPEGStream API
+		StreamType getStreamType() const { return kStreamTypeVideo; }
+
+		// VideoTrack API
+		uint32 getNextFrameStartTime() const { return getNextFrameStartTimestamp().msecs(); }
+	};
+
+	// Base class for all MPEG audio streams
+	class MPEGAudioStream : public AudioTrack, public MPEGStream {
+	public:
+		MPEGAudioStream(int startCode) : MPEGStream(startCode) {}
+
+		// MPEGStream API
+		StreamType getStreamType() const { return kStreamTypeAudio; }
 	};
 
 	// An MPEG 1/2 video track
-	class MPEGVideoTrack : public VideoTrack, public MPEGStream {
+	class MPEGVideoTrack : public MPEGVideoStream {
 	public:
-		MPEGVideoTrack(Common::SeekableReadStream *firstPacket, const Graphics::PixelFormat &format);
+		MPEGVideoTrack(int startCode, Common::SeekableReadStream *firstPacket, const Graphics::PixelFormat &format);
 		~MPEGVideoTrack();
 
-		bool endOfTrack() const { return _endOfTrack; }
+		// VideoTrack API
+		bool endOfTrack() const { return isEndOfStream(); }
 		uint16 getWidth() const;
 		uint16 getHeight() const;
 		Graphics::PixelFormat getPixelFormat() const;
 		int getCurFrame() const { return _curFrame; }
-		uint32 getNextFrameStartTime() const { return _nextFrameStartTime.msecs(); }
 		const Graphics::Surface *decodeNextFrame();
 
-		bool sendPacket(Common::SeekableReadStream *packet, uint32 pts, uint32 dts);
-		StreamType getStreamType() const { return kStreamTypeVideo; }
+		// MPEGVideoStream API
+		Audio::Timestamp getNextFrameStartTimestamp() const { return _nextFrameStartTime; }
 
-		void setEndOfTrack() { _endOfTrack = true; }
+	protected:
+		bool decodePacket(Common::SeekableReadStream *packet);
 
 	private:
-		bool _endOfTrack;
 		int _curFrame;
 		Audio::Timestamp _nextFrameStartTime;
 		Graphics::Surface *_surface;
@@ -113,15 +155,13 @@ private:
 
 #ifdef USE_MAD
 	// An MPEG audio track
-	class MPEGAudioTrack : public AudioTrack, public MPEGStream {
+	class MPEGAudioTrack : public MPEGAudioStream {
 	public:
-		MPEGAudioTrack(Common::SeekableReadStream &firstPacket);
+		MPEGAudioTrack(int startCode, Common::SeekableReadStream &firstPacket);
 		~MPEGAudioTrack();
 
-		bool sendPacket(Common::SeekableReadStream *packet, uint32 pts, uint32 dts);
-		StreamType getStreamType() const { return kStreamTypeAudio; }
-
 	protected:
+		bool decodePacket(Common::SeekableReadStream *packet);
 		Audio::AudioStream *getAudioStream() const;
 
 	private:
@@ -130,15 +170,13 @@ private:
 #endif
 
 #ifdef USE_A52
-	class AC3AudioTrack : public AudioTrack, public MPEGStream {
+	class AC3AudioTrack : public MPEGAudioStream {
 	public:
 		AC3AudioTrack(Common::SeekableReadStream &firstPacket);
 		~AC3AudioTrack();
 
-		bool sendPacket(Common::SeekableReadStream *packet, uint32 pts, uint32 dts);
-		StreamType getStreamType() const { return kStreamTypeAudio; }
-
 	protected:
+		bool decodePacket(Common::SeekableReadStream *packet);
 		Audio::AudioStream *getAudioStream() const;
 
 	private:
@@ -162,6 +200,8 @@ private:
 	int readNextPacketHeader(int32 &startCode, uint32 &pts, uint32 &dts);
 	int findNextStartCode(uint32 &size);
 	uint32 readPTS(int c);
+	void handleNextPacket(MPEGStream &stream);
+	void addNewStream(int startCode, uint32 packetSize);
 
 	void parseProgramStreamMap(int length);
 	byte _psmESType[256];
@@ -169,6 +209,8 @@ private:
 	// A map from stream types to stream handlers
 	typedef Common::HashMap<int, MPEGStream *> StreamMap;
 	StreamMap _streamMap;
+	Common::Array<MPEGVideoStream *> _videoStreams;
+	Common::Array<MPEGAudioStream *> _audioStreams;
 
 	Common::SeekableReadStream *_stream;
 };

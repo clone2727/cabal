@@ -27,6 +27,7 @@
 #include "audio/decoders/mp3.h"
 #include "common/debug.h"
 #include "common/endian.h"
+#include "common/ptr.h"
 #include "common/stream.h"
 #include "common/system.h"
 #include "common/textconsole.h"
@@ -77,13 +78,44 @@ void MPEGPSDecoder::close() {
 	_stream = 0;
 
 	_streamMap.clear();
+	_videoStreams.clear();
+	_audioStreams.clear();
 
 	memset(_psmESType, 0, 256);
 }
 
 void MPEGPSDecoder::readNextPacket() {
-	if (_stream->eos())
+	if (_videoStreams.empty() || endOfVideo())
 		return;
+
+	// Look for the next video packet
+	MPEGVideoStream *videoStream = _videoStreams[0];
+	if (!videoStream->isEndOfStream())
+		handleNextPacket(*videoStream);
+
+	// Get the next frame time
+	// TODO: Use the MPEG-PS PTS timestamp
+	Audio::Timestamp nextFrameTime(videoStream->getNextFrameStartTimestamp());
+
+	// Add half a second to the time in case there's a delay
+	nextFrameTime = nextFrameTime.addMsecs(500);
+
+	for (uint32 i = 0; i < _audioStreams.size(); i++) {
+		MPEGAudioStream *audioStream = _audioStreams[i];
+
+		// Check the pts of the audio stream. pts is always in 90KHz scale.
+		while (!audioStream->isEndOfStream() && Audio::Timestamp(0, audioStream->getLastPTS(), 90000) < nextFrameTime)
+			handleNextPacket(*audioStream);
+	}
+}
+
+void MPEGPSDecoder::handleNextPacket(MPEGStream &stream) {
+	// Make sure we're not past the end of the stream
+	uint32 nextOffset = stream.getNextStartOffset();
+	if (nextOffset >= (uint32)_stream->size())
+		return;
+
+	_stream->seek(nextOffset);
 
 	for (;;) {
 		int32 startCode;
@@ -92,95 +124,98 @@ void MPEGPSDecoder::readNextPacket() {
 
 		if (size < 0) {
 			// End of stream
-			for (TrackListIterator it = getTrackListBegin(); it != getTrackListEnd(); it++)
-				if ((*it)->getTrackType() == Track::kTrackTypeVideo)
-					((MPEGVideoTrack *)*it)->setEndOfTrack();
+			stream.setEndOfStream();
 			return;
 		}
 
-		MPEGStream *stream = 0;
+		// Check if the stream exists already. If not, add it.
+		if (!_streamMap.contains(startCode)) {
+			addNewStream(startCode, size);
+			_stream->skip(size);
+			continue;
+		}
+
+		// *waves hand* "This isn't the stream you're looking for"
+		if (startCode != stream.getStartCode()) {
+			_stream->skip(size);
+			continue;
+		}
+
+		uint32 offset = _stream->pos();
 		Common::SeekableReadStream *packet = _stream->readStream(size);
 
-		if (_streamMap.contains(startCode)) {
-			// We already found the stream
-			stream = _streamMap[startCode];
-		} else {
-			// We haven't seen this before
+		// If the packet returns true, we're done and we move on
+		if (stream.sendPacket(packet, offset, pts, dts))
+			return;
 
-			if (startCode == kStartCodePrivateStream1) {
-				PrivateStreamType streamType = detectPrivateStreamType(packet);
-				packet->seek(0);
+		// Need more data! Continue reading.
+	}
+}
 
-				// TODO: Handling of these types (as needed)
-				bool handled = false;
-				const char *typeName;
+void MPEGPSDecoder::addNewStream(int startCode, uint32 packetSize) {
+	Common::ScopedPtr<Common::SeekableReadStream> packet(_stream->readStream(packetSize));
 
-				switch (streamType) {
-				case kPrivateStreamAC3: {
-					typeName = "AC-3";
+	if (startCode == kStartCodePrivateStream1) {
+		PrivateStreamType streamType = detectPrivateStreamType(packet.get());
+		packet->seek(0);
+
+		// TODO: Handling of these types (as needed)
+		bool handled = false;
+		const char *typeName;
+
+		switch (streamType) {
+		case kPrivateStreamAC3: {
+			typeName = "AC-3";
 
 #ifdef USE_A52
-					handled = true;
-					AC3AudioTrack *ac3Track = new AC3AudioTrack(*packet);
-					stream = ac3Track;
-					_streamMap[startCode] = ac3Track;
-					addTrack(ac3Track);
+			handled = true;
+			AC3AudioTrack *ac3Track = new AC3AudioTrack(*packet);
+			_streamMap[startCode] = ac3Track;
+			addTrack(ac3Track);
+			_audioStreams.push_back(ac3Track);
 #endif
-					break;
-				}
-				case kPrivateStreamDTS:
-					typeName = "DTS";
-					break;
-				case kPrivateStreamDVDPCM:
-					typeName = "DVD PCM";
-					break;
-				case kPrivateStreamPS2Audio:
-					typeName = "PS2 Audio";
-					break;
-				default:
-					typeName = "Unknown";
-					break;
-				}
+			break;
+		}
+		case kPrivateStreamDTS:
+			typeName = "DTS";
+			break;
+		case kPrivateStreamDVDPCM:
+			typeName = "DVD PCM";
+			break;
+		case kPrivateStreamPS2Audio:
+			typeName = "PS2 Audio";
+			break;
+		default:
+			typeName = "Unknown";
+			break;
+		}
 
-				if (!handled) {
-					warning("Unhandled DVD private stream: %s", typeName);
+		if (!handled) {
+			warning("Unhandled DVD private stream: %s", typeName);
 
-					// Make it 0 so we don't get the warning twice
-					_streamMap[startCode] = 0;
-				}
-			} else if (startCode >= 0x1E0 && startCode <= 0x1EF) {
-				// Video stream
-				// TODO: Multiple video streams
-				warning("Found extra video stream 0x%04X", startCode);
-				_streamMap[startCode] = 0;
-			} else if (startCode >= 0x1C0 && startCode <= 0x1DF) {
+			// Make it 0 so we don't get the warning twice
+			_streamMap[startCode] = 0;
+		}
+	} else if (startCode >= 0x1E0 && startCode <= 0x1EF) {
+		// Video stream
+		// TODO: Multiple video streams
+		warning("Found extra video stream 0x%04X", startCode);
+		_streamMap[startCode] = 0;
+	} else if (startCode >= 0x1C0 && startCode <= 0x1DF) {
 #ifdef USE_MAD
-				// MPEG Audio stream
-				MPEGAudioTrack *audioTrack = new MPEGAudioTrack(*packet);
-				stream = audioTrack;
-				_streamMap[startCode] = audioTrack;
-				addTrack(audioTrack);
+		// MPEG Audio stream
+		MPEGAudioTrack *audioTrack = new MPEGAudioTrack(startCode, *packet);
+		_streamMap[startCode] = audioTrack;
+		addTrack(audioTrack);
+		_audioStreams.push_back(audioTrack);
 #else
-				warning("Found audio stream 0x%04X, but no MAD support compiled in", startCode);
-				_streamMap[startCode] = 0;
+		warning("Found audio stream 0x%04X, but no MAD support compiled in", startCode);
+		_streamMap[startCode] = 0;
 #endif
-			} else {
-				// Probably not relevant
-				debug(0, "Found unhandled MPEG-PS stream type 0x%04x", startCode);
-				_streamMap[startCode] = 0;
-			}
-		}
-
-		if (stream) {
-			packet->seek(0);
-
-			bool done = stream->sendPacket(packet, pts, dts);
-
-			if (done && stream->getStreamType() == MPEGStream::kStreamTypeVideo)
-				return;
-		} else {
-			delete packet;
-		}
+	} else {
+		// Probably not relevant
+		debug(0, "Found unhandled MPEG-PS stream type 0x%04x", startCode);
+		_streamMap[startCode] = 0;
 	}
 }
 
@@ -402,11 +437,13 @@ bool MPEGPSDecoder::addFirstVideoTrack() {
 			// Video stream
 			// Can be MPEG-1/2 or MPEG-4/h.264. We'll assume the former and
 			// I hope we never need the latter.
-			Common::SeekableReadStream *firstPacket = _stream->readStream(size);
-			MPEGVideoTrack *track = new MPEGVideoTrack(firstPacket, getDefaultHighColorFormat());
+			Common::ScopedPtr<Common::SeekableReadStream> firstPacket(_stream->readStream(size));
+			MPEGVideoTrack *track = new MPEGVideoTrack(startCode, firstPacket.get(), getDefaultHighColorFormat());
 			addTrack(track);
 			_streamMap[startCode] = track;
-			delete firstPacket;
+
+			// Store the track for later
+			_videoStreams.push_back(track);
 			break;
 		}
 
@@ -438,9 +475,15 @@ MPEGPSDecoder::PrivateStreamType MPEGPSDecoder::detectPrivateStreamType(Common::
 	return kPrivateStreamUnknown;
 }
 
-MPEGPSDecoder::MPEGVideoTrack::MPEGVideoTrack(Common::SeekableReadStream *firstPacket, const Graphics::PixelFormat &format) {
+bool MPEGPSDecoder::MPEGStream::sendPacket(Common::SeekableReadStream *packet, uint32 offset, uint32 pts, uint32 dts) {
+	_lastPTS = pts;
+	_lastDTS = dts;
+	_nextStartOffset = packet->size() + offset;
+	return decodePacket(packet);
+}
+
+MPEGPSDecoder::MPEGVideoTrack::MPEGVideoTrack(int startCode, Common::SeekableReadStream *firstPacket, const Graphics::PixelFormat &format) : MPEGVideoStream(startCode) {
 	_surface = 0;
-	_endOfTrack = false;
 	_curFrame = -1;
 	_nextFrameStartTime = Audio::Timestamp(0, 27000000); // 27 MHz timer
 
@@ -481,7 +524,7 @@ const Graphics::Surface *MPEGPSDecoder::MPEGVideoTrack::decodeNextFrame() {
 	return _surface;
 }
 
-bool MPEGPSDecoder::MPEGVideoTrack::sendPacket(Common::SeekableReadStream *packet, uint32 pts, uint32 dts) {
+bool MPEGPSDecoder::MPEGVideoTrack::decodePacket(Common::SeekableReadStream *packet) {
 #ifdef USE_MPEG2
 	uint32 framePeriod;
 	bool foundFrame = _mpegDecoder->decodePacket(*packet, framePeriod, _surface);
@@ -526,7 +569,7 @@ void MPEGPSDecoder::MPEGVideoTrack::findDimensions(Common::SeekableReadStream *f
 
 // The audio code here is almost entirely based on what we do in mp3.cpp
 
-MPEGPSDecoder::MPEGAudioTrack::MPEGAudioTrack(Common::SeekableReadStream &firstPacket) {
+MPEGPSDecoder::MPEGAudioTrack::MPEGAudioTrack(int startCode, Common::SeekableReadStream &firstPacket) : MPEGAudioStream(startCode) {
 	_audStream = Audio::makePacketizedMP3Stream(firstPacket);
 }
 
@@ -534,7 +577,7 @@ MPEGPSDecoder::MPEGAudioTrack::~MPEGAudioTrack() {
 	delete _audStream;
 }
 
-bool MPEGPSDecoder::MPEGAudioTrack::sendPacket(Common::SeekableReadStream *packet, uint32 pts, uint32 dts) {
+bool MPEGPSDecoder::MPEGAudioTrack::decodePacket(Common::SeekableReadStream *packet) {
 	_audStream->queuePacket(packet);
 	return true;
 }
@@ -547,7 +590,7 @@ Audio::AudioStream *MPEGPSDecoder::MPEGAudioTrack::getAudioStream() const {
 
 #ifdef USE_A52
 
-MPEGPSDecoder::AC3AudioTrack::AC3AudioTrack(Common::SeekableReadStream &firstPacket) {
+MPEGPSDecoder::AC3AudioTrack::AC3AudioTrack(Common::SeekableReadStream &firstPacket) : MPEGAudioStream(kStartCodePrivateStream1) {
 	_audStream = Audio::makeAC3Stream(firstPacket);
 	if (!_audStream)
 		error("Could not create AC-3 stream");
@@ -557,7 +600,7 @@ MPEGPSDecoder::AC3AudioTrack::~AC3AudioTrack() {
 	delete _audStream;
 }
 
-bool MPEGPSDecoder::AC3AudioTrack::sendPacket(Common::SeekableReadStream *packet, uint32 pts, uint32 dts) {
+bool MPEGPSDecoder::AC3AudioTrack::decodePacket(Common::SeekableReadStream *packet) {
 	// Skip DVD code
 	packet->readUint32LE();
 	if (packet->eos())
