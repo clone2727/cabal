@@ -24,6 +24,10 @@
 #define AUDIO_AUDIODEV_PCSPK_H
 
 #include "audio/audiodev/audiodev.h"
+#include "common/hashmap.h"
+#include "common/hash-str.h"
+#include "common/singleton.h"
+#include "common/str.h"
 
 namespace Audio {
 
@@ -59,7 +63,44 @@ public:
 class HardwarePCSpeaker : public virtual PCSpeakerDevice, protected virtual HardwareAudioDevice {
 };
 
+/**
+ * Factory manager for PC speaker objects
+ */
+class PCSpeakerFactoryManager : public Common::Singleton<PCSpeakerFactoryManager> {
+public:
+	/**
+	 * Create a new PCSpeakerDevice based on configuration and what factories
+	 * are available.
+	 */
+	PCSpeakerDevice *createDevice();
+
+	/**
+	 * A function that returns a PCSpeakerDevice and takes no parameters
+	 */
+	typedef PCSpeakerDevice *(*CreateDeviceFunc)();
+
+	/**
+	 * Register a new PC speaker device factory
+	 */
+	void registerFactory(const Common::String &name, const Common::String &description, CreateDeviceFunc factory);
+
+private:
+	friend class Common::Singleton<SingletonBaseType>;
+	PCSpeakerFactoryManager();
+
+	struct Factory {
+		Common::String description;
+		CreateDeviceFunc factory;
+	};
+
+	typedef Common::HashMap<Common::String, Factory> FactoryMap;
+	FactoryMap _factories;
+};
+
 } // End of namespace Audio
+
+/** Shortcut for accessing the PC speaker factory manager. */
+#define PCSpeakerFactoryMan ::Audio::PCSpeakerFactoryManager::instance()
 
 #endif
 

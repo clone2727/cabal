@@ -55,6 +55,7 @@
 
 #include "audio/mididrv.h"
 #include "audio/musicplugin.h"  /* for music manager */
+#include "audio/audiodev/pcspk.h"
 
 #include "graphics/cursorman.h"
 #include "graphics/fontman.h"
@@ -542,6 +543,7 @@ extern "C" int scummvm_main(int argc, const char * const argv[]) {
 #endif
 	EngineManager::destroy();
 	Graphics::YUVToRGBManager::destroy();
+	Audio::PCSpeakerFactoryManager::destroy();
 
 	return 0;
 }

@@ -24,7 +24,7 @@
 
 #include "scumm/imuse/pcspk.h"
 
-#include "audio/softsynth/emu_pcspk.h"
+#include "audio/audiodev/pcspk.h"
 #include "common/util.h"
 
 namespace Scumm {
@@ -57,7 +57,7 @@ int PcSpkDriver::open() {
 	_lastActiveChannel = 0;
 	_lastActiveOut = 0;
 
-	_pcSpk = new Audio::EmulatedPCSpeaker();
+	_pcSpk = PCSpeakerFactoryMan.createDevice();
 	_pcSpk->init();
 	_pcSpk->start(new Common::Functor0Mem<void, PcSpkDriver>(this, &PcSpkDriver::onTimer));
 	return 0;

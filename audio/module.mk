@@ -18,6 +18,7 @@ MODULE_OBJS := \
 	timestamp.o \
 	audiodev/audiodev.o \
 	audiodev/opl.o \
+	audiodev/pcspk.o \
 	decoders/3do.o \
 	decoders/aac.o \
 	decoders/adpcm.o \

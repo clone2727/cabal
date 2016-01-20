@@ -26,7 +26,6 @@
 #define AUDIO_SOFTSYNTH_PCSPK_H
 
 #include "audio/audiostream.h"
-#include "audio/audiodev/pcspk.h"
 #include "common/mutex.h"
 
 namespace Audio {
@@ -69,34 +68,12 @@ protected:
 	static int8 generateWave(uint32 x, uint32 oscLength);
 };
 
+class PCSpeakerDevice;
+
 /**
- * An emulated PC speaker
+ * Create a new emulated PC speaker device
  */
-class EmulatedPCSpeaker : public virtual PCSpeakerDevice, protected virtual EmulatedAudioDevice {
-public:
-	EmulatedPCSpeaker();
-	~EmulatedPCSpeaker();
-
-	// AudioDevice API
-	bool init();
-	void reset();
-
-	// PCSpeakerDevice API
-	void startOutput(int freq);
-	void startOutputTicks(int ticks);
-	void stopOutput();
-
-	// AudioStream API
-	bool isStereo() const { return false; }
-
-protected:
-	// EmulatedAudioDevice API
-	void generateSamples(int16 *buffer, int numSamples);
-
-private:
-	int _oscLength;
-	int _oscPos;
-};
+PCSpeakerDevice *createEmulatedPCSpeaker();
 
 } // End of namespace Audio
 

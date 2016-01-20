@@ -22,9 +22,11 @@
 
 // Based on the ScummVM (GPLv2+) emulated PC Speaker code (originally at audio/softsynth/pcspk.h)
 
-#include "audio/mixer.h"
 #include "audio/softsynth/emu_pcspk.h"
+
+#include "audio/mixer.h"
 #include "audio/null.h"
+#include "audio/audiodev/pcspk.h"
 
 namespace Audio {
 
@@ -100,6 +102,36 @@ int8 PCSpeaker::generateWave(uint32 x, uint32 oscLength) {
 	return (x < (oscLength / 2)) ? 127 : -128;
 }
 
+
+/**
+ * An emulated PC speaker
+ */
+class EmulatedPCSpeaker : public virtual PCSpeakerDevice, protected virtual EmulatedAudioDevice {
+public:
+	EmulatedPCSpeaker();
+	~EmulatedPCSpeaker();
+
+	// AudioDevice API
+	bool init();
+	void reset();
+
+	// PCSpeakerDevice API
+	void startOutput(int freq);
+	void startOutputTicks(int ticks);
+	void stopOutput();
+
+	// AudioStream API
+	bool isStereo() const { return false; }
+
+protected:
+	// EmulatedAudioDevice API
+	void generateSamples(int16 *buffer, int numSamples);
+
+private:
+	int _oscLength;
+	int _oscPos;
+};
+
 EmulatedPCSpeaker::EmulatedPCSpeaker() : _oscLength(0) {
 }
 
@@ -149,6 +181,10 @@ void EmulatedPCSpeaker::generateSamples(int16 *buffer, int numSamples) {
 			_oscPos = (_oscPos + 1) % _oscLength;
 		}
 	}
+}
+
+PCSpeakerDevice *createEmulatedPCSpeaker() {
+	return new EmulatedPCSpeaker();
 }
 
 } // End of namespace Audio
