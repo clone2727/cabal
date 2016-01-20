@@ -20,7 +20,7 @@
  *
  */
 
-#include "audio/audiodevice.h"
+#include "audio/audiodev/audiodev.h"
 
 #include "audio/mixer.h"
 #include "common/system.h"

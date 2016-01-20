@@ -25,7 +25,7 @@
 #ifndef AUDIO_FMOPL_H
 #define AUDIO_FMOPL_H
 
-#include "audio/audiodevice.h"
+#include "audio/audiodev/audiodev.h"
 #include "common/func.h"
 #include "common/ptr.h"
 #include "common/scummsys.h"

@@ -2,7 +2,6 @@ MODULE := audio
 
 MODULE_OBJS := \
 	adlib.o \
-	audiodevice.o \
 	audiostream.o \
 	fmopl.o \
 	mididrv.o \
@@ -18,6 +17,7 @@ MODULE_OBJS := \
 	musicplugin.o \
 	null.o \
 	timestamp.o \
+	audiodev/audiodev.o \
 	decoders/3do.o \
 	decoders/aac.o \
 	decoders/adpcm.o \

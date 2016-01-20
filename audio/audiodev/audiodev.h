@@ -20,8 +20,8 @@
  *
  */
 
-#ifndef AUDIO_AUDIODEVICE_H
-#define AUDIO_AUDIODEVICE_H
+#ifndef AUDIO_AUDIODEV_AUDIODEV_H
+#define AUDIO_AUDIODEV_AUDIODEV_H
 
 #include "audio/audiostream.h"
 #include "common/func.h"
