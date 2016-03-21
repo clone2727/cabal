@@ -25,6 +25,10 @@
 
 #include "mohawk/mohawk.h"
 
+namespace Common {
+class String;
+}
+
 namespace Mohawk {
 
 struct MohawkGameDescription;
@@ -48,7 +52,10 @@ private:
 	Archive *_dialogArchive;
 	Archive *_guidesArchive;
 	Common::Array<Archive *> _characterArchives;
-	Archive *_amtrakArchive2;	
+	Archive *_amtrakArchive2;
+
+	void playVideoCentered(const Common::String &fileName);
+	void playIntro();
 };
 
 } // End of namespace Mohawk

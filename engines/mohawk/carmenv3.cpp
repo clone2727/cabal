@@ -20,14 +20,19 @@
  *
  */
 
+#include "common/config-manager.h"
 #include "common/debug.h"
 #include "common/error.h"
 #include "common/system.h"
-
+#include "common/events.h"
+#include "engines/util.h"
+#include "graphics/surface.h"
 #include "gui/debugger.h"
 
 #include "mohawk/carmenv3.h"
 #include "mohawk/resource.h"
+
+#include "video/qt_decoder.h"
 
 namespace Mohawk {
 
@@ -110,9 +115,59 @@ Common::Error MohawkEngine_CarmenV3::run() {
 		_characterArchives.push_back(archive);
 	}
 
-	// TODO: Initialize at 640x480x[8|16]bpp
+	// TODO: Can support 8bpp too
+	initGraphics(640, 480, true, NULL);
+	if (g_system->getScreenFormat().bytesPerPixel == 1)
+		error("No RGB support");
+
+	// Play the intro
+	playIntro();
+	if (shouldQuit())
+		return Common::kNoError;
 
 	return Common::kNoError;
+}
+
+void MohawkEngine_CarmenV3::playVideoCentered(const Common::String &fileName) {
+	Video::QuickTimeDecoder decoder;
+	if (!decoder.loadFile("MOVIES/OPENING.MOV"))
+		error("Failed to open MOVIES/OPENING.MOV");
+
+	// Center the video
+	int x = (_system->getWidth() - decoder.getWidth()) / 2;
+	int y = (_system->getHeight() - decoder.getHeight()) / 2;
+
+	decoder.start();
+	while (!shouldQuit() && !decoder.endOfVideo()) {
+		if (decoder.needsUpdate()) {
+			const Graphics::Surface *surface = decoder.decodeNextFrame();
+			if (surface) {
+				Graphics::Surface *convSurface = surface->convertTo(_system->getScreenFormat(), decoder.getPalette());
+				_system->copyRectToScreen(convSurface->getPixels(), convSurface->pitch, x, y, convSurface->w, convSurface->h);
+				_system->updateScreen();
+				convSurface->free();
+				delete convSurface;
+			}
+		}
+
+		Common::Event event;
+		while (_eventMan->pollEvent(event))
+			;
+
+		_system->delayMillis(10);
+	}
+}
+
+void MohawkEngine_CarmenV3::playIntro() {
+	// If this is the demo, there's no intro to play
+	if ((getFeatures() & GF_DEMO) != 0)
+		return;
+
+	// If the fSkipOpening flag is set, skip the intro
+	if (ConfMan.hasKey("fSkipOpening") && ConfMan.getBool("fSkipOpening"))
+		return;
+
+	playVideoCentered("MOVIES/OPENING.MOV");
 }
 
 } // End of namespace Mohawk
