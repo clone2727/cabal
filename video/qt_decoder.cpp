@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -20,26 +20,18 @@
  *
  */
 
-//
-// Partially based on ffmpeg code.
-//
-// Copyright (c) 2001 Fabrice Bellard.
-// First version by Francois Revol revol@free.fr
-// Seek function by Gael Chardon gael.dev@4now.net
-//
+// Based on the original ScummVM code, which is in turn based on the FFmpeg code.
 
 #include "video/qt_decoder.h"
 
 #include "audio/audiostream.h"
-
 #include "common/debug.h"
 #include "common/memstream.h"
 #include "common/system.h"
 #include "common/textconsole.h"
 #include "common/util.h"
-
-// Video codecs
 #include "image/codecs/codec.h"
+#include "video/qt_palette.h"
 
 namespace Video {
 
@@ -149,7 +141,7 @@ Common::QuickTimeParser::SampleDesc *QuickTimeDecoder::readSampleDesc(Common::Qu
 		debug(0, "color depth: %d", colorDepth);
 
 		// if the depth is 2, 4, or 8 bpp, file is palettized
-		if (colorDepth == 2 || colorDepth == 4 || colorDepth == 8) {
+		if (colorDepth == 1 || colorDepth == 2 || colorDepth == 4 || colorDepth == 8) {
 			// Initialize the palette
 			entry->_palette = new byte[256 * 3];
 			memset(entry->_palette, 0, 256 * 3);
@@ -168,10 +160,23 @@ Common::QuickTimeParser::SampleDesc *QuickTimeDecoder::readSampleDesc(Common::Qu
 						colorIndex = 0;
 				}
 			} else if (entry->_colorTableId & 0x08) {
-				// if flag bit 3 is set, use the default palette
-				//uint16 colorCount = 1 << colorDepth;
+				debug(0, "Pre-defined palette");
 
-				warning("Predefined palette! %dbpp", colorDepth);
+				// If flag bit 3 is set, use the default palette
+				switch (colorDepth) {
+				case 1:
+					memcpy(entry->_palette, s_qtDefaultPalette2, sizeof(s_qtDefaultPalette2));
+					break;
+				case 2:
+					memcpy(entry->_palette, s_qtDefaultPalette4, sizeof(s_qtDefaultPalette4));
+					break;
+				case 4:
+					memcpy(entry->_palette, s_qtDefaultPalette16, sizeof(s_qtDefaultPalette16));
+					break;
+				case 8:
+					memcpy(entry->_palette, s_qtDefaultPalette256, sizeof(s_qtDefaultPalette256));
+					break;
+				}
 			} else {
 				debug(0, "Palette from file");
 
