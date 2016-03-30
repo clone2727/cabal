@@ -11,8 +11,6 @@ MODULE_DIRS += \
 
 DEVTOOLS := \
 	devtools/convbdf$(EXEEXT) \
-	devtools/md5table$(EXEEXT) \
-	devtools/make-scumm-fontdata$(EXEEXT)
 
 include $(srcdir)/devtools/*/module.mk
 
@@ -36,14 +34,6 @@ devtools/convbdf$(EXEEXT): $(srcdir)/devtools/convbdf.cpp
 	$(QUIET)$(MKDIR) devtools/$(DEPDIR)
 	$(QUIET_LINK)$(LD) $(CXXFLAGS) -Wall -o $@ $<
 
-devtools/md5table$(EXEEXT): $(srcdir)/devtools/md5table.c
-	$(QUIET)$(MKDIR) devtools/$(DEPDIR)
-	$(QUIET_LINK)$(LD) $(CFLAGS) -Wall -o $@ $<
-
-devtools/make-scumm-fontdata$(EXEEXT): $(srcdir)/devtools/make-scumm-fontdata.c
-	$(QUIET)$(MKDIR) devtools/$(DEPDIR)
-	$(QUIET_LINK)$(LD) $(CFLAGS) -Wall -o $@ $<
-
 #
 # Rules to explicitly rebuild the credits / MD5 tables.
 # The rules for the files in the "web" resp. "docs" modules
@@ -59,9 +49,6 @@ credits:
 	$(srcdir)/devtools/credits.pl --xml-website > $(srcdir)/../scummvm-web/data/credits.xml
 #	$(srcdir)/devtools/credits.pl --xml-docbook > $(srcdir)/../../docs/trunk/docbook/credits.xml
 
-md5scumm: devtools/md5table$(EXEEXT)
-	devtools/md5table$(EXEEXT) --c++ < $(srcdir)/devtools/scumm-md5.txt > $(srcdir)/engines/scumm/scumm-md5.h
-
 #
 # Rules which automatically and implicitly rebuild the credits and
 # MD5 tables when needed.
@@ -71,9 +58,6 @@ md5scumm: devtools/md5table$(EXEEXT)
 # run for some reason.
 #
 
-#scumm/scumm-md5.h: $(srcdir)/devtools/scumm-md5.txt devtools/md5table$(EXEEXT)
-#	devtools/md5table$(EXEEXT) --c++ < $< > $@
-
 #AUTHORS: $(srcdir)/devtools/credits.pl
 #	$(srcdir)/devtools/credits.pl --text > $@
 
@@ -81,4 +65,4 @@ md5scumm: devtools/md5table$(EXEEXT)
 #	$(srcdir)/devtools/credits.pl --cpp > $@
 
 
-.PHONY: clean-devtools devtools credits md5scumm
+.PHONY: clean-devtools devtools credits
