@@ -163,7 +163,6 @@ _elf_loader=no
 _plugins_default=static
 _plugin_prefix=
 _plugin_suffix=
-_nasm=auto
 _optimization_level=
 _default_optimization_level=-O2
 # Default commands
@@ -179,9 +178,6 @@ _sdlconfig=sdl-config
 _freetypeconfig=freetype-config
 _sdlpath="$PATH"
 _freetypepath="$PATH"
-_nasmpath="$PATH"
-NASMFLAGS=""
-NASM=""
 _tainted_build=no
 # The following variables are automatically detected, and should not
 # be modified otherwise. Consider them read-only.
@@ -935,9 +931,6 @@ Optional Libraries:
                            installed (optional)
   --disable-freetype2     disable freetype2 TTF library usage [autodetect]
 
-  --with-nasm-prefix=DIR   Prefix where nasm executable is installed (optional)
-  --disable-nasm           disable assembly language optimizations [autodetect]
-
   --with-readline-prefix=DIR    Prefix where readline is installed (optional)
   --disable-readline       disable readline support in text console [autodetect]
 
@@ -981,8 +974,6 @@ for ac_option in $@; do
 	--disable-mad)            _mad=no         ;;
 	--enable-zlib)            _zlib=yes       ;;
 	--disable-zlib)           _zlib=no        ;;
-	--enable-nasm)            _nasm=yes       ;;
-	--disable-nasm)           _nasm=no        ;;
 	--enable-mpeg2)           _mpeg2=yes      ;;
 	--disable-mpeg2)          _mpeg2=no       ;;
 	--disable-jpeg)           _jpeg=no        ;;
@@ -1141,10 +1132,6 @@ for ac_option in $@; do
 	--with-freetype2-prefix=*)
 		arg=`echo $ac_option | cut -d '=' -f 2`
 		_freetypepath="$arg:$arg/bin"
-		;;
-	--with-nasm-prefix=*)
-		arg=`echo $ac_option | cut -d '=' -f 2`
-		_nasmpath="$arg:$arg/bin"
 		;;
 	--with-staticlib-prefix=*)
 		_staticlibpath=`echo $ac_option | cut -d '=' -f 2`
@@ -2923,64 +2910,6 @@ define_in_config_if_yes "$_opengl" "USE_OPENGL"
 define_in_config_if_yes "$_opengles" "USE_GLES"
 
 #
-# Check for nasm
-#
-if test "$_have_x86" = yes ; then
-	echocheck "nasm"
-	if test "$_nasm" = no ; then
-		echo "disabled"
-	else
-		IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS=$SEPARATOR
-
-		for path_dir in $_nasmpath; do
-			if test -x "$path_dir/nasm$NATIVEEXEEXT" ; then
-				NASM="$path_dir/nasm$NATIVEEXEEXT"
-				NASMFLAGS="-O1 -g"
-				echo $NASM
-				break
-			fi
-		done
-
-		# fallback to the nasm compatible yasm
-		if test x$NASM = x -o x$NASM = x'"$NASM"'; then
-			for path_dir in $_nasmpath; do
-				if test -x "$path_dir/yasm$NATIVEEXEEXT" ; then
-					NASM="$path_dir/yasm$NATIVEEXEEXT"
-					NASMFLAGS="-a x86 -m x86"
-					echo $NASM
-					break
-				fi
-			done
-		fi
-
-		IFS="$ac_save_ifs"
-
-		if test x$NASM = x -o x$NASM = x'"$NASM"'; then
-			echo "not found"
-			_nasm=no
-		else
-			case $_host_os in
-				darwin*)
-					append_var NASMFLAGS "-f macho"
-				;;
-				mingw*)
-					append_var NASMFLAGS "-f win32"
-				;;
-				os2-emx*)
-					append_var NASMFLAGS "-f aout"
-				;;
-				*)
-					append_var NASMFLAGS "-f elf"
-				;;
-			esac
-			_nasm=yes
-		fi
-	fi
-fi
-
-define_in_config_if_yes $_nasm 'USE_NASM'
-
-#
 # Enable vkeybd / keymapper / event recorder
 #
 define_in_config_if_yes $_vkeybd 'ENABLE_VKEYBD'
@@ -3053,10 +2982,6 @@ echo_n "$_backend"
 
 if test "$_backend" = "sdl" -a -n "$_sdlversion"; then
 	echo_n " ($_sdlversion)"
-fi
-
-if test "$_nasm" = yes ; then
-	echo_n ", assembly routines"
 fi
 
 if test "$_savegame_timestamp" = yes ; then
@@ -3306,8 +3231,6 @@ MODULES += $MODULES
 MODULE_DIRS += $MODULE_DIRS
 EXEPRE := $HOSTEXEPRE
 EXEEXT := $HOSTEXEEXT
-NASM := $NASM
-NASMFLAGS := $NASMFLAGS
 
 prefix = $prefix
 exec_prefix = $exec_prefix

@@ -22,25 +22,6 @@
 
 #include "graphics/scaler/intern.h"
 
-#ifdef USE_NASM
-// Assembly version of HQ2x
-
-extern "C" {
-
-#if !defined(_WIN32) && !defined(MACOSX) && !defined(__OS2__)
-#define hq2x_16 _hq2x_16
-#endif
-
-void hq2x_16(const byte *, byte *, uint32, uint32, uint32, uint32);
-
-}
-
-void HQ2x(const uint8 *srcPtr, uint32 srcPitch, uint8 *dstPtr, uint32 dstPitch, int width, int height) {
-	hq2x_16(srcPtr, dstPtr, width, height, srcPitch, dstPitch);
-}
-
-#else
-
 #define PIXEL00_0	*(q) = w5;
 #define PIXEL00_10	*(q) = interpolate16_3_1<ColorMask >(w5, w1);
 #define PIXEL00_11	*(q) = interpolate16_3_1<ColorMask >(w5, w4);
@@ -1965,4 +1946,3 @@ void HQ2x(const uint8 *srcPtr, uint32 srcPitch, uint8 *dstPtr, uint32 dstPitch, 
 		HQ2x_implementation<Graphics::ColorMasks<555> >(srcPtr, srcPitch, dstPtr, dstPitch, width, height);
 }
 
-#endif // Assembly version

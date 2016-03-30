@@ -22,26 +22,6 @@
 
 #include "graphics/scaler/intern.h"
 
-#ifdef USE_NASM
-// Assembly version of HQ3x
-
-extern "C" {
-
-#if !defined(_WIN32) && !defined(MACOSX) && !defined(__OS2__)
-#define hq3x_16 _hq3x_16
-#endif
-
-
-void hq3x_16(const byte *, byte *, uint32, uint32, uint32, uint32);
-
-}
-
-void HQ3x(const uint8 *srcPtr, uint32 srcPitch, uint8 *dstPtr, uint32 dstPitch, int width, int height) {
-	hq3x_16(srcPtr, dstPtr, width, height, srcPitch, dstPitch);
-}
-
-#else
-
 #define PIXEL00_1M  *(q) = interpolate16_3_1<ColorMask >(w5, w1);
 #define PIXEL00_1U  *(q) = interpolate16_3_1<ColorMask >(w5, w2);
 #define PIXEL00_1L  *(q) = interpolate16_3_1<ColorMask >(w5, w4);
@@ -2942,4 +2922,3 @@ void HQ3x(const uint8 *srcPtr, uint32 srcPitch, uint8 *dstPtr, uint32 dstPitch, 
 		HQ3x_implementation<Graphics::ColorMasks<555> >(srcPtr, srcPitch, dstPtr, dstPitch, width, height);
 }
 
-#endif // Assembly version
