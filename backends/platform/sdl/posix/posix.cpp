@@ -33,7 +33,6 @@
 #include "backends/platform/sdl/posix/posix.h"
 #include "backends/saves/posix/posix-saves.h"
 #include "backends/fs/posix/posix-fs-factory.h"
-#include "backends/taskbar/unity/unity-taskbar.h"
 
 #include <errno.h>
 #include <sys/stat.h>
@@ -50,11 +49,6 @@ void OSystem_POSIX::init() {
 	// Initialze File System Factory
 	_fsFactory = new POSIXFilesystemFactory();
 
-#if defined(USE_TASKBAR) && defined(USE_UNITY)
-	// Initialize taskbar manager
-	_taskbarManager = new UnityTaskbarManager();
-#endif
-
 	// Invoke parent implementation of this method
 	OSystem_SDL::init();
 }
@@ -66,11 +60,6 @@ void OSystem_POSIX::initBackend() {
 
 	// Invoke parent implementation of this method
 	OSystem_SDL::initBackend();
-
-#if defined(USE_TASKBAR) && defined(USE_UNITY)
-	// Register the taskbar manager as an event source (this is necessary for the glib event loop to be run)
-	_eventManager->getEventDispatcher()->registerSource((UnityTaskbarManager *)_taskbarManager, false);
-#endif
 }
 
 bool OSystem_POSIX::hasFeature(Feature f) {

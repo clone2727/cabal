@@ -1155,11 +1155,6 @@ for ac_option in $@; do
 		READLINE_CFLAGS="-I$arg/include"
 		READLINE_LIBS="-L$arg/lib"
 		;;
-	--with-libunity-prefix=*)
-		arg=`echo $ac_option | cut -d '=' -f 2`
-		LIBUNITY_CFLAGS="-I$arg/include"
-		LIBUNITY_LIBS="-L$arg/lib"
-		;;
 	--with-opengl-prefix=*)
 		arg=`echo $ac_option | cut -d '=' -f 2`
 		OPENGL_CFLAGS="-I$arg/include"
@@ -3916,47 +3911,6 @@ define_in_config_h_if_yes "$_readline" 'USE_READLINE'
 define_in_config_h_if_yes "$_text_console" 'USE_TEXT_CONSOLE_FOR_DEBUGGER'
 
 #
-# Check for Unity if taskbar integration is enabled
-#
-echocheck "libunity"
-if test "$_unix" = no || test "$_taskbar" = no; then
-	_libunity=no
-else
-if test "$_libunity" = auto ; then
-	case $_host_os in
-		mingw*)
-			# pkgconfig and unity are not supported on mingw
-			_libunity=no
-			;;
-		*)
-			# Unity has a lots of dependencies, update the libs and cflags var with them
-			LIBUNITY_LIBS="$LIBUNITY_LIBS `pkg-config --libs 'unity > 3.8.1' 2>> "$TMPLOG"`"
-			LIBUNITY_CFLAGS="$LIBUNITY_CFLAGS `pkg-config --cflags 'unity > 3.8.1' 2>> "$TMPLOG"`"
-			_libunity=no
-			cat > $TMPC << EOF
-#include <unity.h>
-int main(void) {
-	unity_launcher_entry_get_for_desktop_id("scummvm.desktop");
-	return 0;
-}
-EOF
-			cc_check $LIBUNITY_CFLAGS $LIBUNITY_LIBS && _libunity=yes
-			;;
-	esac
-fi
-if test "$_libunity" = yes ; then
-	if test "$LIBUNITY_CFLAGS" = "" || test "$LIBUNITY_LIBS" = ""; then
-		LIBUNITY_LIBS="$LIBUNITY_LIBS `pkg-config --libs 'unity > 3.8.1' 2>> "$TMPLOG"`"
-		LIBUNITY_CFLAGS="$LIBUNITY_CFLAGS `pkg-config --cflags 'unity > 3.8.1' 2>> "$TMPLOG"`"
-	fi
-	append_var LIBS "$LIBUNITY_LIBS"
-	append_var INCLUDES "$LIBUNITY_CFLAGS"
-fi
-define_in_config_h_if_yes "$_libunity" 'USE_UNITY'
-fi
-echo "$_libunity"
-
-#
 # Check for FreeType2 to be present
 #
 if test "$_freetype2" != "no"; then
@@ -4204,36 +4158,6 @@ EOF
 		echo "without runtime language detection)"
 	fi
 fi
-
-#
-# Check whether to build taskbar integration support
-#
-echo_n "Building taskbar integration support... "
-if test "$_taskbar" = "no"; then
-	echo "no"
-else
-	case $_host_os in
-	mingw*)
-		append_var LIBS "-lole32 -luuid"
-		echo "win32"
-		_taskbar=yes
-		;;
-	darwin*)
-		echo "osx"
-		_taskbar=yes
-		;;
-	*)
-		if test "$_libunity" = yes; then
-			echo "unity"
-			_taskbar=yes
-		else
-			echo "no"
-			_taskbar=no
-		fi
-		;;
-	esac
-fi
-define_in_config_if_yes $_taskbar 'USE_TASKBAR'
 
 #
 # Check whether to build Bink video support
