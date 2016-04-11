@@ -38,7 +38,7 @@ Graphics::Font *TTFFontProvider::createFont(const Common::String &name, uint siz
 
 	// TODO: Emulate if necessary
 
-	return Graphics::loadTTFFont(*stream, size, Graphics::kTTFSizeModeCharacter, dpi, render);
+	return Graphics::loadTTFFont(*stream, size, dpi, render);
 }
 
 Common::String TTFFontProvider::makeStyleString(uint32 style) {

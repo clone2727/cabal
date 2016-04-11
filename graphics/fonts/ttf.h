@@ -39,32 +39,10 @@ class FSNode;
 namespace Graphics {
 
 /**
- * This specifies how the font size is defined.
- */
-enum TTFSizeMode {
-	/**
-	 * Character height only.
-	 *
-	 * This matches rendering obtained when calling
-	 * CreateFont in Windows with negative height values.
-	 */
-	kTTFSizeModeCharacter,
-
-	/**
-	 * Full cell height.
-	 *
-	 * This matches rendering obtained when calling
-	 * CreateFont in Windows with positive height values.
-	 */
-	kTTFSizeModeCell
-};
-
-/**
  * Loads a TTF font file from a given data stream object.
  *
  * @param stream     Stream object to load font data from.
- * @param size       The point size to load.
- * @param sizeMode   The point size definition used for the size parameter.
+ * @param size       The font size to load.
  * @param dpi        The dpi to use for size calculations, by default 72dpi
  *                   are used.
  * @param renderMode FreeType2 mode used to render glyphs. @see FontRenderMode
@@ -76,7 +54,7 @@ enum TTFSizeMode {
  *                   supported.
  * @return 0 in case loading fails, otherwise a pointer to the Font object.
  */
-Font *loadTTFFont(Common::SeekableReadStream &stream, int size, TTFSizeMode sizeMode = kTTFSizeModeCharacter, uint dpi = kFontDefaultDPI, FontRenderMode renderMode = kFontRenderLight, const uint32 *mapping = 0);
+Font *loadTTFFont(Common::SeekableReadStream &stream, const FontSize &size, uint dpi = kFontDefaultDPI, FontRenderMode renderMode = kFontRenderLight, const uint32 *mapping = 0);
 
 /**
  * Get the font family and style for a TTF font

@@ -76,6 +76,67 @@ enum {
 };
 
 /**
+ * The type of the font size
+ */
+enum FontSizeType {
+	/**
+	 * The size field represents the point size of the font
+	 */
+	kFontSizePoint,
+
+	/**
+	 * The size field represents the character height in pixels
+	 */
+	kFontSizeHeight
+};
+
+/**
+ * A class describing the size of a font
+ */
+class FontSize {
+public:
+	/**
+	 * Create the font size object
+	 *
+	 * @param size The size of the font
+	 * @param type The type of the size
+	 */
+	FontSize(uint size, FontSizeType type = kFontSizePoint) :
+		_size(size), _type(type) {}
+
+	/**
+	 * Get the size of the font
+	 */
+	uint getSize() const { return _size; }
+
+	/**
+	 * Set the size of the font
+	 */
+	void setSize(uint size) { _size = size; }
+
+	/**
+	 * Get the type of the size
+	 */
+	FontSizeType getType() const { return _type; }
+
+	/**
+	 * Set the type of the size
+	 */
+	void setType(FontSizeType type) { _type = type; }
+
+private:
+	/**
+	 * The size, defined by the type
+	 */
+	uint _size;
+
+	/**
+	 * The type of the size
+	 */
+	FontSizeType _type;
+};
+
+/**
  * Instances of this class represent a distinct font, with a built-in renderer.
  * @todo Maybe move the high-level methods (drawString etc.) to a separate
  *       FontRenderer class? That way, we could have different variants... ?

@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -19,6 +19,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
  */
+
+// Based on the ScummVM (GPLv2+) file of the same name
 
 /*
  * This file is based on WME Lite.
@@ -581,7 +583,7 @@ bool BaseFontTT::initFont() {
 	}
 
 	if (file) {
-		_deletableFont = Graphics::loadTTFFont(*file, _fontHeight, Graphics::kTTFSizeModeCharacter, 96); // Use the same dpi as WME (96 vs 72).
+		_deletableFont = Graphics::loadTTFFont(*file, _fontHeight, 96); // Use the same dpi as WME (96 vs 72).
 		_font = _deletableFont;
 		BaseFileManager::getEngineInstance()->closeFile(file);
 		file = nullptr;
@@ -607,7 +609,7 @@ bool BaseFontTT::initFont() {
 			if (themeArchive->hasFile(fallbackFilename)) {
 				file = nullptr;
 				file = themeArchive->createReadStreamForMember(fallbackFilename);
-				_deletableFont = Graphics::loadTTFFont(*file, _fontHeight, Graphics::kTTFSizeModeCharacter, 96); // Use the same dpi as WME (96 vs 72).
+				_deletableFont = Graphics::loadTTFFont(*file, _fontHeight, 96); // Use the same dpi as WME (96 vs 72).
 				_font = _deletableFont;
 			}
 			// We're not using BaseFileManager, so clean up after ourselves:

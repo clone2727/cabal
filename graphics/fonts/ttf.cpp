@@ -51,7 +51,8 @@ inline int ftCeil26_6(FT_Pos x) {
 	return (x + 63) / 64;
 }
 
-inline int divRoundToNearest(int dividend, int divisor) {
+template<typename T>
+inline T divRoundToNearest(T dividend, T divisor) {
 	return (dividend + (divisor / 2)) / divisor;
 }
 
@@ -114,7 +115,7 @@ public:
 	TTFFont();
 	virtual ~TTFFont();
 
-	bool load(Common::SeekableReadStream &stream, int size, TTFSizeMode sizeMode, uint dpi, FontRenderMode renderMode, const uint32 *mapping);
+	bool load(Common::SeekableReadStream &stream, const FontSize &size, uint dpi, FontRenderMode renderMode, const uint32 *mapping);
 
 	virtual int getFontHeight() const;
 
@@ -152,9 +153,9 @@ private:
 
 	Common::SeekableReadStream *readTTFTable(FT_ULong tag) const;
 
-	int computePointSize(int size, TTFSizeMode sizeMode) const;
-	int readPointSizeFromVDMXTable(int height) const;
-	int computePointSizeFromHeaders(int height) const;
+	uint computePointSize(const FontSize &size) const;
+	uint readPointSizeFromVDMXTable(uint height) const;
+	uint computePointSizeFromHeaders(uint height) const;
 
 	FT_Int32 _loadFlags;
 	FT_Render_Mode _renderMode;
@@ -181,7 +182,7 @@ TTFFont::~TTFFont() {
 	}
 }
 
-bool TTFFont::load(Common::SeekableReadStream &stream, int size, TTFSizeMode sizeMode, uint dpi, FontRenderMode renderMode, const uint32 *mapping) {
+bool TTFFont::load(Common::SeekableReadStream &stream, const FontSize &size, uint dpi, FontRenderMode renderMode, const uint32 *mapping) {
 	if (!g_ttf.isInitialized())
 		return false;
 
@@ -219,7 +220,7 @@ bool TTFFont::load(Common::SeekableReadStream &stream, int size, TTFSizeMode siz
 	// Check whether we have kerning support
 	_hasKerning = (FT_HAS_KERNING(_face) != 0);
 
-	if (FT_Set_Char_Size(_face, 0, computePointSize(size, sizeMode) * 64, dpi, dpi)) {
+	if (FT_Set_Char_Size(_face, 0, computePointSize(size) * 64, dpi, dpi)) {
 		delete[] _ttfFile;
 		_ttfFile = 0;
 
@@ -281,28 +282,22 @@ bool TTFFont::load(Common::SeekableReadStream &stream, int size, TTFSizeMode siz
 	return _initialized;
 }
 
-int TTFFont::computePointSize(int size, TTFSizeMode sizeMode) const {
-	int ptSize;
-	switch (sizeMode) {
-	case kTTFSizeModeCell: {
-		ptSize = readPointSizeFromVDMXTable(size);
+uint TTFFont::computePointSize(const FontSize &size) const {
+	if (size.getType() == kFontSizeHeight) {
+		uint ptSize = readPointSizeFromVDMXTable(size.getSize());
 
-		if (ptSize == 0) {
-			ptSize = computePointSizeFromHeaders(size);
-		}
+		if (ptSize == 0)
+			ptSize = computePointSizeFromHeaders(size.getSize());
 
 		if (ptSize == 0) {
 			warning("Unable to compute point size for font '%s'", _face->family_name);
 			ptSize = 1;
 		}
-		break;
-	}
-	case kTTFSizeModeCharacter:
-		ptSize = size;
-		break;
+
+		return ptSize;
 	}
 
-	return ptSize;
+	return size.getSize();
 }
 
 Common::SeekableReadStream *TTFFont::readTTFTable(FT_ULong tag) const {
@@ -327,7 +322,7 @@ Common::SeekableReadStream *TTFFont::readTTFTable(FT_ULong tag) const {
 	return new Common::MemoryReadStream(buf, size, DisposeAfterUse::YES);
 }
 
-int TTFFont::readPointSizeFromVDMXTable(int height) const {
+uint TTFFont::readPointSizeFromVDMXTable(uint height) const {
 	// The Vertical Device Metrics table matches font heights with point sizes.
 	// FreeType does not expose it, we have to parse it ourselves.
 	// See https://www.microsoft.com/typography/otspec/vdmx.htm
@@ -377,10 +372,10 @@ int TTFFont::readPointSizeFromVDMXTable(int height) const {
 		int16 yMax = vdmxBuf->readSint16BE();
 		int16 yMin = vdmxBuf->readSint16BE();
 
-		if (yMax + -yMin > height) {
+		if (yMax + -yMin > (int)height) {
 			return 0;
 		}
-		if (yMax + -yMin == height) {
+		if (yMax + -yMin == (int)height) {
 			return pointSize;
 		}
 	}
@@ -388,14 +383,14 @@ int TTFFont::readPointSizeFromVDMXTable(int height) const {
 	return 0;
 }
 
-int TTFFont::computePointSizeFromHeaders(int height) const {
+uint TTFFont::computePointSizeFromHeaders(uint height) const {
 	TT_OS2 *os2Header = (TT_OS2 *)FT_Get_Sfnt_Table(_face, ft_sfnt_os2);
 	TT_HoriHeader *horiHeader = (TT_HoriHeader *)FT_Get_Sfnt_Table(_face, ft_sfnt_hhea);
 
 	if (os2Header && (os2Header->usWinAscent + os2Header->usWinDescent != 0)) {
-		return divRoundToNearest(_face->units_per_EM * height, os2Header->usWinAscent + os2Header->usWinDescent);
+		return divRoundToNearest<uint>(_face->units_per_EM * height, os2Header->usWinAscent + os2Header->usWinDescent);
 	} else if (horiHeader && (horiHeader->Ascender + horiHeader->Descender != 0)) {
-		return divRoundToNearest(_face->units_per_EM * height, horiHeader->Ascender + horiHeader->Descender);
+		return divRoundToNearest<uint>(_face->units_per_EM * height, horiHeader->Ascender + horiHeader->Descender);
 	}
 
 	return 0;
@@ -660,10 +655,10 @@ void TTFFont::assureCached(uint32 chr) const {
 	}
 }
 
-Font *loadTTFFont(Common::SeekableReadStream &stream, int size, TTFSizeMode sizeMode, uint dpi, FontRenderMode renderMode, const uint32 *mapping) {
+Font *loadTTFFont(Common::SeekableReadStream &stream, const FontSize &size, uint dpi, FontRenderMode renderMode, const uint32 *mapping) {
 	TTFFont *font = new TTFFont();
 
-	if (!font->load(stream, size, sizeMode, dpi, renderMode, mapping)) {
+	if (!font->load(stream, size, dpi, renderMode, mapping)) {
 		delete font;
 		return 0;
 	}
