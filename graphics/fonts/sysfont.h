@@ -29,6 +29,7 @@
 namespace Graphics {
 
 class Font;
+class FontSize;
 
 class SystemFontManager : public Common::Singleton<SystemFontManager> {
 public:
@@ -39,7 +40,7 @@ public:
 	 * @param name
 	 *     The name of the font family. For example "arial" for pulling an Arial font.
 	 * @param size
-	 *     The point size of the font.
+	 *     The size of the font.
 	 * @param style
 	 *     The style of the font.
 	 * @param render
@@ -47,7 +48,7 @@ public:
 	 * @param dpi
 	 *     The dots per inch to render the font with.
 	 */
-	Graphics::Font *createFont(const Common::String &name, uint size, uint32 style = kFontStyleNormal, FontRenderMode render = kFontRenderNormal, uint dpi = kFontDefaultDPI);
+	Graphics::Font *createFont(const Common::String &name, const FontSize &size, uint32 style = kFontStyleNormal, FontRenderMode render = kFontRenderNormal, uint dpi = kFontDefaultDPI);
 
 	/**
 	 * Find a matching font properties for a Windows font file name.
@@ -69,7 +70,7 @@ private:
 	/**
 	 * Internal function for creating a font; called by createFont()
 	 */
-	Graphics::Font *createFontIntern(const Common::String &name, uint size, uint32 style = kFontStyleNormal, FontRenderMode render = kFontRenderNormal, uint dpi = kFontDefaultDPI);
+	Graphics::Font *createFontIntern(const Common::String &name, const FontSize &size, uint32 style = kFontStyleNormal, FontRenderMode render = kFontRenderNormal, uint dpi = kFontDefaultDPI);
 };
 
 } // End of namespace Graphics

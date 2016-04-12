@@ -67,13 +67,13 @@ public:
 	 * an exact match for the name requested, if present.
 	 *
 	 * @param name The name of the font face, not including style
-	 * @param size The point size
+	 * @param size The font size
 	 * @param style A set of flags representing style
 	 * @param render A set of flags for rendering the font
 	 * @param dpi The DPI to load the font in
 	 * @return A pointer to the font, or 0 if it could not be found
 	 */
-	virtual Graphics::Font *createFont(const Common::String &name, uint size, uint32 style = kFontStyleNormal, Graphics::FontRenderMode render = Graphics::kFontRenderNormal, uint dpi = Graphics::kFontDefaultDPI) = 0;
+	virtual Graphics::Font *createFont(const Common::String &name, const Graphics::FontSize &size, uint32 style = kFontStyleNormal, Graphics::FontRenderMode render = Graphics::kFontRenderNormal, uint dpi = Graphics::kFontDefaultDPI) = 0;
 };
 
 #endif

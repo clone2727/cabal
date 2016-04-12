@@ -43,7 +43,7 @@ static const SubstituteFont s_substituteFonts[] = {
 	{ "MS Gothic", kFontStyleNormal, "Ume Gothic", kFontStyleNormal }
 };
 
-Graphics::Font *SystemFontManager::createFont(const Common::String &name, uint size, uint32 style, FontRenderMode render, uint dpi) {
+Graphics::Font *SystemFontManager::createFont(const Common::String &name, const FontSize &size, uint32 style, FontRenderMode render, uint dpi) {
 	// Look for the font directly
 	Graphics::Font *font = createFontIntern(name, size, style, render, dpi);
 	if (font)
@@ -70,7 +70,7 @@ Graphics::Font *SystemFontManager::createFont(const Common::String &name, uint s
 	return 0;
 }
 
-Graphics::Font *SystemFontManager::createFontIntern(const Common::String &name, uint size, uint32 style, FontRenderMode render, uint dpi) {
+Graphics::Font *SystemFontManager::createFontIntern(const Common::String &name, const FontSize &size, uint32 style, FontRenderMode render, uint dpi) {
 	SystemFontProvider *provider = g_system->getSystemFontProvider();
 
 	if (provider) {
