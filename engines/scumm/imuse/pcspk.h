@@ -129,6 +129,7 @@ private:
 		virtual void pitchBendFactor(byte value);
 		virtual void priority(byte value);
 		virtual void sysEx_customInstrument(uint32 type, const byte *instr);
+		void volume(byte value);
 
 		void init(PcSpkDriver *owner, byte channel);
 		bool allocate();

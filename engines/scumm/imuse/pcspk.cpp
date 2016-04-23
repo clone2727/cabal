@@ -365,6 +365,11 @@ void PcSpkDriver::MidiChannel_PcSpk::sysEx_customInstrument(uint32 type, const b
 	memcpy(_instrument, instr, sizeof(_instrument));
 }
 
+void PcSpkDriver::MidiChannel_PcSpk::volume(byte volume) {
+	MidiChannel::volume(volume);
+	_owner->_pcSpk->setVolume(volume);
+}
+
 uint8 PcSpkDriver::getEffectModifier(uint16 level) {
 	uint8 base = level / 32;
 	uint8 index = level % 32;
