@@ -52,6 +52,12 @@ public:
 	virtual void stopOutput() = 0;
 
 	/**
+	 * Set the volume of the device. Has no effect for a hardware
+	 * PC speaker.
+	 */
+	virtual void setVolume(byte volume) {}
+
+	/**
 	 * The frequency of the device
 	 */
 	static const int kDeviceFreq = 1193180;

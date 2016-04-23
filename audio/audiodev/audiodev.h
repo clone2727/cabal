@@ -157,6 +157,12 @@ protected:
 	 */
 	virtual void generateSamples(int16 *buffer, int numSamples) = 0;
 
+	/**
+	 * Set the volume of the channel in the mixer. Should only be used if
+	 * the device has no other means of setting the volume.
+	 */
+	void setChannelVolume(byte volume);
+
 private:
 	int _baseFreq;
 
@@ -168,6 +174,7 @@ private:
 	int _samplesPerTick;
 
 	Audio::SoundHandle *_handle;
+	byte _volume;
 };
 
 } // End of namespace Audio

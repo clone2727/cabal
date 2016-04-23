@@ -119,6 +119,7 @@ public:
 	void startOutput(int freq);
 	void startOutputTicks(int ticks);
 	void stopOutput();
+	void setVolume(byte volume);
 
 	// AudioStream API
 	bool isStereo() const { return false; }
@@ -185,6 +186,10 @@ void EmulatedPCSpeaker::generateSamples(int16 *buffer, int numSamples) {
 
 PCSpeakerDevice *createEmulatedPCSpeaker() {
 	return new EmulatedPCSpeaker();
+}
+
+void EmulatedPCSpeaker::setVolume(byte volume) {
+	setChannelVolume(volume);
 }
 
 } // End of namespace Audio

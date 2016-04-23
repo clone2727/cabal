@@ -99,7 +99,8 @@ EmulatedAudioDevice::EmulatedAudioDevice() :
 	_nextTick(0),
 	_samplesPerTick(0),
 	_baseFreq(0),
-	_handle(new Audio::SoundHandle()) {
+	_handle(new Audio::SoundHandle()),
+	_volume(Audio::Mixer::kMaxChannelVolume) {
 }
 
 EmulatedAudioDevice::~EmulatedAudioDevice() {
@@ -145,7 +146,7 @@ int EmulatedAudioDevice::getRate() const {
 
 void EmulatedAudioDevice::startCallbacks(int timerFrequency) {
 	setCallbackFrequency(timerFrequency);
-	g_system->getMixer()->playStream(Audio::Mixer::kPlainSoundType, _handle, this, -1, Audio::Mixer::kMaxChannelVolume, 0, DisposeAfterUse::NO, true);
+	g_system->getMixer()->playStream(Audio::Mixer::kPlainSoundType, _handle, this, -1, _volume, 0, DisposeAfterUse::NO, true);
 }
 
 void EmulatedAudioDevice::stopCallbacks() {
@@ -163,6 +164,13 @@ void EmulatedAudioDevice::setCallbackFrequency(int timerFrequency) {
 	// but less prone to arithmetic overflow.
 
 	_samplesPerTick = (d << FIXP_SHIFT) + (r << FIXP_SHIFT) / _baseFreq;
+}
+
+void EmulatedAudioDevice::setChannelVolume(byte volume) {
+	_volume = volume;
+
+	if (g_system->getMixer()->isSoundHandleActive(*_handle))
+		g_system->getMixer()->setChannelVolume(*_handle, volume);
 }
 
 } // End of namespace Audio
