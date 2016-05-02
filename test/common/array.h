@@ -42,6 +42,12 @@ class ArrayTestSuite : public CxxTest::TestSuite
 		TS_ASSERT_EQUALS(*iter, -11);
 		iter++;
 		TS_ASSERT_EQUALS(iter, array.end());
+
+		// Test erase
+		iter = array.erase(iter);
+		TS_ASSERT_EQUALS(iter, array.end());
+		iter = array.erase(array.begin());
+		TS_ASSERT_EQUALS(*iter, 33);
 	}
 
 	void test_direct_access() {

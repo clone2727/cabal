@@ -1,6 +1,5 @@
-/* ScummVM - Graphic Adventure Engine
- *
- * ScummVM is the legal property of its developers, whose names
+/* Cabal - Legacy Game Implementations                                   *
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -19,6 +18,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
  */
+
+// Based on the ScummVM (GPLv2+) file of the same name
 
 #ifndef COMMON_ARRAY_H
 #define COMMON_ARRAY_H
@@ -221,6 +222,15 @@ public:
 
 	const_iterator end() const {
 		return _storage + _size;
+	}
+
+	iterator erase(iterator pos) {
+		if (pos == end())
+			return pos;
+
+		size_t index = pos - _storage;
+		remove_at(index);
+		return _storage + index;
 	}
 
 	void reserve(size_type newCapacity) {
