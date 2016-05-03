@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -19,6 +19,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
  */
+
+// Based on the ScummVM (GPLv2+) file of the same name
 
 #ifndef COMMON_PTR_H
 #define COMMON_PTR_H
@@ -264,6 +266,59 @@ public:
 	 * After release() call you need to delete object yourself
 	 *
 	 * @return the pointer the ScopedPtr manages
+	 */
+	PointerType release() {
+		PointerType r = _pointer;
+		_pointer = 0;
+		return r;
+	}
+
+private:
+	PointerType _pointer;
+};
+
+
+template<typename T>
+class ScopedArray : NonCopyable {
+public:
+	typedef T ValueType;
+	typedef T *PointerType;
+	typedef T &ReferenceType;
+
+	explicit ScopedArray(PointerType o = 0) : _pointer(o) {}
+
+	ReferenceType operator[](size_t i) const { return _pointer[i]; }
+
+	/**
+	 * Implicit conversion operator to bool for convenience, to make
+	 * checks like "if (scopedArray) ..." possible.
+	 */
+	operator bool() const { return _pointer != 0; }
+
+	~ScopedArray() {
+		delete[] _pointer;
+	}
+
+	/**
+	 * Resets the pointer with the new value. Old object will be destroyed
+	 */
+	void reset(PointerType o = 0) {
+		delete[] _pointer;
+		_pointer = o;
+	}
+
+	/**
+	 * Returns the plain pointer value.
+	 *
+	 * @return the pointer the ScopedArray manages
+	 */
+	PointerType get() const { return _pointer; }
+
+	/**
+	 * Returns the plain pointer value and releases ScopedArray.
+	 * After release() call you need to delete object yourself
+	 *
+	 * @return the pointer the ScopedArray manages
 	 */
 	PointerType release() {
 		PointerType r = _pointer;
