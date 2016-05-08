@@ -490,8 +490,24 @@ bool AVIDecoder::shouldQueueAudio(TrackStatus& status) {
 	if (videoTrack->endOfTrack())
 		return true;
 
-	// Being three frames ahead should be enough for any video.
-	return ((AVIAudioTrack *)status.track)->getCurChunk() < (uint32)(videoTrack->getCurFrame() + 3);
+	AVIAudioTrack *audioTrack = (AVIAudioTrack *)status.track;
+	const AVIStreamHeader &audioHeader = audioTrack->getStreamHeader();
+	const AVIStreamHeader &videoHeader = videoTrack->getStreamHeader();
+	Audio::Timestamp videoTimestamp(0, videoTrack->getCurFrame(), Common::Rational(videoHeader.rate, videoHeader.scale));
+
+	Audio::Timestamp audioTimestamp;
+	if (audioHeader.sampleSize == 0) {
+		// Variable bitrate
+		audioTimestamp = Audio::Timestamp(0, audioTrack->getCurChunk(), Common::Rational(audioHeader.rate, audioHeader.scale));
+	} else {
+		// Constant bitrate
+		audioTimestamp = Audio::Timestamp(0, audioTrack->getCurChunk(), Common::Rational(videoHeader.rate, videoHeader.scale));
+	}
+
+	// Add 0.5s to the video timestamp so we get some extra audio queued
+	videoTimestamp = videoTimestamp.addMsecs(500);
+
+	return audioTimestamp < videoTimestamp;
 }
 
 bool AVIDecoder::rewind() {

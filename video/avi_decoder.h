@@ -189,6 +189,8 @@ protected:
 		bool isRewindable() const { return true; }
 		bool rewind();
 
+		const AVIStreamHeader &getStreamHeader() const { return _vidsHeader; }
+
 	protected:
 		Common::Rational getFrameRate() const { return Common::Rational(_vidsHeader.rate, _vidsHeader.scale); }
 
@@ -220,6 +222,8 @@ protected:
 
 		bool isRewindable() const { return true; }
 		bool rewind();
+
+		const AVIStreamHeader &getStreamHeader() const { return _audsHeader; }
 
 	protected:
 		Audio::AudioStream *getAudioStream() const { return _audioStream; }
