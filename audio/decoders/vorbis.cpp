@@ -26,7 +26,9 @@
 
 #ifdef USE_VORBIS
 
+#include "common/mutex.h"
 #include "common/ptr.h"
+#include "common/queue.h"
 #include "common/stream.h"
 #include "common/textconsole.h"
 #include "common/util.h"
@@ -36,12 +38,15 @@
 #ifdef USE_TREMOR
 #ifdef USE_TREMOLO
 #include <tremolo/ivorbisfile.h>
+#include <tremolo/ivorbiscodec.h>
 #else
 #include <tremor/ivorbisfile.h>
+#include <tremor/ivorbiscodec.h>
 #endif
 #else
 #define OV_EXCLUDE_STATIC_CALLBACKS
 #include <vorbis/vorbisfile.h>
+#include <vorbis/codec.h>
 #endif
 
 
@@ -77,13 +82,6 @@ static long tell_stream_wrap(void *datasource) {
 static ov_callbacks g_stream_wrap = {
 	read_stream_wrap, seek_stream_wrap, close_stream_wrap, tell_stream_wrap
 };
-
-
-
-#pragma mark -
-#pragma mark --- Ogg Vorbis stream ---
-#pragma mark -
-
 
 class VorbisStream : public SeekableAudioStream {
 protected:
@@ -232,10 +230,253 @@ bool VorbisStream::refill() {
 	return true;
 }
 
+class PacketizedVorbisStream : public PacketizedAudioStream {
+public:
+	PacketizedVorbisStream();
+	~PacketizedVorbisStream();
 
-#pragma mark -
-#pragma mark --- Ogg Vorbis factory functions ---
-#pragma mark -
+	bool parseExtraData(Common::SeekableReadStream &stream);
+	bool parseExtraData(Common::SeekableReadStream &packet1, Common::SeekableReadStream &packet2, Common::SeekableReadStream &packet3);
+
+	// AudioStream API
+	bool isStereo() const { return _vorbisInfo.channels == 2; }
+	int getRate() const { return _vorbisInfo.rate; }
+	int readBuffer(int16 *buffer, const int numSamples);
+	bool endOfData() const;
+	bool endOfStream() const;
+
+	// PacketizedAudioStream API
+	void queuePacket(Common::SeekableReadStream *packet);
+	void finish();
+
+private:
+	// Vorbis decode state
+	vorbis_info _vorbisInfo;
+	vorbis_dsp_state _dspState;
+	vorbis_block _block;
+	vorbis_comment _comment;
+	ogg_packet _packet;
+	bool _init;
+
+	Common::Mutex _mutex;
+	Common::Queue<Common::SeekableReadStream *> _queue;
+	bool _finished;
+	bool _hasData;
+};
+
+PacketizedVorbisStream::PacketizedVorbisStream() {
+	_finished = false;
+	_init = false;
+	_hasData = false;
+	vorbis_info_init(&_vorbisInfo);
+	vorbis_comment_init(&_comment);
+}
+
+PacketizedVorbisStream::~PacketizedVorbisStream() {
+	if (_init) {
+		vorbis_block_clear(&_block);
+		vorbis_dsp_clear(&_dspState);
+	}
+
+	vorbis_info_clear(&_vorbisInfo);
+	vorbis_comment_clear(&_comment);
+
+	// Remove anything from the queue
+	while (!_queue.empty())
+		delete _queue.pop();
+}
+
+bool PacketizedVorbisStream::parseExtraData(Common::SeekableReadStream &stream) {
+	if (stream.size() < 3)
+		return false;
+
+	byte initialBytes[3];
+	stream.read(initialBytes, sizeof(initialBytes));
+
+	int headerSizes[3];
+	Common::ScopedArray<byte> headers[3];
+
+	if (stream.size() >= 6 && READ_BE_UINT16(initialBytes) == 30) {
+		stream.seek(0);
+
+		for (int i = 0; i < 3; i++) {
+			headerSizes[i] = stream.readUint16BE();
+
+			if (headerSizes[i] + stream.pos() > stream.size()) {
+				warning("Vorbis header size invalid");
+				return false;
+			}
+
+			headers[i].reset(new byte[headerSizes[i]]);
+			stream.read(headers[i].get(), headerSizes[i]);
+		}
+	} else if (initialBytes[0] == 2 && stream.size() < 0x7FFFFE00) {
+		stream.seek(1);
+		uint32 offset = 1;
+
+		for (int i = 0; i < 2; i++) {
+			headerSizes[i] = 0;
+
+			while (stream.pos() < stream.size()) {
+				byte length = stream.readByte();
+				headerSizes[i] += length;
+				offset++;
+
+				if (length != 0xFF)
+					break;
+			}
+
+			if (offset >= (uint32)stream.size()) {
+				warning("Vorbis header sizes damaged");
+				return false;
+			}
+		}
+
+		headerSizes[2] = stream.size() - (headerSizes[0] + headerSizes[1] + offset);
+		stream.seek(offset);
+
+		for (int i = 0; i < 3; i++) {
+			headers[i].reset(new byte[headerSizes[i]]);
+			stream.read(headers[i].get(), headerSizes[i]);
+		}
+	} else {
+		warning("Invalid vorbis initial header length: %d", initialBytes[0]);
+		return false;
+	}
+
+	for (int i = 0; i < 3; i++) {
+		_packet.b_o_s = (i == 0);
+		_packet.bytes = headerSizes[i];
+		_packet.packet = headers[i].get();
+
+		if (vorbis_synthesis_headerin(&_vorbisInfo, &_comment, &_packet) < 0) {
+			warning("Vorbis header %d is damaged", i);
+			return false;
+		}
+	}
+
+	// Begin decode
+	vorbis_synthesis_init(&_dspState, &_vorbisInfo);
+	vorbis_block_init(&_dspState, &_block);
+	_init = true;
+
+	return true;
+}
+
+bool PacketizedVorbisStream::parseExtraData(Common::SeekableReadStream &packet1, Common::SeekableReadStream &packet2, Common::SeekableReadStream &packet3) {
+	int headerSizes[3];
+	Common::ScopedArray<byte> headers[3];
+
+#define READ_WHOLE_STREAM(x) \
+	do { \
+		Common::SeekableReadStream &packet = packet##x; \
+		headerSizes[x - 1] = packet.size(); \
+		headers[x - 1].reset(new byte[headerSizes[x - 1]]); \
+		packet.read(headers[x - 1].get(), headerSizes[x - 1]); \
+	} while (0)
+
+	READ_WHOLE_STREAM(1);
+	READ_WHOLE_STREAM(2);
+	READ_WHOLE_STREAM(3);
+
+#undef READ_WHOLE_STREAM
+
+	for (int i = 0; i < 3; i++) {
+		_packet.b_o_s = (i == 0);
+		_packet.bytes = headerSizes[i];
+		_packet.packet = headers[i].get();
+
+		if (vorbis_synthesis_headerin(&_vorbisInfo, &_comment, &_packet) < 0) {
+			warning("Vorbis header %d is damaged", i);
+			return false;
+		}
+	}
+
+	// Begin decode
+	vorbis_synthesis_init(&_dspState, &_vorbisInfo);
+	vorbis_block_init(&_dspState, &_block);
+	_init = true;
+
+	return true;
+}
+
+int PacketizedVorbisStream::readBuffer(int16 *buffer, const int numSamples) {
+	int samples = 0;
+	while (samples < numSamples) {
+#ifdef USE_TREMOR
+		ogg_int32_t **pcm;
+#else
+		float **pcm;
+#endif
+		int decSamples = vorbis_synthesis_pcmout(&_dspState, &pcm);
+		if (decSamples <= 0) {
+			// No more samples
+			Common::StackLock lock(_mutex);
+			_hasData = false;
+
+			// If the queue is empty, we can do nothing else
+			if (_queue.empty())
+				return samples;
+
+			// Feed the next packet into the beast
+			Common::ScopedPtr<Common::SeekableReadStream> stream(_queue.pop());
+			Common::ScopedArray<byte> data(new byte[stream->size()]);
+			stream->read(data.get(), stream->size());
+
+			// Synthesize!
+			_packet.packet = data.get();
+			_packet.bytes = stream->size();
+			if (vorbis_synthesis(&_block, &_packet) == 0) {
+				vorbis_synthesis_blockin(&_dspState, &_block);
+				_hasData = true;
+			} else {
+				warning("Failed to synthesize from vorbis packet");
+			}
+
+			// Retry pcmout
+			continue;
+		}
+
+		// See how many samples we can decode
+		uint channels = isStereo() ? 2 : 1;
+		decSamples = MIN<int>((numSamples - samples) / channels, decSamples);
+
+#ifdef USE_TREMOR
+		for (int i = 0; i < decSamples; i++)
+			for (uint j = 0; j < channels; j++)
+				buffer[samples++] = (int16)(pcm[j][i] / 32768);
+#else
+		for (int i = 0; i < decSamples; i++)
+			for (uint j = 0; j < channels; j++)
+				buffer[samples++] = CLIP<int>(floor(pcm[j][i] * 32767.0f + 0.5), -32768, 32767);
+#endif
+
+		vorbis_synthesis_read(&_dspState, decSamples);
+	}
+
+	return samples;
+}
+
+bool PacketizedVorbisStream::endOfData() const {
+	Common::StackLock lock(_mutex);
+	return !_hasData && _queue.empty();
+}
+
+bool PacketizedVorbisStream::endOfStream() const {
+	Common::StackLock lock(_mutex);
+	return _finished && endOfData();
+}
+
+void PacketizedVorbisStream::queuePacket(Common::SeekableReadStream *packet) {
+	Common::StackLock lock(_mutex);
+	assert(!_finished);
+	_queue.push(packet);
+}
+
+void PacketizedVorbisStream::finish() {
+	Common::StackLock lock(_mutex);
+	_finished = true;
+}
 
 SeekableAudioStream *makeVorbisStream(
 	Common::SeekableReadStream *stream,
@@ -247,6 +488,22 @@ SeekableAudioStream *makeVorbisStream(
 	} else {
 		return s;
 	}
+}
+
+PacketizedAudioStream *makePacketizedVorbisStream(Common::SeekableReadStream &extraData) {
+	Common::ScopedPtr<PacketizedVorbisStream> stream(new PacketizedVorbisStream());
+	if (!stream->parseExtraData(extraData))
+		return 0;
+
+	return stream.release();
+}
+
+PacketizedAudioStream *makePacketizedVorbisStream(Common::SeekableReadStream &packet1, Common::SeekableReadStream &packet2, Common::SeekableReadStream &packet3) {
+	Common::ScopedPtr<PacketizedVorbisStream> stream(new PacketizedVorbisStream());
+	if (!stream->parseExtraData(packet1, packet2, packet3))
+		return 0;
+
+	return stream.release();
 }
 
 } // End of namespace Audio

@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -19,6 +19,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
  */
+
+// Based on the ScummVM (GPLv2+) file of the same name
 
 /**
  * @file
@@ -51,6 +53,7 @@ class SeekableReadStream;
 
 namespace Audio {
 
+class PacketizedAudioStream;
 class SeekableAudioStream;
 
 /**
@@ -64,6 +67,33 @@ class SeekableAudioStream;
 SeekableAudioStream *makeVorbisStream(
 	Common::SeekableReadStream *stream,
 	DisposeAfterUse::Flag disposeAfterUse);
+
+/**
+ * Create a new PacketizedAudioStream capable of decoding vorbis audio data.
+ *
+ * @param extraData
+ *    The vorbis header data, combined into one stream, as used in non-ogg
+ *    containers.
+ * @return a new PacketizedAudioStream, or NULL if an error occurred
+ */
+PacketizedAudioStream *makePacketizedVorbisStream(
+	Common::SeekableReadStream &extraData);
+
+/**
+ * Create a new PacketizedAudioStream capable of decoding vorbis audio data.
+ *
+ * @param packet1
+ *    The first vorbis header, as used in ogg
+ * @param packet2
+ *    The second vorbis header, as used in ogg
+ * @param packet3
+ *    The third vorbis header, as used in ogg
+ * @return a new PacketizedAudioStream, or NULL if an error occurred
+ */
+PacketizedAudioStream *makePacketizedVorbisStream(
+	Common::SeekableReadStream &packet1,
+	Common::SeekableReadStream &packet2,
+	Common::SeekableReadStream &packet3);
 
 } // End of namespace Audio
 
