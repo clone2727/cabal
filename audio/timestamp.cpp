@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -20,8 +20,11 @@
  *
  */
 
+// Based on the ScummVM (GPLv2+) file of the same name
+
 #include "audio/timestamp.h"
 #include "common/algorithm.h"
+#include "common/rational.h"
 
 namespace Audio {
 
@@ -38,6 +41,24 @@ Timestamp::Timestamp(uint ms, uint fr) {
 
 Timestamp::Timestamp(uint s, uint frames, uint fr) {
 	assert(fr > 0);
+
+	_secs = s + (frames / fr);
+	_framerateFactor = 1000 / Common::gcd<uint>(1000, fr);
+	_framerate = fr * _framerateFactor;
+	_numFrames = (frames % fr) * _framerateFactor;
+}
+
+Timestamp::Timestamp(uint s, uint frames, const Common::Rational &newFramerate) {
+	assert(newFramerate > 0);
+
+	uint fr;
+	if (newFramerate.getDenominator() == 1) {
+		fr = newFramerate.getNumerator();
+	} else {
+		Common::Rational time = newFramerate.getInverse() * frames;
+		frames = time.getNumerator();
+		fr = time.getDenominator();
+	}
 
 	_secs = s + (frames / fr);
 	_framerateFactor = 1000 / Common::gcd<uint>(1000, fr);
