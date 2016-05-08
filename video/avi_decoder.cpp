@@ -91,8 +91,8 @@ AVIDecoder::~AVIDecoder() {
 	close();
 }
 
-AVIDecoder::AVIAudioTrack *AVIDecoder::createAudioTrack(AVIStreamHeader sHeader, PCMWaveFormat wvInfo) {
-	return new AVIAudioTrack(sHeader, wvInfo, _soundType);
+AVIDecoder::AVIAudioTrack *AVIDecoder::createAudioTrack(AVIStreamHeader sHeader, WaveFormat wvInfo, Common::SeekableReadStream *extraData) {
+	return new AVIAudioTrack(sHeader, wvInfo, _soundType, extraData);
 }
 
 void AVIDecoder::initCommon() {
@@ -267,20 +267,37 @@ void AVIDecoder::handleStreamHeader(uint32 size) {
 
 		addTrack(new AVIVideoTrack(_header.totalFrames, sHeader, bmInfo, initialPalette));
 	} else if (sHeader.streamType == ID_AUDS) {
-		PCMWaveFormat wvInfo;
+		WaveFormat wvInfo;
 		wvInfo.tag = _fileStream->readUint16LE();
 		wvInfo.channels = _fileStream->readUint16LE();
 		wvInfo.samplesPerSec = _fileStream->readUint32LE();
 		wvInfo.avgBytesPerSec = _fileStream->readUint32LE();
 		wvInfo.blockAlign = _fileStream->readUint16LE();
-		wvInfo.size = _fileStream->readUint16LE();
+
+		if (strfSize >= 16)
+			wvInfo.bitsPerSample = _fileStream->readUint16LE();
+		else
+			wvInfo.bitsPerSample = 8;
 
 		// AVI seems to treat the sampleSize as including the second
 		// channel as well, so divide for our sake.
+		// FIXME: Handle this better
 		if (wvInfo.channels == 2)
 			sHeader.sampleSize /= 2;
 
-		AVIAudioTrack *track = createAudioTrack(sHeader, wvInfo);
+		// TODO: Handle extended wave format
+		Common::SeekableReadStream *extraData = 0;
+		if (strfSize >= 18) {
+			uint16 cbSize = _fileStream->readUint16LE();
+
+			// Clamp it to the remaining strf size
+			cbSize = MIN<uint16>(cbSize, strfSize - 18);
+
+			// Read it in as extra data
+			extraData = _fileStream->readStream(cbSize);
+		}
+
+		AVIAudioTrack *track = createAudioTrack(sHeader, wvInfo, extraData);
 		track->createAudioStream();
 		addTrack(track);
 	}
@@ -843,12 +860,13 @@ void AVIDecoder::AVIVideoTrack::setDither(const byte *palette) {
 	_videoCodec->setDither(Image::Codec::kDitherTypeVFW, palette);
 }
 
-AVIDecoder::AVIAudioTrack::AVIAudioTrack(const AVIStreamHeader &streamHeader, const PCMWaveFormat &waveFormat, Audio::Mixer::SoundType soundType)
-		: _audsHeader(streamHeader), _wvInfo(waveFormat), _soundType(soundType), _audioStream(0), _packetStream(0), _curChunk(0) {
+AVIDecoder::AVIAudioTrack::AVIAudioTrack(const AVIStreamHeader &streamHeader, const WaveFormat &waveFormat, Audio::Mixer::SoundType soundType, Common::SeekableReadStream *extraData)
+		: _audsHeader(streamHeader), _wvInfo(waveFormat), _soundType(soundType), _audioStream(0), _packetStream(0), _curChunk(0), _extraData(extraData) {
 }
 
 AVIDecoder::AVIAudioTrack::~AVIAudioTrack() {
 	delete _audioStream;
+	delete _extraData;
 }
 
 void AVIDecoder::AVIAudioTrack::queueSound(Common::SeekableReadStream *stream) {
@@ -891,6 +909,16 @@ bool AVIDecoder::AVIAudioTrack::rewind() {
 	resetStream();
 	return true;
 }
+
+// Audio Codecs
+enum {
+	kWaveFormatNone = 0,
+	kWaveFormatPCM = 1,
+	kWaveFormatMSADPCM = 2,
+	kWaveFormatMSIMAADPCM = 17,
+	kWaveFormatMP3 = 85,
+	kWaveFormatDK3 = 98 // rogue format number
+};
 
 void AVIDecoder::AVIAudioTrack::createAudioStream() {
 	_packetStream = 0;

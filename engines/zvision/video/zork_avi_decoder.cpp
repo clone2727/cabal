@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -20,6 +20,8 @@
  *
  */
 
+// Based on the ScummVM (GPLv2+) file of the same name
+
 #include "common/scummsys.h"
 
 #include "zvision/video/zork_avi_decoder.h"
@@ -33,15 +35,16 @@
 
 namespace ZVision {
 
-Video::AVIDecoder::AVIAudioTrack *ZorkAVIDecoder::createAudioTrack(Video::AVIDecoder::AVIStreamHeader sHeader, Video::AVIDecoder::PCMWaveFormat wvInfo) {
+Video::AVIDecoder::AVIAudioTrack *ZorkAVIDecoder::createAudioTrack(Video::AVIDecoder::AVIStreamHeader sHeader, Video::AVIDecoder::WaveFormat wvInfo, Common::SeekableReadStream *extraData) {
 	if (wvInfo.tag != kWaveFormatZorkPCM)
-		return new AVIAudioTrack(sHeader, wvInfo, _soundType);
+		return new AVIAudioTrack(sHeader, wvInfo, _soundType, extraData);
 
-	assert(wvInfo.size == 8);
+	assert(wvInfo.bitsPerSample == 8);
+	delete extraData;
 	return new ZorkAVIAudioTrack(sHeader, wvInfo, _soundType);
 }
 
-ZorkAVIDecoder::ZorkAVIAudioTrack::ZorkAVIAudioTrack(const AVIStreamHeader &streamHeader, const PCMWaveFormat &waveFormat, Audio::Mixer::SoundType soundType) :
+ZorkAVIDecoder::ZorkAVIAudioTrack::ZorkAVIAudioTrack(const AVIStreamHeader &streamHeader, const WaveFormat &waveFormat, Audio::Mixer::SoundType soundType) :
 		Video::AVIDecoder::AVIAudioTrack(streamHeader, waveFormat, soundType), _queueStream(0), _decoder(waveFormat.channels == 2) {
 }
 

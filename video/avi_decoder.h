@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -19,6 +19,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
  */
+
+// Based on the ScummVM (GPLv2+) file of the same name
 
 #ifndef VIDEO_AVI_DECODER_H
 #define VIDEO_AVI_DECODER_H
@@ -101,15 +103,7 @@ protected:
 		uint32 samplesPerSec;
 		uint32 avgBytesPerSec;
 		uint16 blockAlign;
-	};
-
-	struct PCMWaveFormat : public WaveFormat {
-		uint16 size;
-	};
-
-	struct WaveFormatEX : public WaveFormat {
 		uint16 bitsPerSample;
-		uint16 size;
 	};
 
 	struct OldIndex {
@@ -213,7 +207,7 @@ protected:
 
 	class AVIAudioTrack : public AudioTrack {
 	public:
-		AVIAudioTrack(const AVIStreamHeader &streamHeader, const PCMWaveFormat &waveFormat, Audio::Mixer::SoundType soundType);
+		AVIAudioTrack(const AVIStreamHeader &streamHeader, const WaveFormat &waveFormat, Audio::Mixer::SoundType soundType, Common::SeekableReadStream *extraData = 0);
 		~AVIAudioTrack();
 
 		virtual void createAudioStream();
@@ -230,21 +224,12 @@ protected:
 	protected:
 		Audio::AudioStream *getAudioStream() const { return _audioStream; }
 
-		// Audio Codecs
-		enum {
-			kWaveFormatNone = 0,
-			kWaveFormatPCM = 1,
-			kWaveFormatMSADPCM = 2,
-			kWaveFormatMSIMAADPCM = 17,
-			kWaveFormatMP3 = 85,
-			kWaveFormatDK3 = 98		// rogue format number
-		};
-
 		AVIStreamHeader _audsHeader;
-		PCMWaveFormat _wvInfo;
+		WaveFormat _wvInfo;
 		Audio::Mixer::SoundType _soundType;
 		Audio::AudioStream *_audioStream;
 		Audio::PacketizedAudioStream *_packetStream;
+		Common::SeekableReadStream *_extraData;
 		uint32 _curChunk;
 	};
 
@@ -283,7 +268,7 @@ protected:
 	Common::Array<TrackStatus> _videoTracks, _audioTracks;
 
 public:
-	virtual AVIAudioTrack *createAudioTrack(AVIStreamHeader sHeader, PCMWaveFormat wvInfo);
+	virtual AVIAudioTrack *createAudioTrack(AVIStreamHeader sHeader, WaveFormat wvInfo, Common::SeekableReadStream *extraData = 0);
 };
 
 } // End of namespace Video
