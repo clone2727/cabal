@@ -546,18 +546,7 @@ uint32 VideoDecoder::FixedRateVideoTrack::getNextFrameStartTime() const {
 }
 
 Audio::Timestamp VideoDecoder::FixedRateVideoTrack::getFrameTime(uint frame) const {
-	// Try to get as accurate as possible, considering we have a fractional frame rate
-	// (which Audio::Timestamp doesn't support).
-	Common::Rational frameRate = getFrameRate();
-
-	// Try to keep it in terms of the frame rate, if the frame rate is a whole
-	// number.
-	if (frameRate.getDenominator() == 1)
-		return Audio::Timestamp(0, frame, frameRate.toInt());
-
-	// Convert as best as possible
-	Common::Rational time = frameRate.getInverse() * frame;
-	return Audio::Timestamp(0, time.getNumerator(), time.getDenominator());
+	return Audio::Timestamp(0, frame, getFrameRate());
 }
 
 uint VideoDecoder::FixedRateVideoTrack::getFrameAtTime(const Audio::Timestamp &time) const {
