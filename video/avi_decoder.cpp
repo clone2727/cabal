@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -19,6 +19,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
  */
+
+// Based on the ScummVM (GPLv2+) file of the same name
 
 #include "common/stream.h"
 #include "common/system.h"
@@ -443,7 +445,6 @@ void AVIDecoder::handleNextPacket(TrackStatus &status) {
 			if (getStreamType(nextTag) != kStreamTypeAudio)
 				error("Invalid audio track tag '%s'", tag2str(nextTag));
 
-			assert(chunk);
 			((AVIAudioTrack *)status.track)->queueSound(chunk);
 
 			// Break out if we have enough audio
@@ -851,10 +852,12 @@ AVIDecoder::AVIAudioTrack::~AVIAudioTrack() {
 }
 
 void AVIDecoder::AVIAudioTrack::queueSound(Common::SeekableReadStream *stream) {
-	if (_packetStream)
-		_packetStream->queuePacket(stream);
-	else
-		delete stream;
+	if (stream) {
+		if (_packetStream)
+			_packetStream->queuePacket(stream);
+		else
+			delete stream;
+	}
 
 	_curChunk++;
 }
