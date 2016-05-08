@@ -279,12 +279,6 @@ void AVIDecoder::handleStreamHeader(uint32 size) {
 		else
 			wvInfo.bitsPerSample = 8;
 
-		// AVI seems to treat the sampleSize as including the second
-		// channel as well, so divide for our sake.
-		// FIXME: Handle this better
-		if (wvInfo.channels == 2)
-			sHeader.sampleSize /= 2;
-
 		// TODO: Handle extended wave format
 		Common::SeekableReadStream *extraData = 0;
 		if (strfSize >= 18) {
@@ -926,7 +920,7 @@ void AVIDecoder::AVIAudioTrack::createAudioStream() {
 	switch (_wvInfo.tag) {
 	case kWaveFormatPCM: {
 		byte flags = 0;
-		if (_audsHeader.sampleSize == 2)
+		if (_wvInfo.bitsPerSample == 16)
 			flags |= Audio::FLAG_16BITS | Audio::FLAG_LITTLE_ENDIAN;
 		else
 			flags |= Audio::FLAG_UNSIGNED;
