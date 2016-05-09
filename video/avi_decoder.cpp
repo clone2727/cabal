@@ -35,6 +35,7 @@
 #include "audio/decoders/adpcm.h"
 #include "audio/decoders/mp3.h"
 #include "audio/decoders/raw.h"
+#include "audio/decoders/vorbis.h"
 
 // Video Codecs
 #include "image/codecs/codec.h"
@@ -930,7 +931,8 @@ enum {
 	kWaveFormatMSADPCM = 2,
 	kWaveFormatMSIMAADPCM = 17,
 	kWaveFormatMP3 = 85,
-	kWaveFormatDK3 = 98 // rogue format number
+	kWaveFormatDK3 = 98, // rogue format number
+	kWaveFormatVorbis = ('V' << 8) | 'o'
 };
 
 void AVIDecoder::AVIAudioTrack::createAudioStream() {
@@ -964,6 +966,13 @@ void AVIDecoder::AVIAudioTrack::createAudioStream() {
 		_packetStream = Audio::makePacketizedMP3Stream(_wvInfo.channels, _wvInfo.samplesPerSec);
 #else
 		warning("AVI MP3 stream found, but no libmad support compiled in");
+#endif
+		break;
+	case kWaveFormatVorbis:
+#ifdef USE_VORBIS
+		_packetStream = Audio::makePacketizedVorbisStream(*_extraData);
+#else
+		warning("AVI Vorbis stream found, but no libvorbis support compiled in");
 #endif
 		break;
 	case kWaveFormatNone:
