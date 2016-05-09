@@ -618,9 +618,12 @@ bool AVIDecoder::seekIntern(const Audio::Timestamp &time) {
 
 			if (getStreamIndex(index.id) == _audioTracks[i].index) {
 				if (chunksFound == frame) {
-					_fileStream->seek(index.offset + 8);
-					Common::SeekableReadStream *audioChunk = _fileStream->readStream(index.size);
-					audioTrack->queueSound(audioChunk);
+					if (index.size != 0) {
+						_fileStream->seek(index.offset + 8);
+						Common::SeekableReadStream *audioChunk = _fileStream->readStream(index.size);
+						audioTrack->queueSound(audioChunk);
+					}
+
 					_audioTracks[i].chunkSearchOffset = (j == _indexEntries.size() - 1) ? _movieListEnd : _indexEntries[j + 1].offset;
 					break;
 				}
