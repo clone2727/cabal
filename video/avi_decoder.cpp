@@ -682,6 +682,10 @@ byte AVIDecoder::getStreamIndex(uint32 tag) const {
 	return strtol(string, 0, 16);
 }
 
+static bool isValidStreamIndex(uint32 tag) {
+	return Common::isDigit(tag >> 24) && Common::isDigit((tag >> 16) & 0xFF);
+}
+
 void AVIDecoder::readOldIndex(uint32 size) {
 	uint32 entryCount = size / 16;
 
@@ -690,26 +694,22 @@ void AVIDecoder::readOldIndex(uint32 size) {
 	if (entryCount == 0)
 		return;
 
-	// Read the first index separately
-	OldIndex firstEntry;
-	firstEntry.id = _fileStream->readUint32BE();
-	firstEntry.flags = _fileStream->readUint32LE();
-	firstEntry.offset = _fileStream->readUint32LE();
-	firstEntry.size = _fileStream->readUint32LE();
+	// Check out the first entry's offset
+	uint32 startPos = _fileStream->pos();
+	_fileStream->seek(8, SEEK_CUR);
+	uint32 firstOffset = _fileStream->readUint32LE();
+	_fileStream->seek(startPos);
 
 	// Check if the offset is already absolute
 	// If it's absolute, the offset will equal the start of the movie list
-	bool isAbsolute = firstEntry.offset == _movieListStart;
+	bool isAbsolute = firstOffset == _movieListStart;
 
 	debug(1, "Old index is %s", isAbsolute ? "absolute" : "relative");
 
-	if (!isAbsolute)
-		firstEntry.offset += _movieListStart - 4;
+	// Keep track of whether or not a track has a keyframe
+	Common::Array<bool> hasKeyFrames;
 
-	debug(0, "Index 0: Tag '%s', Offset = %d, Size = %d (Flags = %d)", tag2str(firstEntry.id), firstEntry.offset, firstEntry.size, firstEntry.flags);
-	_indexEntries.push_back(firstEntry);
-
-	for (uint32 i = 1; i < entryCount; i++) {
+	for (uint32 i = 0; i < entryCount; i++) {
 		OldIndex indexEntry;
 		indexEntry.id = _fileStream->readUint32BE();
 		indexEntry.flags = _fileStream->readUint32LE();
@@ -720,8 +720,33 @@ void AVIDecoder::readOldIndex(uint32 size) {
 		if (!isAbsolute)
 			indexEntry.offset += _movieListStart - 4;
 
-		_indexEntries.push_back(indexEntry);
 		debug(0, "Index %d: Tag '%s', Offset = %d, Size = %d (Flags = %d)", i, tag2str(indexEntry.id), indexEntry.offset, indexEntry.size, indexEntry.flags);
+
+		// If this was a keyframe, mark it off that we have it
+		if (isValidStreamIndex(indexEntry.id)) {
+			byte streamIndex = getStreamIndex(indexEntry.id);
+
+			if (streamIndex >= hasKeyFrames.size())
+				hasKeyFrames.resize(streamIndex + 1);
+
+			if (indexEntry.flags & AVIIF_INDEX)
+				hasKeyFrames[streamIndex] = true;
+		}
+
+		_indexEntries.push_back(indexEntry);
+	}
+
+	// Update the keyframe flag if the file has omitted them for all
+	// entries within a track.
+	for (uint32 i = 0; i < hasKeyFrames.size(); i++) {
+		if (hasKeyFrames[i])
+			continue;
+
+		debug(0, "Track %d has no keyframes; forcing all to be keyframes", i);
+
+		for (uint32 j = 0; j < _indexEntries.size(); j++)
+			if (isValidStreamIndex(_indexEntries[j].id) && getStreamIndex(_indexEntries[j].id) == i)
+				_indexEntries[j].flags |= AVIIF_INDEX;
 	}
 }
 
