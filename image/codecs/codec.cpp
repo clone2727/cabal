@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -8,17 +8,19 @@
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
-
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
-
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
  */
+
+// Based on the ScummVM (GPLv2+) file of the same name
 
 #include "common/list.h"
 #include "common/scummsys.h"
@@ -192,7 +194,7 @@ byte *Codec::createQuickTimeDitherTable(const byte *palette, uint colorCount) {
 	return buf;
 }
 
-Codec *createBitmapCodec(uint32 tag, int width, int height, int bitsPerPixel) {
+Codec *createBitmapCodec(uint32 tag, int width, int height, int bitsPerPixel, Common::SeekableReadStream *extraData) {
 	switch (tag) {
 	case SWAP_CONSTANT_32(0):
 		return new BitmapRawDecoder(width, height, bitsPerPixel);
@@ -223,6 +225,7 @@ Codec *createBitmapCodec(uint32 tag, int width, int height, int bitsPerPixel) {
 			warning("Unknown BMP/AVI compression format \'%s\'", tag2str(tag));
 		else
 			warning("Unknown BMP/AVI compression format %d", SWAP_BYTES_32(tag));
+		break;
 	}
 
 	return 0;

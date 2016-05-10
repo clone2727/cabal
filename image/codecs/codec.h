@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -19,6 +19,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
  */
+
+// Based on the ScummVM (GPLv2+) file of the same name
 
 #ifndef IMAGE_CODECS_CODEC_H
 #define IMAGE_CODECS_CODEC_H
@@ -120,7 +122,7 @@ public:
 /**
  * Create a codec given a bitmap/AVI compression tag.
  */
-Codec *createBitmapCodec(uint32 tag, int width, int height, int bitsPerPixel);
+Codec *createBitmapCodec(uint32 tag, int width, int height, int bitsPerPixel, Common::SeekableReadStream *extraData = 0);
 
 /**
  * Create a codec given a QuickTime compression tag.
