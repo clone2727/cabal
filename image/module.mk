@@ -27,5 +27,10 @@ MODULE_OBJS += \
 	codecs/mpeg.o
 endif
 
+ifdef USE_THEORADEC
+MODULE_OBJS += \
+	codecs/theora.o
+endif
+
 # Include common rules
 include $(srcdir)/rules.mk
