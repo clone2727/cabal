@@ -40,6 +40,7 @@
 #include "image/codecs/rpza.h"
 #include "image/codecs/smc.h"
 #include "image/codecs/svq1.h"
+#include "image/codecs/theora.h"
 #include "image/codecs/truemotion1.h"
 
 #include "common/endian.h"
@@ -220,6 +221,16 @@ Codec *createBitmapCodec(uint32 tag, int width, int height, int bitsPerPixel, Co
 	case MKTAG('M','J','P','G'):
 	case MKTAG('m','j','p','g'):
 		return new MJPEGDecoder();
+#ifdef USE_THEORADEC
+	case MKTAG('t','h','e','o'):
+		// Theora requires extra data
+		if (!extraData) {
+			warning("Missing extra data for Theora");
+			break;
+		}
+
+		return makeTheoraDecoder(*extraData);
+#endif
 	default:
 		if (tag & 0x00FFFFFF)
 			warning("Unknown BMP/AVI compression format \'%s\'", tag2str(tag));
