@@ -266,7 +266,13 @@ void AVIDecoder::handleStreamHeader(uint32 size) {
 			}
 		}
 
-		addTrack(new AVIVideoTrack(_header.totalFrames, sHeader, bmInfo, initialPalette));
+		// Read the rest in as extra data
+		Common::SeekableReadStream *extraData = 0;
+
+		if ((uint32)_fileStream->pos() < startPos + strfSize)
+			extraData = _fileStream->readStream(strfSize - (_fileStream->pos() - startPos));
+
+		addTrack(new AVIVideoTrack(_header.totalFrames, sHeader, bmInfo, initialPalette, extraData));
 	} else if (sHeader.streamType == ID_AUDS) {
 		WaveFormat wvInfo;
 		wvInfo.tag = _fileStream->readUint16LE();
@@ -298,7 +304,7 @@ void AVIDecoder::handleStreamHeader(uint32 size) {
 	}
 
 	// Ensure that we're at the end of the chunk
-	_fileStream->seek(startPos + strfSize);
+	_fileStream->seek(startPos + strfSize + (strfSize & 1));
 }
 
 bool AVIDecoder::loadStream(Common::SeekableReadStream *stream) {
@@ -758,8 +764,8 @@ VideoDecoder::AudioTrack *AVIDecoder::getAudioTrack(int index) {
 	return (AudioTrack *)track;
 }
 
-AVIDecoder::AVIVideoTrack::AVIVideoTrack(int frameCount, const AVIStreamHeader &streamHeader, const BitmapInfoHeader &bitmapInfoHeader, byte *initialPalette)
-		: _frameCount(frameCount), _vidsHeader(streamHeader), _bmInfo(bitmapInfoHeader), _initialPalette(initialPalette) {
+AVIDecoder::AVIVideoTrack::AVIVideoTrack(int frameCount, const AVIStreamHeader &streamHeader, const BitmapInfoHeader &bitmapInfoHeader, byte *initialPalette, Common::SeekableReadStream *extraData)
+		: _frameCount(frameCount), _vidsHeader(streamHeader), _bmInfo(bitmapInfoHeader), _initialPalette(initialPalette), _extraData(extraData) {
 	_videoCodec = createCodec();
 	_lastFrame = 0;
 	_curFrame = -1;
@@ -770,6 +776,7 @@ AVIDecoder::AVIVideoTrack::AVIVideoTrack(int frameCount, const AVIStreamHeader &
 AVIDecoder::AVIVideoTrack::~AVIVideoTrack() {
 	delete _videoCodec;
 	delete[] _initialPalette;
+	delete _extraData;
 }
 
 void AVIDecoder::AVIVideoTrack::decodeFrame(Common::SeekableReadStream *stream) {
@@ -843,7 +850,7 @@ bool AVIDecoder::AVIVideoTrack::rewind() {
 }
 
 Image::Codec *AVIDecoder::AVIVideoTrack::createCodec() {
-	return Image::createBitmapCodec(_bmInfo.compression, _bmInfo.width, _bmInfo.height, _bmInfo.bitCount);
+	return Image::createBitmapCodec(_bmInfo.compression, _bmInfo.width, _bmInfo.height, _bmInfo.bitCount, _extraData);
 }
 
 void AVIDecoder::AVIVideoTrack::forceTrackEnd() {

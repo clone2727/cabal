@@ -162,7 +162,7 @@ protected:
 
 	class AVIVideoTrack : public FixedRateVideoTrack {
 	public:
-		AVIVideoTrack(int frameCount, const AVIStreamHeader &streamHeader, const BitmapInfoHeader &bitmapInfoHeader, byte *initialPalette = 0);
+		AVIVideoTrack(int frameCount, const AVIStreamHeader &streamHeader, const BitmapInfoHeader &bitmapInfoHeader, byte *initialPalette = 0, Common::SeekableReadStream *extraData = 0);
 		~AVIVideoTrack();
 
 		void decodeFrame(Common::SeekableReadStream *stream);
@@ -201,6 +201,7 @@ protected:
 		byte *_initialPalette;
 		mutable bool _dirtyPalette;
 		int _frameCount, _curFrame;
+		Common::SeekableReadStream *_extraData;
 
 		Image::Codec *_videoCodec;
 		const Graphics::Surface *_lastFrame;
