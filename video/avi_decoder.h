@@ -270,6 +270,7 @@ protected:
 
 	void handleNextPacket(TrackStatus& status);
 	bool shouldQueueAudio(TrackStatus& status);
+	bool seekTrackToTime(TrackStatus &status, const Audio::Timestamp &time);
 	Common::Array<TrackStatus> _videoTracks, _audioTracks;
 
 public:

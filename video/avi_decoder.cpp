@@ -537,7 +537,6 @@ bool AVIDecoder::seekIntern(const Audio::Timestamp &time) {
 
 	// Get our video
 	AVIVideoTrack *videoTrack = (AVIVideoTrack *)_videoTracks[0].track;
-	uint32 videoIndex = _videoTracks[0].index;
 
 	// If we seek directly to the end, just mark the tracks as over
 	if (time == getDuration()) {
@@ -550,11 +549,49 @@ bool AVIDecoder::seekIntern(const Audio::Timestamp &time) {
 		return true;
 	}
 
-	// Get the frame we should be on at this time
-	uint frame = videoTrack->getFrameAtTime(time);
+	// Seek all the video tracks
+	for (uint32 i = 0; i < _videoTracks.size(); i++)
+		if (!seekTrackToTime(_videoTracks[i], time))
+			return false;
+
+	// Seek all audio tracks
+	for (uint32 i = 0; i < _audioTracks.size(); i++)
+		if (!seekTrackToTime(_audioTracks[i], time))
+			return false;
+
+	return true;
+}
+
+bool AVIDecoder::seekTrackToTime(TrackStatus &status, const Audio::Timestamp &time) {
+	Track *track = status.track;
+
+	// Figure out the frame rate of the track
+	const AVIStreamHeader *streamHeader;
+	if (track->getTrackType() == Track::kTrackTypeAudio)
+		streamHeader = &((AVIAudioTrack *)track)->getStreamHeader();
+	else
+		streamHeader = &((AVIVideoTrack *)track)->getStreamHeader();
+
+	// If it's a CBR audio track, take the rate from the video track. Otherwise,
+	// use the audio track's rate.
+	Common::Rational frameRate;
+	if (track->getTrackType() == Track::kTrackTypeAudio && streamHeader->sampleSize != 0) {
+		const AVIStreamHeader &videoStreamHeader = ((AVIVideoTrack *)_videoTracks[0].track)->getStreamHeader();
+		frameRate = Common::Rational(videoStreamHeader.rate, videoStreamHeader.scale);
+	} else {
+		// Calculate the frame from the time and the frame rate
+		frameRate = Common::Rational(streamHeader->rate, streamHeader->scale);
+	}
+
+	uint32 frame;
+	if (frameRate == time.framerate())
+		frame = time.totalNumberOfFrames();
+	else
+		frame = (Common::Rational(time.totalNumberOfFrames(), time.framerate()) * frameRate).toInt();
 
 	// Reset any palette, if necessary
-	videoTrack->useInitialPalette();
+	if (track->getTrackType() == Track::kTrackTypeVideo)
+		((AVIVideoTrack *)track)->useInitialPalette();
 
 	int lastKeyFrame = -1;
 	int frameIndex = -1;
@@ -570,7 +607,7 @@ bool AVIDecoder::seekIntern(const Audio::Timestamp &time) {
 			continue;
 
 		// We're only looking at entries for this track
-		if (getStreamIndex(index.id) != videoIndex)
+		if (getStreamIndex(index.id) != status.index)
 			continue;
 
 		uint16 streamType = getStreamType(index.id);
@@ -578,6 +615,13 @@ bool AVIDecoder::seekIntern(const Audio::Timestamp &time) {
 		if (streamType == kStreamTypePaletteChange) {
 			// We need to handle any palette change we see since there's no
 			// flag to tell if this is a "key" palette.
+
+			// Only look at this for videos
+			if (track->getTrackType() != Track::kTrackTypeVideo) {
+				warning("Audio track with a palette change");
+				continue;
+			}
+
 			// Decode the palette
 			_fileStream->seek(_indexEntries[i].offset + 8);
 			Common::SeekableReadStream *chunk = 0;
@@ -585,7 +629,7 @@ bool AVIDecoder::seekIntern(const Audio::Timestamp &time) {
 			if (_indexEntries[i].size != 0)
 				chunk = _fileStream->readStream(_indexEntries[i].size);
 
-			videoTrack->loadPaletteFromChunk(chunk);
+			((AVIVideoTrack *)track)->loadPaletteFromChunk(chunk);
 		} else {
 			// Check to see if this is a keyframe
 			// The first frame has to be a keyframe
@@ -605,50 +649,17 @@ bool AVIDecoder::seekIntern(const Audio::Timestamp &time) {
 	if (frameIndex < 0) // This shouldn't happen.
 		return false;
 
-	// Update all the audio tracks
-	for (uint32 i = 0; i < _audioTracks.size(); i++) {
-		AVIAudioTrack *audioTrack = (AVIAudioTrack *)_audioTracks[i].track;
-
-		// Recreate the audio stream
-		audioTrack->resetStream();
-
-		// Set the chunk index for the track
-		audioTrack->setCurChunk(frame);
-
-		uint32 chunksFound = 0;
-		for (uint32 j = 0; j < _indexEntries.size(); j++) {
-			const OldIndex &index = _indexEntries[j];
-
-			// Continue ignoring RECs
-			if (index.id == ID_REC)
-				continue;
-
-			if (getStreamIndex(index.id) == _audioTracks[i].index) {
-				if (chunksFound == frame) {
-					if (index.size != 0) {
-						_fileStream->seek(index.offset + 8);
-						Common::SeekableReadStream *audioChunk = _fileStream->readStream(index.size);
-						audioTrack->queueSound(audioChunk);
-					}
-
-					_audioTracks[i].chunkSearchOffset = (j == _indexEntries.size() - 1) ? _movieListEnd : _indexEntries[j + 1].offset;
-					break;
-				}
-
-				chunksFound++;
-			}
-		}
-
-		// Skip any audio to bring us to the right time
-		audioTrack->skipAudio(time, videoTrack->getFrameTime(frame));
-	}
+	// For video, we want to not actually draw the frame. For audio, we do, so we can
+	// skip audio to get as close to the requested time as possible.
+	if (track->getTrackType() == Track::kTrackTypeAudio && (uint32)frameIndex < _indexEntries.size())
+		frameIndex++;
 
 	// Decode from keyFrame to curFrame - 1
 	for (int i = lastKeyFrame; i < frameIndex; i++) {
 		if (_indexEntries[i].id == ID_REC)
 			continue;
 
-		if (getStreamIndex(_indexEntries[i].id) != videoIndex)
+		if (getStreamIndex(_indexEntries[i].id) != status.index)
 			continue;
 
 		uint16 streamType = getStreamType(_indexEntries[i].id);
@@ -664,14 +675,32 @@ bool AVIDecoder::seekIntern(const Audio::Timestamp &time) {
 		if (_indexEntries[i].size != 0)
 			chunk = _fileStream->readStream(_indexEntries[i].size);
 
-		videoTrack->decodeFrame(chunk);
+		if (track->getTrackType() == Track::kTrackTypeAudio)
+			((AVIAudioTrack *)track)->queueSound(chunk);
+		else
+			((AVIVideoTrack *)track)->decodeFrame(chunk);
 	}
 
-	// Set the video track's frame
-	videoTrack->setCurFrame((int)frame - 1);
+	if (track->getTrackType() == Track::kTrackTypeAudio) {
+		// Set the current audio chunk
+		((AVIAudioTrack *)track)->setCurChunk(frame);
 
-	// Set the video track's search offset to the right spot
-	_videoTracks[0].chunkSearchOffset = _indexEntries[frameIndex].offset;
+		// Figure out the time of the audio decoded
+		Audio::Timestamp decodedAudioTime(0, frame, frameRate);
+
+		// Skip excees audio to bring us to the right time
+		((AVIAudioTrack *)track)->skipAudio(time, decodedAudioTime);
+
+		// Start audio off at the beginning of the next audio chunk
+		status.chunkSearchOffset = ((uint32)frameIndex == _indexEntries.size() - 1) ? _movieListEnd : _indexEntries[frameIndex + 1].offset;
+	} else {
+		// Set the video track's frame
+		((AVIVideoTrack *)track)->setCurFrame((int)frame - 1);
+
+		// Start video off at the beginning of the frame needed to be decoded
+		status.chunkSearchOffset = _indexEntries[frameIndex].offset;
+	}
+
 	return true;
 }
 
