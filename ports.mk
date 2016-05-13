@@ -9,52 +9,52 @@ install:
 	$(INSTALL) -d "$(DESTDIR)$(bindir)"
 	$(INSTALL) -c -m 755 "./$(EXECUTABLE)" "$(DESTDIR)$(bindir)/$(EXECUTABLE)"
 	$(INSTALL) -d "$(DESTDIR)$(mandir)/man6/"
-	$(INSTALL) -c -m 644 "$(srcdir)/dists/scummvm.6" "$(DESTDIR)$(mandir)/man6/scummvm.6"
+	$(INSTALL) -c -m 644 "$(srcdir)/dists/cabalexec.6" "$(DESTDIR)$(mandir)/man6/cabalexec.6"
 	$(INSTALL) -d "$(DESTDIR)$(datarootdir)/pixmaps/"
-	$(INSTALL) -c -m 644 "$(srcdir)/icons/scummvm.xpm" "$(DESTDIR)$(datarootdir)/pixmaps/scummvm.xpm"
+	$(INSTALL) -c -m 644 "$(srcdir)/icons/cabalexec.xpm" "$(DESTDIR)$(datarootdir)/pixmaps/cabalexec.xpm"
 	$(INSTALL) -d "$(DESTDIR)$(datarootdir)/icons/hicolor/scalable/apps/"
-	$(INSTALL) -c -m 644 "$(srcdir)/icons/scummvm.svg" "$(DESTDIR)$(datarootdir)/icons/hicolor/scalable/apps/scummvm.svg"
+	$(INSTALL) -c -m 644 "$(srcdir)/icons/cabalexec.svg" "$(DESTDIR)$(datarootdir)/icons/hicolor/scalable/apps/cabalexec.svg"
 	$(INSTALL) -d "$(DESTDIR)$(docdir)"
 	$(INSTALL) -c -m 644 $(DIST_FILES_DOCS) "$(DESTDIR)$(docdir)"
 	$(INSTALL) -d "$(DESTDIR)$(datadir)"
 	$(INSTALL) -c -m 644 $(DIST_FILES_THEMES) $(DIST_FILES_ENGINEDATA) "$(DESTDIR)$(datadir)/"
 ifdef DYNAMIC_MODULES
-	$(INSTALL) -d "$(DESTDIR)$(libdir)/scummvm/"
-	$(INSTALL) -c -m 644 $(PLUGINS) "$(DESTDIR)$(libdir)/scummvm/"
+	$(INSTALL) -d "$(DESTDIR)$(libdir)/cabalexec/"
+	$(INSTALL) -c -m 644 $(PLUGINS) "$(DESTDIR)$(libdir)/cabalexec/"
 endif
 
 install-strip:
 	$(INSTALL) -d "$(DESTDIR)$(bindir)"
 	$(INSTALL) -c -s -m 755 "./$(EXECUTABLE)" "$(DESTDIR)$(bindir)/$(EXECUTABLE)"
 	$(INSTALL) -d "$(DESTDIR)$(mandir)/man6/"
-	$(INSTALL) -c -m 644 "$(srcdir)/dists/scummvm.6" "$(DESTDIR)$(mandir)/man6/scummvm.6"
+	$(INSTALL) -c -m 644 "$(srcdir)/dists/cabalexec.6" "$(DESTDIR)$(mandir)/man6/cabalexec.6"
 	$(INSTALL) -d "$(DESTDIR)$(datarootdir)/pixmaps/"
-	$(INSTALL) -c -m 644 "$(srcdir)/icons/scummvm.xpm" "$(DESTDIR)$(datarootdir)/pixmaps/scummvm.xpm"
+	$(INSTALL) -c -m 644 "$(srcdir)/icons/cabalexec.xpm" "$(DESTDIR)$(datarootdir)/pixmaps/cabalexec.xpm"
 	$(INSTALL) -d "$(DESTDIR)$(datarootdir)/icons/hicolor/scalable/apps/"
-	$(INSTALL) -c -m 644 "$(srcdir)/icons/scummvm.svg" "$(DESTDIR)$(datarootdir)/icons/hicolor/scalable/apps/scummvm.svg"
+	$(INSTALL) -c -m 644 "$(srcdir)/icons/cabalexec.svg" "$(DESTDIR)$(datarootdir)/icons/hicolor/scalable/apps/cabalexec.svg"
 	$(INSTALL) -d "$(DESTDIR)$(docdir)"
 	$(INSTALL) -c -m 644 $(DIST_FILES_DOCS) "$(DESTDIR)$(docdir)"
 	$(INSTALL) -d "$(DESTDIR)$(datadir)"
 	$(INSTALL) -c -m 644 $(DIST_FILES_THEMES) $(DIST_FILES_ENGINEDATA) "$(DESTDIR)$(datadir)/"
 ifdef DYNAMIC_MODULES
-	$(INSTALL) -d "$(DESTDIR)$(libdir)/scummvm/"
-	$(INSTALL) -c -s -m 644 $(PLUGINS) "$(DESTDIR)$(libdir)/scummvm/"
+	$(INSTALL) -d "$(DESTDIR)$(libdir)/cabalexec/"
+	$(INSTALL) -c -s -m 644 $(PLUGINS) "$(DESTDIR)$(libdir)/cabalexec/"
 endif
 
 uninstall:
 	rm -f "$(DESTDIR)$(bindir)/$(EXECUTABLE)"
-	rm -f "$(DESTDIR)$(mandir)/man6/scummvm.6"
-	rm -f "$(DESTDIR)$(datarootdir)/pixmaps/scummvm.xpm"
-	rm -f "$(DESTDIR)$(datarootdir)/icons/hicolor/scalable/apps/scummvm.svg"
+	rm -f "$(DESTDIR)$(mandir)/man6/cabalexec.6"
+	rm -f "$(DESTDIR)$(datarootdir)/pixmaps/cabalexec.xpm"
+	rm -f "$(DESTDIR)$(datarootdir)/icons/hicolor/scalable/apps/cabalexec.svg"
 	rm -rf "$(DESTDIR)$(docdir)"
 	rm -rf "$(DESTDIR)$(datadir)"
 ifdef DYNAMIC_MODULES
-	rm -rf "$(DESTDIR)$(libdir)/scummvm/"
+	rm -rf "$(DESTDIR)$(libdir)/cabalexec/"
 endif
 
 # Special target to create a application wrapper for Mac OS X
-bundle_name = ScummVM.app
-bundle: scummvm-static
+bundle_name = Cabal.app
+bundle: cabalexec-static
 	mkdir -p $(bundle_name)/Contents/MacOS
 	mkdir -p $(bundle_name)/Contents/Resources
 	echo "APPL????" > $(bundle_name)/Contents/PkgInfo
@@ -64,7 +64,7 @@ ifdef USE_SPARKLE
 	cp $(srcdir)/dists/macosx/dsa_pub.pem $(bundle_name)/Contents/Resources/
 	cp -R $(STATICLIBPATH)/Sparkle.framework $(bundle_name)/Contents/Frameworks/
 endif
-	cp $(srcdir)/icons/scummvm.icns $(bundle_name)/Contents/Resources/
+	cp $(srcdir)/icons/cabalexec.icns $(bundle_name)/Contents/Resources/
 	cp $(DIST_FILES_DOCS) $(bundle_name)/
 	cp $(DIST_FILES_THEMES) $(bundle_name)/Contents/Resources/
 ifdef DIST_FILES_ENGINEDATA
@@ -72,9 +72,9 @@ ifdef DIST_FILES_ENGINEDATA
 endif
 	$(srcdir)/devtools/credits.pl --rtf > $(bundle_name)/Contents/Resources/Credits.rtf
 	chmod 644 $(bundle_name)/Contents/Resources/*
-	cp scummvm-static $(bundle_name)/Contents/MacOS/scummvm
-	chmod 755 $(bundle_name)/Contents/MacOS/scummvm
-	$(STRIP) $(bundle_name)/Contents/MacOS/scummvm
+	cp cabalexec-static $(bundle_name)/Contents/MacOS/cabalexec
+	chmod 755 $(bundle_name)/Contents/MacOS/cabalexec
+	$(STRIP) $(bundle_name)/Contents/MacOS/cabalexec
 
 iphonebundle: iphone
 	mkdir -p $(bundle_name)
@@ -84,17 +84,17 @@ iphonebundle: iphone
 ifdef DIST_FILES_ENGINEDATA
 	cp $(DIST_FILES_ENGINEDATA) $(bundle_name)/
 endif
-	$(STRIP) scummvm
-	ldid -S scummvm
-	chmod 755 scummvm
-	cp scummvm $(bundle_name)/ScummVM
+	$(STRIP) cabalexec
+	ldid -S cabalexec
+	chmod 755 cabalexec
+	cp cabalexec $(bundle_name)/Cabal
 	cp $(srcdir)/dists/iphone/icon.png $(bundle_name)/
 	cp $(srcdir)/dists/iphone/icon-72.png $(bundle_name)/
 	cp $(srcdir)/dists/iphone/Default.png $(bundle_name)/
 
 # Location of static libs for the iPhone
 ifneq ($(BACKEND), iphone)
-# Static libaries, used for the scummvm-static and iphone targets
+# Static libaries, used for the cabalexec-static and iphone targets
 OSX_STATIC_LIBS := `$(SDLCONFIG) --static-libs`
 endif
 
@@ -158,15 +158,15 @@ endif
 # Special target to create a static linked binary for Mac OS X.
 # We use -force_cpusubtype_ALL to ensure the binary runs on every
 # PowerPC machine.
-scummvm-static: $(OBJS)
-	$(CXX) $(LDFLAGS) -force_cpusubtype_ALL -o scummvm-static $(OBJS) \
+cabalexec-static: $(OBJS)
+	$(CXX) $(LDFLAGS) -force_cpusubtype_ALL -o cabalexec-static $(OBJS) \
 		-framework CoreMIDI \
 		$(OSX_STATIC_LIBS) \
 		$(OSX_ZLIB)
 
 # Special target to create a static linked binary for the iPhone
 iphone: $(OBJS)
-	$(CXX) $(LDFLAGS) -o scummvm $(OBJS) \
+	$(CXX) $(LDFLAGS) -o cabalexec $(OBJS) \
 		$(OSX_STATIC_LIBS) \
 		-framework UIKit -framework CoreGraphics -framework OpenGLES \
 		-framework CoreFoundation -framework QuartzCore -framework Foundation \
@@ -175,62 +175,62 @@ iphone: $(OBJS)
 # Special target to create a snapshot disk image for Mac OS X
 # TODO: Replace AUTHORS by Credits.rtf
 osxsnap: bundle
-	mkdir ScummVM-snapshot
+	mkdir Cabal-snapshot
 	$(srcdir)/devtools/credits.pl --text > $(srcdir)/AUTHORS
-	cp $(srcdir)/AUTHORS ./ScummVM-snapshot/Authors
-	cp $(srcdir)/COPYING ./ScummVM-snapshot/License\ \(GPL\)
-	cp $(srcdir)/COPYING.BSD ./ScummVM-snapshot/License\ \(BSD\)
-	cp $(srcdir)/COPYING.LGPL ./ScummVM-snapshot/License\ \(LGPL\)
-	cp $(srcdir)/COPYING.FREEFONT ./ScummVM-snapshot/License\ \(FREEFONT\)
-	cp $(srcdir)/COPYRIGHT ./ScummVM-snapshot/Copyright\ Holders
-	cp $(srcdir)/NEWS ./ScummVM-snapshot/News
-	cp $(srcdir)/README ./ScummVM-snapshot/ScummVM\ ReadMe
-	mkdir ScummVM-snapshot/doc
-	cp $(srcdir)/doc/QuickStart ./ScummVM-snapshot/doc/QuickStart
-	mkdir ScummVM-snapshot/doc/cz
-	cp $(srcdir)/doc/cz/PrectiMe ./ScummVM-snapshot/doc/cz/PrectiMe
-	mkdir ScummVM-snapshot/doc/da
-	cp $(srcdir)/doc/da/HurtigStart ./ScummVM-snapshot/doc/da/HurtigStart
-	mkdir ScummVM-snapshot/doc/de
-	cp $(srcdir)/doc/de/Liesmich ./ScummVM-snapshot/doc/de/Liesmich
-	cp $(srcdir)/doc/de/Schnellstart ./ScummVM-snapshot/doc/de/Schnellstart
-	mkdir ScummVM-snapshot/doc/es
-	cp $(srcdir)/doc/es/InicioRapido ./ScummVM-snapshot/doc/es
-	mkdir ScummVM-snapshot/doc/fr
-	cp $(srcdir)/doc/fr/DemarrageRapide ./ScummVM-snapshot/doc/fr/DemarrageRapide
-	mkdir ScummVM-snapshot/doc/it
-	cp $(srcdir)/doc/it/GuidaRapida ./ScummVM-snapshot/doc/it/GuidaRapida
-	mkdir ScummVM-snapshot/doc/no-nb
-	cp $(srcdir)/doc/no-nb/HurtigStart ./ScummVM-snapshot/doc/no-nb/HurtigStart
-	mkdir ScummVM-snapshot/doc/se
-	cp $(srcdir)/doc/se/LasMig ./ScummVM-snapshot/doc/se/LasMig
-	cp $(srcdir)/doc/se/Snabbstart ./ScummVM-snapshot/doc/se/Snabbstart
-	/Developer/Tools/SetFile -t ttro -c ttxt ./ScummVM-snapshot/*
-	xattr -w "com.apple.TextEncoding" "utf-8;134217984" ./ScummVM-snapshot/doc/cz/*
-	xattr -w "com.apple.TextEncoding" "utf-8;134217984" ./ScummVM-snapshot/doc/da/*
-	xattr -w "com.apple.TextEncoding" "utf-8;134217984" ./ScummVM-snapshot/doc/de/*
-	xattr -w "com.apple.TextEncoding" "utf-8;134217984" ./ScummVM-snapshot/doc/es/*
-	xattr -w "com.apple.TextEncoding" "utf-8;134217984" ./ScummVM-snapshot/doc/fr/*
-	xattr -w "com.apple.TextEncoding" "utf-8;134217984" ./ScummVM-snapshot/doc/it/*
-	xattr -w "com.apple.TextEncoding" "utf-8;134217984" ./ScummVM-snapshot/doc/no-nb/*
-	xattr -w "com.apple.TextEncoding" "utf-8;134217984" ./ScummVM-snapshot/doc/se/*
-	/Developer/Tools/CpMac -r $(bundle_name) ./ScummVM-snapshot/
-	cp $(srcdir)/dists/macosx/DS_Store ./ScummVM-snapshot/.DS_Store
-	cp $(srcdir)/dists/macosx/background.jpg ./ScummVM-snapshot/background.jpg
-	/Developer/Tools/SetFile -a V ./ScummVM-snapshot/.DS_Store
-	/Developer/Tools/SetFile -a V ./ScummVM-snapshot/background.jpg
+	cp $(srcdir)/AUTHORS ./Cabal-snapshot/Authors
+	cp $(srcdir)/COPYING ./Cabal-snapshot/License\ \(GPL\)
+	cp $(srcdir)/COPYING.BSD ./Cabal-snapshot/License\ \(BSD\)
+	cp $(srcdir)/COPYING.LGPL ./Cabal-snapshot/License\ \(LGPL\)
+	cp $(srcdir)/COPYING.FREEFONT ./Cabal-snapshot/License\ \(FREEFONT\)
+	cp $(srcdir)/COPYRIGHT ./Cabal-snapshot/Copyright\ Holders
+	cp $(srcdir)/NEWS ./Cabal-snapshot/News
+	cp $(srcdir)/README ./Cabal-snapshot/Cabal\ ReadMe
+	mkdir Cabal-snapshot/doc
+	cp $(srcdir)/doc/QuickStart ./Cabal-snapshot/doc/QuickStart
+	mkdir Cabal-snapshot/doc/cz
+	cp $(srcdir)/doc/cz/PrectiMe ./Cabal-snapshot/doc/cz/PrectiMe
+	mkdir Cabal-snapshot/doc/da
+	cp $(srcdir)/doc/da/HurtigStart ./Cabal-snapshot/doc/da/HurtigStart
+	mkdir Cabal-snapshot/doc/de
+	cp $(srcdir)/doc/de/Liesmich ./Cabal-snapshot/doc/de/Liesmich
+	cp $(srcdir)/doc/de/Schnellstart ./Cabal-snapshot/doc/de/Schnellstart
+	mkdir Cabal-snapshot/doc/es
+	cp $(srcdir)/doc/es/InicioRapido ./Cabal-snapshot/doc/es
+	mkdir Cabal-snapshot/doc/fr
+	cp $(srcdir)/doc/fr/DemarrageRapide ./Cabal-snapshot/doc/fr/DemarrageRapide
+	mkdir Cabal-snapshot/doc/it
+	cp $(srcdir)/doc/it/GuidaRapida ./Cabal-snapshot/doc/it/GuidaRapida
+	mkdir Cabal-snapshot/doc/no-nb
+	cp $(srcdir)/doc/no-nb/HurtigStart ./Cabal-snapshot/doc/no-nb/HurtigStart
+	mkdir Cabal-snapshot/doc/se
+	cp $(srcdir)/doc/se/LasMig ./Cabal-snapshot/doc/se/LasMig
+	cp $(srcdir)/doc/se/Snabbstart ./Cabal-snapshot/doc/se/Snabbstart
+	/Developer/Tools/SetFile -t ttro -c ttxt ./Cabal-snapshot/*
+	xattr -w "com.apple.TextEncoding" "utf-8;134217984" ./Cabal-snapshot/doc/cz/*
+	xattr -w "com.apple.TextEncoding" "utf-8;134217984" ./Cabal-snapshot/doc/da/*
+	xattr -w "com.apple.TextEncoding" "utf-8;134217984" ./Cabal-snapshot/doc/de/*
+	xattr -w "com.apple.TextEncoding" "utf-8;134217984" ./Cabal-snapshot/doc/es/*
+	xattr -w "com.apple.TextEncoding" "utf-8;134217984" ./Cabal-snapshot/doc/fr/*
+	xattr -w "com.apple.TextEncoding" "utf-8;134217984" ./Cabal-snapshot/doc/it/*
+	xattr -w "com.apple.TextEncoding" "utf-8;134217984" ./Cabal-snapshot/doc/no-nb/*
+	xattr -w "com.apple.TextEncoding" "utf-8;134217984" ./Cabal-snapshot/doc/se/*
+	/Developer/Tools/CpMac -r $(bundle_name) ./Cabal-snapshot/
+	cp $(srcdir)/dists/macosx/DS_Store ./Cabal-snapshot/.DS_Store
+	cp $(srcdir)/dists/macosx/background.jpg ./Cabal-snapshot/background.jpg
+	/Developer/Tools/SetFile -a V ./Cabal-snapshot/.DS_Store
+	/Developer/Tools/SetFile -a V ./Cabal-snapshot/background.jpg
 	hdiutil create -ov -format UDZO -imagekey zlib-level=9 -fs HFS+ \
-					-srcfolder ScummVM-snapshot \
-					-volname "ScummVM" \
-					ScummVM-snapshot.dmg
-	rm -rf ScummVM-snapshot
+					-srcfolder Cabal-snapshot \
+					-volname "Cabal" \
+					Cabal-snapshot.dmg
+	rm -rf Cabal-snapshot
 
 #
 # Windows specific
 #
 
-scummvmwinres.o: $(srcdir)/icons/scummvm.ico $(DIST_FILES_THEMES) $(DIST_FILES_ENGINEDATA) $(srcdir)/dists/scummvm.rc
-	$(QUIET_WINDRES)$(WINDRES) -DHAVE_CONFIG_H $(WINDRESFLAGS) $(DEFINES) -I. -I$(srcdir) $(srcdir)/dists/scummvm.rc scummvmwinres.o
+cabalexecwinres.o: $(srcdir)/icons/cabalexec.ico $(DIST_FILES_THEMES) $(DIST_FILES_ENGINEDATA) $(srcdir)/dists/cabalexec.rc
+	$(QUIET_WINDRES)$(WINDRES) -DHAVE_CONFIG_H $(WINDRESFLAGS) $(DEFINES) -I. -I$(srcdir) $(srcdir)/dists/cabalexec.rc cabalexecwinres.o
 
 # Special target to create a win32 snapshot binary (for Inno Setup)
 win32dist: $(EXECUTABLE)
@@ -269,10 +269,10 @@ win32dist: $(EXECUTABLE)
 	cp /usr/local/README-SDL.txt $(WIN32PATH)
 	cp /usr/local/bin/SDL.dll $(WIN32PATH)
 	cp $(srcdir)/dists/win32/graphics/left.bmp $(WIN32PATH)/graphics
-	cp $(srcdir)/dists/win32/graphics/scummvm-install.ico $(WIN32PATH)/graphics
+	cp $(srcdir)/dists/win32/graphics/cabalexec-install.ico $(WIN32PATH)/graphics
 	cp $(srcdir)/dists/win32/migration.bat $(WIN32PATH)
 	cp $(srcdir)/dists/win32/migration.txt $(WIN32PATH)
-	cp $(srcdir)/dists/win32/ScummVM.iss $(WIN32PATH)
+	cp $(srcdir)/dists/win32/Cabal.iss $(WIN32PATH)
 	unix2dos $(WIN32PATH)/*.txt
 	unix2dos $(WIN32PATH)/doc/*.txt
 	unix2dos $(WIN32PATH)/doc/cz/*.txt
@@ -289,7 +289,7 @@ win32setup: $(EXECUTABLE)
 	mkdir -p $(srcdir)/$(STAGINGPATH)
 	$(STRIP) $(EXECUTABLE) -o $(srcdir)/$(STAGINGPATH)/$(EXECUTABLE)
 	cp /usr/local/bin/SDL.dll $(srcdir)/$(STAGINGPATH)
-	makensis -V2 -Dtop_srcdir="../.." -Dstaging_dir="../../$(STAGINGPATH)" -Darch=$(ARCH) $(srcdir)/dists/win32/scummvm.nsi
+	makensis -V2 -Dtop_srcdir="../.." -Dstaging_dir="../../$(STAGINGPATH)" -Darch=$(ARCH) $(srcdir)/dists/win32/cabalexec.nsi
 
 
 #
@@ -327,11 +327,11 @@ endif
 
 # Target to create Raspberry Pi zip containig binary and specific README
 raspberrypi_dist:
-	mkdir -p $(srcdir)/scummvm-rpi
-	cp $(srcdir)/backends/platform/sdl/raspberrypi/README.RASPBERRYPI $(srcdir)/scummvm-rpi/README
-	cp $(srcdir)/scummvm $(srcdir)/scummvm-rpi
-	zip -r scummvm-rpi.zip scummvm-rpi
-	rm -f -R scummvm-rpi
+	mkdir -p $(srcdir)/cabalexec-rpi
+	cp $(srcdir)/backends/platform/sdl/raspberrypi/README.RASPBERRYPI $(srcdir)/cabalexec-rpi/README
+	cp $(srcdir)/cabalexec $(srcdir)/cabalexec-rpi
+	zip -r cabalexec-rpi.zip cabalexec-rpi
+	rm -f -R cabalexec-rpi
 
 # Mark special targets as phony
 .PHONY: deb bundle osxsnap win32dist install uninstall

@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -19,6 +19,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
  */
+
+// Based on the ScummVM (GPLv2+) file of the same name
 
 #include "engines/metaengine.h"
 #include "base/plugins.h"
@@ -57,10 +59,10 @@ enum {
 
 static const char *copyright_text[] = {
 "",
-"C0""Copyright (C) 2001-2015 The ScummVM Team",
-"C0""http://www.scummvm.org",
+"C0""Copyright (C) 2001-2016 The Cabal Team",
+"C0""http://project-cabal.org",
 "",
-"C0""ScummVM is the legal property of its developers, whose names are too numerous to list here. Please refer to the COPYRIGHT file distributed with this binary.",
+"C0""Cabal is the legal property of its developers, whose names are too numerous to list here. Please refer to the COPYRIGHT file distributed with this binary.",
 "",
 };
 
@@ -87,11 +89,11 @@ AboutDialog::AboutDialog()
 	for (i = 0; i < 1; i++)
 		_lines.push_back("");
 
-	Common::String version("C0""ScummVM ");
-	version += gScummVMVersion;
+	Common::String version("C0""Cabal ");
+	version += Cabal::getVersion();
 	_lines.push_back(version);
 
-	Common::String date = Common::String::format(_("(built on %s)"), gScummVMBuildDate);
+	Common::String date = Common::String::format(_("(built on %s)"), Cabal::getBuildDate());
 	_lines.push_back("C2" + date);
 
 	for (i = 0; i < ARRAYSIZE(copyright_text); i++)
@@ -101,7 +103,7 @@ AboutDialog::AboutDialog()
 	features += _("Features compiled in:");
 	addLine(features.c_str());
 	Common::String featureList("C0");
-	featureList += gScummVMFeatures;
+	featureList += Cabal::getFeatures();
 	addLine(featureList.c_str());
 
 	_lines.push_back("");

@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -20,6 +20,8 @@
  *
  */
 
+// Based on the ScummVM (GPLv2+) file of the same name
+
 #include "common/config-manager.h"
 #include "common/debug.h"
 #include "common/file.h"
@@ -38,7 +40,7 @@ namespace Common {
 
 DECLARE_SINGLETON(ConfigManager);
 
-char const *const ConfigManager::kApplicationDomain = "scummvm";
+char const *const ConfigManager::kApplicationDomain = "cabal";
 char const *const ConfigManager::kTransientDomain = "__TRANSIENT";
 
 #ifdef ENABLE_KEYMAPPER

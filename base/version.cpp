@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -20,11 +20,15 @@
  *
  */
 
+// Based on the ScummVM (GPLv2+) file of the same name
+
 #include "common/scummsys.h"
 #include "base/version.h"
 
 #define INCLUDED_FROM_BASE_VERSION_CPP
 #include "base/internal_version.h"
+
+namespace Cabal {
 
 /*
  * Version string and build date string. These can be used by anything that
@@ -55,24 +59,20 @@
  * I don't know VC enough to be sure). And of course it must be robust enough
  * to properly work in exports (i.e. release tar balls etc.).
  */
-const char *gScummVMVersion = SCUMMVM_VERSION;
+const char *g_CabalVersion = CABAL_VERSION;
 #ifdef __amigaos4__
-static const char *version_cookie __attribute__((used)) = "$VER: ScummVM " SCUMMVM_VERSION " (" __DATE__ ", " __TIME__ ")";
+static const char *version_cookie __attribute__((used)) = "$VER: Cabal " CABAL_VERSION " (" __DATE__ ", " __TIME__ ")";
 #endif
 #ifdef __PLAYSTATION2__
-const char *gScummVMBuildDate = "Git Master"; /* ScummVM Git Master */
-const char *gScummVMVersionDate = SCUMMVM_VERSION " - PlayStation2";
-const char *gScummVMFullVersion = "ScummVM " SCUMMVM_VERSION " - PlayStation2";
+const char *g_CabalBuildDate = "Git Master"; /* Cabal Git Master */
+const char *g_CabalVersionDate = CABAL_VERSION " - PlayStation2";
+const char *g_CabalFullVersion = "Cabal " CABAL_VERSION " - PlayStation2";
 #else
-const char *gScummVMBuildDate = __DATE__ " " __TIME__;
-const char *gScummVMVersionDate = SCUMMVM_VERSION " (" __DATE__ " " __TIME__ ")";
-const char *gScummVMFullVersion = "ScummVM " SCUMMVM_VERSION " (" __DATE__ " " __TIME__ ")";
+const char *g_CabalBuildDate = __DATE__ " " __TIME__;
+const char *g_CabalVersionDate = CABAL_VERSION " (" __DATE__ " " __TIME__ ")";
+const char *g_CabalFullVersion = "Cabal " CABAL_VERSION " (" __DATE__ " " __TIME__ ")";
 #endif
-const char *gScummVMFeatures = ""
-#ifdef TAINTED_BUILD
-	// TAINTED means the build contains engines/subengines not enabled by default
-	"TAINTED "
-#endif
+const char *g_CabalFeatures = ""
 
 #ifdef USE_TREMOR
 #ifdef USE_TREMOLO
@@ -155,3 +155,26 @@ const char *gScummVMFeatures = ""
 	"virtual keyboard "
 #endif
 	;
+
+const char *getVersion() {
+	return g_CabalVersion;
+}
+
+const char *getBuildDate() {
+	return g_CabalBuildDate;
+}
+
+const char *getVersionDate() {
+	return g_CabalVersionDate;
+}
+
+const char *getFullVersion() {
+	return g_CabalFullVersion;
+}
+
+const char *getFeatures() {
+	return g_CabalFeatures;
+}
+
+} // End of namespace Cabal
+

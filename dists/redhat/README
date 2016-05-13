@@ -8,19 +8,19 @@ adapt the below instructions where necessary.
 
 1) Collect sources:
 
-Place scummvm-%{version}.tar.bz2 and libmad-0.15.1b.tar.bz2 
+Place cabalexec-%{version}.tar.bz2 and libmad-0.15.1b.tar.bz2 
 in /usr/src/redhat/SOURCES .
 If you have a different version of libmad, put the correct version
 numbers in the .spec file.
 
-Place scummvm.spec in /usr/src/redhat/SPECS .
+Place cabalexec.spec in /usr/src/redhat/SPECS .
 
 2) Build the rpm:
 
 Change directory to /usr/src/redhat/SPECS .
 Run:
 
-rpmbuild -ba scummvm.spec
+rpmbuild -ba cabalexec.spec
 
 The RPM should now be built and placed in /usr/src/redhat/RPMS/i386 and
 the source RPM in /usr/src/redhat/SRPMS
@@ -28,7 +28,7 @@ the source RPM in /usr/src/redhat/SRPMS
 
 
 
-Note: libmad is statically linked into the scummvm binary
+Note: libmad is statically linked into the cabalexec binary
 because Fedora does not carry a libmad package, so I did not
-want to make the scummvm package depend on them.
+want to make the cabalexec package depend on them.
 You can get libmad from http://www.underbit.com/products/mad/ .

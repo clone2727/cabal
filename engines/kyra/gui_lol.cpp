@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -19,6 +19,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
  */
+
+// Based on the ScummVM (GPLv2+) file of the same name
 
 #ifdef ENABLE_LOL
 
@@ -2356,7 +2358,7 @@ int GUI_LoL::runMenu(Menu &menu) {
 
 		if (_currentMenu == &_mainMenu && !_vm->gameFlags().use16ColorMode) {
 			Screen::FontId f = _screen->setFont(Screen::FID_6_FNT);
-			_screen->fprintString("%s", menu.x + 8, menu.y + menu.height - 12, 204, 0, 8, gScummVMVersion);
+			_screen->fprintString("%s", menu.x + 8, menu.y + menu.height - 12, 204, 0, 8, Cabal::getVersion());
 			_screen->setFont(f);
 			_screen->updateScreen();
 		}

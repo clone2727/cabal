@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -20,13 +20,42 @@
  *
  */
 
-#ifndef BASE_VERSION_H
-#define BASE_VERSION_H
+#ifndef CABAL_BASE_VERSION_H
+#define CABAL_BASE_VERSION_H
 
-extern const char *gScummVMVersion;		// e.g. "0.4.1"
-extern const char *gScummVMBuildDate;	// e.g. "2003-06-24"
-extern const char *gScummVMVersionDate; // e.g. "0.4.1 (2003-06-24)"
-extern const char *gScummVMFullVersion;	// e.g. "ScummVM 0.4.1 (2003-06-24)"
-extern const char *gScummVMFeatures;	// e.g. "ALSA MPEG2 zLib"
+namespace Cabal {
+
+/**
+ * Get the Cabal version
+ *
+ * e.g. "1.0.0"
+ */
+const char *getVersion();
+
+/**
+ * Get the build date of the library
+ * e.g. "2016-05-13"
+ */
+const char *getBuildDate();
+
+/**
+ * Get a string containing the version and the build date
+ * e.g. "1.0.0 (2016-05-13)
+ */
+const char *getVersionDate();
+
+/**
+ * Get a string containing the name, version, and build date
+ * e.g. "Cabal 1.0.0 (2016-05-13)
+ */
+const char *getFullVersion();
+
+/**
+ * Get a string containing features supported by this build
+ * e.g. "ALSA PNG zLib"
+ */
+const char *getFeatures();
+
+} // End of namespace Cabal
 
 #endif

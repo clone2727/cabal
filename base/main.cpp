@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -20,9 +20,11 @@
  *
  */
 
-/*! \mainpage %ScummVM Source Reference
+// Based on the ScummVM (GPLv2+) file of the same name
+
+/*! \mainpage %Cabal Source Reference
  *
- * These pages contains a cross referenced documentation for the %ScummVM source code,
+ * These pages contains a cross referenced documentation for the %Cabal source code,
  * generated with Doxygen (http://www.doxygen.org) directly from the source.
  * Currently not much is actually properly documented, but at least you can get an overview
  * of almost all the classes, methods and variables, and how they interact.
@@ -279,7 +281,7 @@ static void setupGraphics(OSystem &system) {
 	GUI::GuiManager::instance();
 
 	// Set initial window caption
-	system.setWindowCaption(gScummVMFullVersion);
+	system.setWindowCaption(Cabal::getFullVersion());
 
 	// Clear the main screen
 	system.fillScreen(0);
@@ -360,7 +362,7 @@ extern "C" int scummvm_main(int argc, const char * const argv[]) {
 	}
 
 	// Update the config file
-	ConfMan.set("versioninfo", gScummVMVersion, Common::ConfigManager::kApplicationDomain);
+	ConfMan.set("versioninfo", Cabal::getVersion(), Common::ConfigManager::kApplicationDomain);
 
 	// Load and setup the debuglevel and the debug flags. We do this at the
 	// soonest possible moment to ensure debug output starts early on, if

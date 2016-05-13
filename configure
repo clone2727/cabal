@@ -1,8 +1,8 @@
 #!/bin/sh
 #
-# configure -- custom configure script for ScummVM.
+# configure -- custom configure script for Cabal.
 #
-# ScummVM is the legal property of its developers, whose names
+# Cabal is the legal property of its developers, whose names
 # are too numerous to list here. Please refer to the COPYRIGHT
 # file distributed with this source distribution.
 #
@@ -177,8 +177,8 @@ _ar="ar cru"
 _as="as"
 _windres=windres
 _stagingpath="staging"
-_win32path="c:/scummvm"
-_amigaospath="Games:ScummVM"
+_win32path="c:/cabalexec"
+_amigaospath="Games:Cabal"
 _staticlibpath=
 _sdlconfig=sdl-config
 _freetypeconfig=freetype-config
@@ -209,21 +209,21 @@ add_feature zlib "zlib" "_zlib"
 
 
 
-# Directories for installing ScummVM.
+# Directories for installing Cabal.
 # This list is closely based on what GNU autoconf does,
 # although the default value for datadir differs.
 # Like GNU autoconf, we distinguish datadir and datarootdir
 # to make it possible to change e.g. the location of the
 # man pages independently of that of the engine data files,
-# which are placed inside $datadir/scummvm
+# which are placed inside $datadir/cabalexec
 prefix=NONE
 exec_prefix=NONE
 bindir='${exec_prefix}/bin'
 libdir='${exec_prefix}/lib'
 datarootdir='${prefix}/share'
-datadir='${datarootdir}/scummvm'
+datadir='${datarootdir}/cabalexec'
 mandir='${datarootdir}/man'
-docdir='${datarootdir}/doc/scummvm'
+docdir='${datarootdir}/doc/cabalexec'
 #localedir='${datarootdir}/locale'
 
 # For cross compiling
@@ -236,7 +236,7 @@ _host_alias=""
 _port_mk="ports.mk"
 
 # Use temp files in the build directory
-TMPO=./scummvm-conf
+TMPO=./cabalexec-conf
 TMPC=${TMPO}.cpp
 TMPLOG=config.log
 
@@ -806,7 +806,7 @@ get_subengines_build_string() {
 #
 # Greet user
 #
-echo "Running ScummVM configure..."
+echo "Running Cabal configure..."
 echo "Configure run on" `date` > $TMPLOG
 
 #
@@ -854,9 +854,9 @@ Fine tuning of the installation directories:
   --libdir=DIR            object code libraries [EPREFIX/lib]
   --datarootdir=DIR       read-only arch.-independent data root [PREFIX/share]
   --datadir=DIR           read-only architecture-independent data
-                          [DATAROOTDIR/scummvm]
+                          [DATAROOTDIR/cabalexec]
   --mandir=DIR            man documentation [DATAROOTDIR/man]
-  --docdir=DIR            documentation root [DATAROOTDIR/doc/scummvm]
+  --docdir=DIR            documentation root [DATAROOTDIR/doc/cabalexec]
 
 Special configuration feature:
   --host=HOST             cross-compile to target HOST (arm-linux, ...)
@@ -1366,13 +1366,13 @@ maemo)
 	# The prefix is always the same on Maemo so we hardcode the default
 	# here. It is still possible to define a custom prefix which is
 	# needed when packaging the app with a user-specific app ID.
-	test "x$prefix" = xNONE && prefix=/opt/scummvm
+	test "x$prefix" = xNONE && prefix=/opt/cabalexec
 	# Maemo apps are installed into app-specific directories. The
-	# default directory structure of ScummVM makes no sense here so we
+	# default directory structure of Cabal makes no sense here so we
 	# hardcode Maemo specific directories here.
 	datarootdir='${prefix}/share'
-	datadir=/opt/scummvm/share
-	docdir='${datarootdir}/doc/scummvm'
+	datadir=/opt/cabalexec/share
+	docdir='${datarootdir}/doc/cabalexec'
 	;;
 motoezx)
 	_host_os=linux
@@ -1420,7 +1420,7 @@ ps3)
 	# needed when packaging the app with a user-specific app ID.
 	test "x$prefix" = xNONE && prefix=/dev_hdd0/game/SCUM12000/USRDIR
 	# PS3 apps are installed into app-specific directories. The
-	# default directory structure of ScummVM makes no sense here so we
+	# default directory structure of Cabal makes no sense here so we
 	# hardcode PS3 specific directories here.
 	datarootdir='${prefix}/data'
 	datadir='${datarootdir}'
@@ -1448,9 +1448,9 @@ webos)
 	# The prefix is always the same on WebOS so we hardcode the default
 	# here. It is still possible to define a custom prefix which is
 	# needed when packaging the app with a user-specific app ID.
-	test "x$prefix" = xNONE && prefix=/media/cryptofs/apps/usr/palm/applications/org.scummvm.scummvm
+	test "x$prefix" = xNONE && prefix=/media/cryptofs/apps/usr/palm/applications/org.project-cabal.cabal
 	# WebOS apps are installed into app-specific directories. The
-	# default directory structure of ScummVM makes no sense here so we
+	# default directory structure of Cabal makes no sense here so we
 	# hardcode WebOS specific directories here.
 	datarootdir='${prefix}/data'
 	datadir='${datarootdir}'
@@ -2212,7 +2212,7 @@ case $_host_os in
 		_seq_midi=no
 		;;
 	cygwin*)
-		echo ERROR: Cygwin building is not supported by ScummVM anymore. Consider using MinGW.
+		echo ERROR: Cygwin building is not supported by Cabal anymore. Consider using MinGW.
 		exit 1
 		;;
 	darwin*)
@@ -2402,7 +2402,7 @@ case $_host_os in
 		append_var DEFINES "-D__USE_MINGW_ANSI_STDIO=0"
 		append_var LDFLAGS "-static-libgcc -static-libstdc++"
 		append_var LIBS "-lmingw32 -lwinmm -lgdi32"
-		append_var OBJS "scummvmwinres.o"
+		append_var OBJS "cabalexecwinres.o"
 		add_line_to_config_mk 'WIN32 = 1'
 		;;
 	mint*)
@@ -2784,7 +2784,7 @@ if test -n "$_host"; then
 			append_var LDFLAGS "-mno-crt0"
 			append_var LDFLAGS "-L$N64SDK/hkz-libn64"
 			append_var LDFLAGS "-L$N64SDK/lib"
-			append_var LDFLAGS "-T n64ld_cpp.x -Xlinker -Map -Xlinker scummvm.map"
+			append_var LDFLAGS "-T n64ld_cpp.x -Xlinker -Map -Xlinker cabalexec.map"
 			_backend="n64"
 			_mt32emu=no
 			_build_scalers=no
@@ -3259,10 +3259,10 @@ if test "$_dynamic_modules" = yes ; then
 # into dlopen(RTLD_LOCAL).  It *does* look in
 # DT_NEEDED libraries, so the workaround is to add an
 # (otherwise unnecessary) dependency from plugins back
-# to the main libscummvm.so.
+# to the main libcabal.so.
 _mak_plugins='
-PLUGIN_EXTRA_DEPS = libscummvm.so
-PLUGIN_LDFLAGS  += $(LDFLAGS) -L. -lscummvm
+PLUGIN_EXTRA_DEPS = libcabal.so
+PLUGIN_LDFLAGS  += $(LDFLAGS) -L. -lcabal
 PRE_OBJS_FLAGS  := -Wl,-export-dynamic -Wl,-whole-archive
 POST_OBJS_FLAGS := -Wl,-no-whole-archive
 '
@@ -3358,9 +3358,9 @@ POST_OBJS_FLAGS := -Wl,-no-whole-archive
 		_plugin_suffix=".dll"
 _mak_plugins='
 PLUGIN_EXTRA_DEPS	= $(EXECUTABLE)
-PLUGIN_LDFLAGS		:= -Wl,--enable-auto-import -shared ./libscummvm.a
+PLUGIN_LDFLAGS		:= -Wl,--enable-auto-import -shared ./libcabal.a
 PRE_OBJS_FLAGS		:= -Wl,--whole-archive
-POST_OBJS_FLAGS		:= -Wl,--export-all-symbols -Wl,--no-whole-archive -Wl,--out-implib,./libscummvm.a
+POST_OBJS_FLAGS		:= -Wl,--export-all-symbols -Wl,--no-whole-archive -Wl,--out-implib,./libcabal.a
 '
 		;;
 	wince)
@@ -3370,9 +3370,9 @@ POST_OBJS_FLAGS		:= -Wl,--export-all-symbols -Wl,--no-whole-archive -Wl,--out-im
 		_plugin_suffix=".plugin"
 _mak_plugins='
 PLUGIN_EXTRA_DEPS	= $(EXECUTABLE)
-PLUGIN_LDFLAGS		:= -shared -lscummvm -L.
+PLUGIN_LDFLAGS		:= -shared -lcabal -L.
 PRE_OBJS_FLAGS		:= -Wl,--whole-archive
-POST_OBJS_FLAGS		:= -Wl,--export-all-symbols -Wl,--no-whole-archive -Wl,--out-implib,./libscummvm.a -shared
+POST_OBJS_FLAGS		:= -Wl,--export-all-symbols -Wl,--no-whole-archive -Wl,--out-implib,./libcabal.a -shared
 '
 		;;
 	ps2)
@@ -3933,7 +3933,7 @@ if test "$_libunity" = auto ; then
 			cat > $TMPC << EOF
 #include <unity.h>
 int main(void) {
-	unity_launcher_entry_get_for_desktop_id("scummvm.desktop");
+	unity_launcher_entry_get_for_desktop_id("cabalexec.desktop");
 	return 0;
 }
 EOF
@@ -4276,7 +4276,7 @@ case $_backend in
 		;;
 	maemo | webos)
 		# The WebOS and Maemo apps want the plugins in the "lib" directory
-		# without a scummvm sub directory.
+		# without a cabalexec sub directory.
 		append_var DEFINES "-DPLUGIN_DIRECTORY=\\\"$libdir\\\""
 		;;
 	ps2)
@@ -4284,7 +4284,7 @@ case $_backend in
 		append_var DEFINES "-DPLUGIN_DIRECTORY=\\\"host:plugins\\\""
 		;;
 	*)
-		append_var DEFINES "-DPLUGIN_DIRECTORY=\\\"$libdir/scummvm\\\""
+		append_var DEFINES "-DPLUGIN_DIRECTORY=\\\"$libdir/cabalexec\\\""
 		;;
 esac
 
@@ -4491,7 +4491,7 @@ s/#/    /g'
 fi
 
 if test -n "$_engines_built_wip" ; then
-	echo "WARNING: This ScummVM build contains the following UNSTABLE engines:"
+	echo "WARNING: This Cabal build contains the following UNSTABLE engines:"
 	echo "$_engines_built_wip" | sed 's/@/\
 /g
 s/#/    /g'

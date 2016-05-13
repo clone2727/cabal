@@ -1,15 +1,14 @@
-ScummVM README
+Cabal README
 ------------------------------------------------------------------------
 
-For more information, compatibility lists, details on donating, the latest
-release, progress reports and more, please visit the ScummVM home page
-at: http://www.scummvm.org/
+For more information, compatibility lists, the latest release, progress
+reports and more, please visit the Cabal home page at: http://project-cabal.org/
 
 
 Table of Contents:
 ------------------
 1.0) Introduction
- * 1.1 About ScummVM
+ * 1.1 About Cabal
  * 1.2 Quick start
 2.0) Contact
  * 2.1 Reporting Bugs
@@ -37,7 +36,7 @@ Table of Contents:
  * 3.21 Simultaneous speech and subtitles in Sierra SCI games
  * 3.22 Known Problems
 4.0) Supported Platforms
-5.0) Running ScummVM
+5.0) Running Cabal
  * 5.1 Command Line Options
  * 5.2 Language Options
  * 5.3 Graphics Filters
@@ -66,64 +65,47 @@ Table of Contents:
 1.0) Introduction:
 ---- -------------
 
-1.1) About ScummVM:
+1.1) About Cabal:
 ---- --------------
-ScummVM is a program which allows you to run certain classic graphical
-point-and-click adventure games, provided you already have their data
-files. The clever part about this: ScummVM just replaces the executables
-shipped with the game, allowing you to play them on systems for which
-they were never designed!
+Cabal is a program which allows you to run certain classic games,
+provided you already have their data files. Cabal is intended to be a
+drop-in replacement for the original executables for the games,
+allowing you to play them on systems for which they were never designed!
 
-Originally it was designed to run LucasArts' SCUMM games, such as Maniac
-Mansion, Monkey Island, Day of the Tentacle or Sam and Max. SCUMM stands
-for 'Script Creation Utility for Maniac Mansion', which was the first
+This was originally based on the ScummVM codebase, but has since forked.
+Originally, that project was designed to run LucasArts' SCUMM games, such
+as Maniac Mansion, Monkey Island, Day of the Tentacle or Sam and Max. SCUMM
+stands for 'Script Creation Utility for Maniac Mansion', which was the first
 game for which LucasArts designed this system. And much later it gave
 its name to ScummVM ('VM' meaning Virtual Machine).
 
 Over time support for a lot of non-SCUMM games has been added, and
-ScummVM now also supports many of Sierra's AGI and SCI games (such as King's
+Cabal now also supports many of Sierra's AGI and SCI games (such as King's
 Quest 1-6, Space Quest 1-5, ...), Discworld 1 and 2, Simon the Sorcerer 1 and
 2, Beneath A Steel Sky, Lure of the Temptress, Broken Sword I and II, Flight of
 the Amazon Queen, Gobliiins 1-3, The Legend of Kyrandia series, many of
 Humongous Entertainment's children's SCUMM games (including Freddi Fish and
 Putt Putt games) and many more. You can find a full list with details on which
-adventures are supported and how well on the compatibility page. ScummVM is
-continually improving, so check back often.
+adventures are supported and how well on the compatibility page.
 
 Among the systems on which you can play those games are regular desktop
 computers (running Windows, Linux, Mac OS X, ...), game consoles
 (Dreamcast, Nintendo DS & Wii, PS2, PSP, ...), smartphones (Android,
 iPhone, PocketPC, Symbian ...) and more.
 
-At this time ScummVM is still under heavy development. Be aware that
-whilst we attempt to make sure that many games can be completed with few
-major bugs, crashes can happen and we offer no warranty. That being said,
-some of the games have been supported for a long time and should work
-fine with any recent stable release. You can get a feeling of how well
-each game is working in ScummVM by looking at the compatibility page.
-Actually if you browse a bit around you might discover that ScummVM is
-even being used commercially to re-release some of the supported games on
-modern platforms. This shows that several companies are happy with the
-quality of the software and how well it can run some of the games.
-
-If you enjoy ScummVM feel free to donate using the PayPal button on the
-ScummVM homepage. This will help us buy utilities needed to develop
-ScummVM easier and quicker. If you cannot donate, help and contribute a
-patch!
-
 1.2) Quick start:
 ---- ------------
-For the impatient among you, here is how to get ScummVM running in five
+For the impatient among you, here is how to get Cabal running in five
 simple steps.
 
-1. Download ScummVM from <http://www.scummvm.org/downloads.php> and
+1. Download Cabal from <http://project-cabal.org/downloads> and
 install it.
 
 2. Create a directory on your hard drive and copy the game datafiles
 from the original media to this directory. Repeat this for every game
 you want to play.
 
-3. Start ScummVM, choose 'Add game', select the directory with the game
+3. Start Cabal, choose 'Add game', select the directory with the game
 datafiles (do not try to select the datafiles themselves!) and press
 'Choose'.
 
@@ -139,35 +121,37 @@ want to add more games.
 Hint: If you want to add multiple games in one go, try pressing and
 holding the shift key before clicking 'Add game' -- its label will
 change to 'Mass Add' and if you press it, you are again asked to select
-a directory, only this time ScummVM will search through all
+a directory, only this time Cabal will search through all
 subdirectories for supported games.
 
 
 2.0) Contact:
 ---- --------
-The easiest way to contact the ScummVM team is by submitting bug reports
-(see section 2.1) or by using our forums at http://forums.scummvm.org .
-You can also join and e-mail the scummvm-devel mailing list, or chat
-with us on IRC (#scummvm on irc.freenode.net) Please do not ask us to
-support an unsupported game -- read the FAQ on our web site first.
+The easiest way to contact the Cabal team is by submitting bug reports
+(see section 2.1) or joining us on IRC (#project-cabal on irc.freenode.net).
+Please do not ask us to support an unsupported game -- doing that is an immense
+amount of work.
 
 
 2.1) Reporting Bugs:
 ---- ---------------
-To report a bug, please create a SourceForge account and follow the
-"Bug Tracker" link from our homepage. Please make sure the bug is
-reproducible, and still occurs in the latest git/Daily build version.
-Also check the known problems list (below) and the compatibility list
-on our website for that game, to ensure the issue is not already known:
+To report a bug, please create an issue on the GitHub page:
 
-  http://scummvm.org/compatibility/
+  https://github.com/project-cabal/cabal/issues
+
+Please make sure the bug is reproducible, and still occurs in the latest
+git/Daily build version. Also check the known problems list (below) and
+the compatibility list on our website for that game, to ensure the issue is
+not already known:
+
+  http://project-cabal.org/compatibility/
 
 Please do not report bugs on games that are not listed as being
-completeable in the 'Supported Games' section, or compatibility list. We
+completable in the 'Supported Games' section, or compatibility list. We
 -know- those games have bugs.
 
 Please include the following information:
-    - ScummVM version (PLEASE test the latest git/Daily build)
+    - Cabal version (PLEASE test the latest git/Daily build)
     - Bug details, including instructions on reproducing
     - Language of game (English, German, ...)
     - Version of game (talkie, floppy, ...)
@@ -444,7 +428,7 @@ and view the compatibility chart.
      Blue's Treasure Hunt                        [BluesTreasureHunt]
 
 The following games are based on the SCUMM engine, but NOT supported
-by ScummVM (yet):
+by Cabal (yet):
 
      Moonbase Commander
 
@@ -456,7 +440,7 @@ reports are above) if you encounter such a bug in a 'supported' game.
 
 3.1) Copy Protection:
 ---- ----------------
-The ScummVM team does not condone piracy. However, there are cases where
+The Cabal team does not condone piracy. However, there are cases where
 the game companies (such as LucasArts) themselves bundled 'cracked'
 executables with their games -- in these cases the data files still
 contain the copy protection scripts, but the interpreter bypasses them
@@ -464,13 +448,13 @@ contain the copy protection scripts, but the interpreter bypasses them
 the producer of the game did it). There is no way for us to tell the
 difference between legitimate and pirated data files, so for the games
 where we know that a cracked version of the original interpreter was
-sold at some point, ScummVM will always have to bypass the copy
+sold at some point, Cabal will always have to bypass the copy
 protection.
 
-In some cases ScummVM will still show the copy protection screen. Try
+In some cases Cabal will still show the copy protection screen. Try
 entering any answer. Chances are that it will work.
 
-ScummVM will skip copy protection in the following games:
+Cabal will skip copy protection in the following games:
 
   * Beneath a Steel Sky
       -- bypassed with kind permission from Revolution Software.
@@ -496,13 +480,13 @@ ScummVM will skip copy protection in the following games:
 ---- --------------------------
 
 At one point in the game, you come across a computer that allows you
-to play the original Maniac Mansion as an easter egg. ScummVM supports
+to play the original Maniac Mansion as an easter egg. Cabal supports
 this, with a few caveats:
 
-ScummVM will scan your configuration file for a game that's in a
+Cabal will scan your configuration file for a game that's in a
 'Maniac' sub-folder of your Day of the Tentacle folder. If you've
 copied the data files from the CD version, this should already be the
-case but you have to add the game to ScummVM as well.
+case but you have to add the game to Cabal as well.
 
 To return to Day of the Tentacle, press F5 and select "Return to
 Launcher".
@@ -518,12 +502,12 @@ of the Tentacle itself as the easter egg game is not recommended.
 ---- ------------------------
 Both Maniac Mansion and Zak McKracken run but Maniac Mansion is not yet
 playable. Simply name the D64 disks "maniac1.d64" and "maniac2.d64"
-respectively "zak1.d64" and "zak2.d64", then ScummVM should be able to
+respectively "zak1.d64" and "zak2.d64", then Cabal should be able to
 automatically detect the game if you point it at the right directory.
 
 Alternatively, you can use 'extract_mm_c64' from the tools package to
 extract the data files. But then the game will not be properly
-autodetected by ScummVM, and you must make sure that the platform is set
+autodetected by Cabal, and you must make sure that the platform is set
 to Commodore64. We recommend using the much simpler approach described
 in the previous paragraph.
 
@@ -531,7 +515,7 @@ in the previous paragraph.
 3.4) Maniac Mansion NES notes:
 ---- -------------------------
 Supported versions are English GB (E), French (F), German (G), Italian (I),
-Swedish (SW) and English US (U). ScummVM requires just the PRG section
+Swedish (SW) and English US (U). Cabal requires just the PRG section
 to run and not the whole ROM.
 
 In order to get the game working, you will have to strip out the first
@@ -549,7 +533,7 @@ Most common mistakes which prevents the game from running:
 
   * Bad file
   * ROM extracted with the 0.7.0 tools
-  * You try to feed ScummVM with the FULL ROM and not just the PRG
+  * You try to feed Cabal with the FULL ROM and not just the PRG
     section.
 
 It is also possible to extract the separate LFL files from the PRG
@@ -560,7 +544,7 @@ package.
 3.5) Macintosh games notes:
 ---- ----------------------
 All LucasArts SCUMM based adventures, except COMI, also exist in versions
-for the Macintosh. ScummVM can use most (all?) of them, however, in some
+for the Macintosh. Cabal can use most (all?) of them, however, in some
 cases some additional work is required. First off, if you are not using
 a Macintosh for this, accessing the CD/floppy data might be tricky. The
 reason for this is that the mac uses a special disk format called HFS
@@ -571,8 +555,8 @@ operating systems.
 
 Most of the newer games on the Macintosh shipped with only a single data
 file (note that in some cases this data file was made invisible, so you
-may need extra tools in order to copy it). ScummVM is able to directly
-use such a data file; simply point ScummVM at the directory containing
+may need extra tools in order to copy it). Cabal is able to directly
+use such a data file; simply point Cabal at the directory containing
 it, and it should work (just like with every other supported game).
 
 We also provide a tool called 'extract_scumm_mac' in the tools package
@@ -587,14 +571,14 @@ disk see:
 
 3.6) Multi-CD games notes:
 ---- ---------------------
-In general, ScummVM does not deal very well with Multi-CD games. This is
-because ScummVM assumes everything about a game can be found in one
-directory. Even if ScummVM does make some provisions for asking the user
+In general, Cabal does not deal very well with Multi-CD games. This is
+because Cabal assumes everything about a game can be found in one
+directory. Even if Cabal does make some provisions for asking the user
 to change CD, the original game executables usually installed a small
 number of files to the hard disk. Unless these files can be found on all
-the CDs, ScummVM will be in trouble.
+the CDs, Cabal will be in trouble.
 
-Fortunately, ScummVM has no problems running the games entirely from
+Fortunately, Cabal has no problems running the games entirely from
 hard disk, if you create a directory with the correct combination of
 files. Usually, when a file appears on more than one CD you can pick
 either of them.
@@ -616,7 +600,7 @@ identical.
 ---- -------------------------
 The instructions for the Broken Sword games are for the Sold-Out
 Software versions, with each game on two CDs, since these were the
-versions most easily available at the time ScummVM gained support for
+versions most easily available at the time Cabal gained support for
 them. Hopefully they are general enough to be useful to other releases
 as well.
 
@@ -648,13 +632,13 @@ provide re-encoded cutscenes for download on our website:
 
 These cutscenes are provided in DXA format with FLAC audio. Their
 quality is equal to the original games due to the use of lossless
-compression. Viewing these cutscenes requires a version of ScummVM
+compression. Viewing these cutscenes requires a version of Cabal
 compiled with both FLAC and zlib support.
 
 For systems that are too slow to handle the decoding of FLAC audio, the
 audio for these cutscenes is also provided separately as OGG Vorbis
 audio. Viewing these cutscenes with OGG Vorbis audio requires a version
-of ScummVM compiled with both libVorbis and zlib support.
+of Cabal compiled with both libVorbis and zlib support.
 
 For Broken Sword, we also provide a subtitles add-on. Simply unpack it
 and follow the instructions in its readme.txt file. The subtitle pack
@@ -681,10 +665,7 @@ originals, at the cost of being larger.
 
 Finally, in early 2006, the Smacker format was reverse engineered for
 the FFmpeg project. Thanks to their hard work, ScummVM 1.0.0 now
-supports the original cutscenes. At the same time, MPEG support was
-dropped. From a technical standpoint, this was a good thing since
-decoding MPEG movies added a lot of complexity, and they didn't look as
-good as the Smacker and DXA versions anyway.
+supports the original cutscenes.
 
 
 3.8.3) Broken Sword:
@@ -710,7 +691,7 @@ For this game, you will need all of the files from the clusters
 directories on both CDs. (Actually, a few of them may not be strictly
 necessary, but the ones that I'm uncertain about are all fairly small.)
 You will need to rename the speech.clu and music.clu files speech1.clu,
-speech2.clu, music1.clu and music2.clu so that ScummVM can tell which
+speech2.clu, music1.clu and music2.clu so that Cabal can tell which
 ones are from CD 1 and which ones are from CD 2. Any other files that
 appear in both cluster directories are identical. Use whichever you
 like.
@@ -727,7 +708,7 @@ run Beneath a Steel Sky.
 This file is available on the 'Downloads' page of the ScummVM website.
 You can place it in either the directory containing the other game data
 files (SKY.DNR, SKY.DSK), in your extrapath, or in the directory where
-your ScummVM executable resides.
+your Cabal executable resides.
 
 
 3.10) Flight of the Amazon Queen notes:
@@ -736,7 +717,7 @@ In order to use a non-freeware version of Flight of the Amazon Queen
 (from original CD), you will need to place the 'queen.tbl' file
 (available from the 'Downloads' page on our website) in either the
 directory containing the 'queen.1' game data file, in your extrapath, or
-in the directory where your ScummVM executable resides.
+in the directory where your Cabal executable resides.
 
 Alternatively, you can use the 'compress_queen' tool from the tools
 package to 'rebuild' your FOTAQ data file to include the table for that
@@ -784,16 +765,7 @@ DOS version in the DOS directory of the CD.
 
 3.14) The Feeble Files notes:
 ----- -----------------------
-If you have the Windows version of The Feeble Files, there are several
-things to note.
-
-Many of the files necessary for the game are stored in an InstallShield
-file called data1.cab, which ScummVM is unable to unpack. You will need
-to use the original installer or i5comp to unpack the contents of this
-file. The i5comp decompression tool, can be found via a search on the
-internet.
-
-To use the speech files with ScummVM, they need to be renamed as follows:
+To use the speech files with Cabal, they need to be renamed as follows:
 Rename voices.wav on CD1 to voices1.wav
 Rename voices.wav on CD2 to voices2.wav
 Rename voices.wav on CD3 to voices3.wav
@@ -802,25 +774,25 @@ Rename voices.wav on CD4 to voices4.wav
 
 3.15) The Legend of Kyrandia notes:
 ----- -----------------------------
-To run The Legend of Kyrandia under ScummVM you need the 'kyra.dat'
-file. The file should always be included in official ScummVM packages.
-In case ScummVM complains that the file is missing you can find it on the
-'Downloads' page of the ScummVM website. Note that the current Windows
-release of ScummVM should contain the file embedded into the executable,
-thus you only need to grab it in case ScummVM complains about the file
+To run The Legend of Kyrandia under Cabal you need the 'kyra.dat'
+file. The file should always be included in official Cabal packages.
+In case Cabal complains that the file is missing you can find it on the
+'Downloads' page of the Cabal website. Note that the current Windows
+release of Cabal should contain the file embedded into the executable,
+thus you only need to grab it in case Cabal complains about the file
 being missing.
 
 
 3.16) Sierra AGI games Predictive Input Dialog notes:
 ----- -----------------------------------------------
-The Predictive Input Dialog is a ScummVM aid for running AGI engine
+The Predictive Input Dialog is a Cabal aid for running AGI engine
 games (which notoriously require command line input) on devices with
 limited keyboard support. In these situations, since typing with emulated
 keyboards is quite tedious, commands can be entered quickly and easily
 via the Predictive Input Dialog.
 
 In order to enable predictive input in AGI games, you need to copy the
-pred.dic file in the ScummVM extras directory or the directory of the
+pred.dic file in the Cabal extras directory or the directory of the
 game you wish to play. This dictionary has been created by parsing
 through all known AGI games and contains the maximum set of common
 words.
@@ -860,17 +832,17 @@ through the letters and repeat with another number. For example, to
 enter the word 'look' you must press the following: 5##6##6##5#
 
 The dialog is fully usable with the mouse, but a few provisions have
-been made in some ScummVM ports to make its use more comfortable by
+been made in some Cabal ports to make its use more comfortable by
 naturally mapping the functionality to the numeric keypad. Also, the
 dialog's buttons can be navigated with the arrow and the enter keys.
 
 
 3.17) Mickey's Space Adventure notes:
 ----- -------------------------------
-To run Mickey's Space Adventure under ScummVM, the original executable
+To run Mickey's Space Adventure under Cabal, the original executable
 of the game (mickey.exe) is needed together with the game's data files.
 
-There is extensive mouse support for the game under ScummVM, even though
+There is extensive mouse support for the game under Cabal, even though
 there wasn't any mouse support in the original game. Menu items can be
 selected using the mouse, and it is possible to move to other locations
 using the mouse as well. When the mouse cursor is hovered on the edges
@@ -883,9 +855,9 @@ is simpler and more straightforward than moving around using the menu.
 3.18) Winnie the Pooh notes:
 ----- ----------------------
 It is possible to import saved games from the original interpreter of the
-game into ScummVM.
+game into Cabal.
 
-There is extensive mouse support for the game under ScummVM, even though
+There is extensive mouse support for the game under Cabal, even though
 there wasn't any mouse support in the original game. Menu items can be
 selected using the mouse, and it is possible to move to other locations
 using the mouse as well. When the mouse cursor is hovered on the edges
@@ -899,7 +871,7 @@ is simpler and more straightforward than moving around using the menu.
 ----- -------------------
 The original game came in a PC booter disk, therefore it is necessary to
 dump the contents of that disk in an image file and name it "troll.img"
-to be able to play the game under ScummVM.
+to be able to play the game under Cabal.
 
 
 3.20) Dragon History notes:
@@ -925,9 +897,9 @@ http://www.ucw.cz/draci-historie/index-en.html
 Certain CD versions of Sierra SCI games had both speech and text
 resources. Some have an option to toggle between the two, but there are
 some cases where there wasn't any option to enable both simultaneously.
-In ScummVM, it is possible to enjoy a combined mode, where both speech
+In Cabal, it is possible to enjoy a combined mode, where both speech
 and text are shown at the same time. This mode can be toggled in the
-ScummVM audio options, but each game has different behavior in-game
+Cabal audio options, but each game has different behavior in-game
 regarding speech and text toggling.
 
 The CD games where speech and subtitles can be shown simultaneously
@@ -941,31 +913,31 @@ are:
 
 EcoQuest 1 CD:
     Speech and text can be toggled via the game's "Mode" option in the
-    options dialog, or via ScummVM's audio options.
+    options dialog, or via Cabal's audio options.
 
 Freddy Pharkas CD:
-    There is no in-game option to toggle speech and text. Only ScummVM's
+    There is no in-game option to toggle speech and text. Only Cabal's
     audio options can be used to toggle this feature. Note that some
     spoken dialog is missing from the game texts.
 
 King's Quest 6 CD:
     Speech and text can be toggled via the "Mode" button in the options
-    dialog (with an extra "Dual" setting added in ScummVM), or via
-    ScummVM's audio options.
+    dialog (with an extra "Dual" setting added in Cabal), or via
+    Cabal's audio options.
 
 Laura Bow 2 CD:
     Speech and text can be toggled via the "Mode" button in the options
-    dialog (with an extra "Dual" setting added in ScummVM), or via
-    ScummVM's audio options.
+    dialog (with an extra "Dual" setting added in Cabal), or via
+    Cabal's audio options.
 
 Leisure Suit Larry 6 CD:
     Either speech only or speech and text can be selected. There is no
-    in-game option to toggle text only. Only ScummVM's audio options can
+    in-game option to toggle text only. Only Cabal's audio options can
     be used to enable the text only mode.
 
 Space Quest 4 CD:
     Speech and text can be toggled via the "Display Mode" button in the
-    options dialog, or via ScummVM's audio options.
+    options dialog, or via Cabal's audio options.
 
 
 3.22) Known Problems:
@@ -1047,10 +1019,10 @@ site, please see the section on reporting bugs.
 
 4.0) Supported Platforms:
 ---- --------------------
-ScummVM has been ported to run on many platforms and operating systems.
-Links to these ports can be found either on the ScummVM web page or by a
+Cabal has been ported to run on many platforms and operating systems.
+Links to these ports can be found either on the Cabal web page or by a
 Google search. Many thanks to our porters for their efforts. If you have
-a port of ScummVM and wish to commit it into the master git, feel free to
+a port of Cabal and wish to commit it into the master git, feel free to
 contact us!
 
 Supported platforms include (but are not limited to):
@@ -1079,6 +1051,7 @@ Supported platforms include (but are not limited to):
 The Dreamcast port does not support The Curse of Monkey Island, nor The
 Dig. The Nintendo DS port does not support Full Throttle, The Dig, or
 The Curse of Monkey Island.
+
 For more platform specific limitations, please refer to our Wiki:
   http://wiki.scummvm.org/index.php/Platforms
 
@@ -1092,35 +1065,35 @@ by us, so we neither endorse nor can we support them. Use at your own
 risk!
 
 
-5.0) Running ScummVM:
+5.0) Running Cabal:
 ---- ----------------
-Please note that by default, ScummVM will save games in the directory it
+Please note that by default, Cabal will save games in the directory it
 is executed from, so you should refrain from running it from more than
 one location. Further information, including how to specify a specific
 save directory to avoid this issue, are in section 6.0.
 
-ScummVM can be launched directly by running the executable. In this
+Cabal can be launched directly by running the executable. In this
 case, the built-in launcher will activate. From this, you can add games
 (click 'Add Game'), or launch games which have already been configured.
 Games can also be added in mass quantities. By pressing shift + 'Add
 Game' (Note that the image turns to 'Mass Add'), you can then specify a
-directory to start in, and ScummVM will attempt to detect games in all
+directory to start in, and Cabal will attempt to detect games in all
 subdirectories of that directory.
 
-ScummVM can also be launched into a game directly using Command Line
+Cabal can also be launched into a game directly using Command Line
 arguments -- see the next section.
 
 
 5.1) Command Line Options:
 ---- ---------------------
 
-  Usage: scummvm [OPTIONS]... [GAME]
+  Usage: cabalexec [OPTIONS]... [GAME]
 
   [GAME]                   Short name of game to load. For example, 'monkey'
                            for Monkey Island. This can be either a built-in
                            gameid, or a user configured target.
 
-  -v, --version            Display ScummVM version information and exit
+  -v, --version            Display Cabal version information and exit
   -h, --help               Display a brief help text and exit
   -z, --list-games         Display list of supported games and exit
   -t, --list-targets       Display list of configured targets and exit
@@ -1174,7 +1147,7 @@ arguments -- see the next section.
   --alt-intro              Use alternative intro for CD versions of Beneath a
                            Steel Sky and Flight of the Amazon Queen
   --copy-protection        Enable copy protection in games, when
-                           ScummVM disables it by default.
+                           Cabal disables it by default.
   --talkspeed=NUM          Set talk delay for SCUMM games, or talk speed for
                            other games (default: 60)
   --demo-mode              Start demo mode of Maniac Mansion (Classic version)
@@ -1195,20 +1168,20 @@ built-in gameid. A brief list of the latter can be found in section 3.0.
 Examples:
  * Win32:
   Running Monkey Island, fullscreen, from a hard disk:
-   C:\Games\LucasArts\scummvm.exe -f -pC:\Games\LucasArts\monkey\ monkey
+   C:\Games\LucasArts\cabalexec.exe -f -pC:\Games\LucasArts\monkey\ monkey
   Running Full Throttle from CD, fullscreen and with subtitles enabled:
-   C:\Games\LucasArts\scummvm.exe -f -n -pD:\resource\ ft
+   C:\Games\LucasArts\cabalexec.exe -f -n -pD:\resource\ ft
 
  * Unix:
   Running Monkey Island, fullscreen, from a hard disk:
-   /path/to/scummvm -f -p/games/LucasArts/monkey/ monkey
+   /path/to/cabalexec -f -p/games/LucasArts/monkey/ monkey
   Running Full Throttle from CD, fullscreen and with subtitles enabled:
-   /path/to/scummvm -f -n -p/cdrom/resource/ ft
+   /path/to/cabalexec -f -n -p/cdrom/resource/ ft
 
 
 5.2) Language options:
 ---- -----------------
-ScummVM includes a language option for Maniac Mansion, Zak McKracken,
+Cabal includes a language option for Maniac Mansion, Zak McKracken,
 The Dig, The Curse of Monkey Island, Beneath a Steel Sky and
 Broken Sword.
 
@@ -1267,7 +1240,7 @@ Broken Sword
 
 5.3) Graphics filters:
 ---- -----------------
-ScummVM offers several anti-aliasing filters to attempt to improve
+Cabal offers several anti-aliasing filters to attempt to improve
 visual quality. These are the same filters used in many other emulators,
 such as MAME. These filters take the original game graphics, and scale
 it by a certain fixed factor (usually 2x or 3x) before displaying them
@@ -1291,15 +1264,15 @@ They are:
     dotmatrix  - Dot matrix effect. Factor 2x.
 
 To select a graphics filter, select it in the Launcher, or pass its name
-via the '-g' option to scummvm, for example:
+via the '-g' option to cabalexec, for example:
 
-    scummvm -gadvmame2x monkey2
+    cabalexec -gadvmame2x monkey2
 
 Note #1: Not all backends support all (or even any) of the filters
 listed above; some may support additional ones. The filters listed above
 are those supported by the default SDL backend.
 
-Note #2: Filters can be very slow when ScummVM is compiled in a debug
+Note #2: Filters can be very slow when Cabal is compiled in a debug
 configuration without optimizations. And there is always a speed impact
 when using any form of anti-aliasing/linear filtering.
 
@@ -1317,7 +1290,7 @@ engines by pressing Ctrl-F5.  From this menu there are the following
 buttons: Resume, Options, About, Return to Launcher, and Quit. Selecting
 'Options' will display a dialog where basic audio settings, such as
 volume levels, can be adjusted. Selecting 'Return to Launcher' will
-close the current game and return the user back to the ScummVM Launcher,
+close the current game and return the user back to the Cabal Launcher,
 where another game may be selected to play.
 
 Note: Returning to the Launcher is not supported by all of the engines,
@@ -1357,7 +1330,7 @@ Engines which currently support returning to the Launcher are:
 
 5.5) Hotkeys:
 ---- --------
-ScummVM supports various in-game hotkeys. They differ between SCUMM games and
+Cabal supports various in-game hotkeys. They differ between SCUMM games and
 other games.
 
   Common:
@@ -1395,7 +1368,7 @@ other games.
     Alt-F5                 - Displays the original save/load box, if the
                              game has one. You can save and load games using
                              using this, however it is not intended for this
-                             purpose, and may even crash ScummVM in some
+                             purpose, and may even crash Cabal in some
                              games.
     i                      - Displays IQ points (Indiana Jones and the Last
                              Crusade, and Indiana Jones and the Fate of
@@ -1555,22 +1528,22 @@ file later in this README.
 
 The platforms that currently have a different default directory are:
     Mac OS X:
-    $HOME/Documents/ScummVM Savegames/
+    $HOME/Documents/Cabal Savegames/
 
     Other unices:
-    $HOME/.scummvm/
+    $HOME/.cabalexec/
 
     Windows Vista/7:
-    \Users\username\AppData\Roaming\ScummVM\Saved games\
+    \Users\username\AppData\Roaming\Cabal\Saved games\
 
     Windows 2000/XP:
-    \Documents and Settings\username\Application Data\ScummVM\Saved games\
+    \Documents and Settings\username\Application Data\Cabal\Saved games\
 
     Windows NT4:
-    <windir>\Profiles\username\Application Data\ScummVM\Saved games\
+    <windir>\Profiles\username\Application Data\Cabal\Saved games\
 
 Saved games are stored under a hidden area in Windows NT4/2000/XP/Vista/7,
-which can be accessed by running "%APPDATA%\ScummVM\Saved Games\" or by
+which can be accessed by running "%APPDATA%\Cabal\Saved Games\" or by
 enabling hidden files in Windows Explorer.
 
 Note for Windows NT4/2000/XP/Vista/7 users: The default saved games location
@@ -1580,7 +1553,7 @@ saved games from the old default location, to the new default location.
 6.1) Autosaves:
 ---- ----------
 For some games (namely "Beneath a Steel Sky", "Flight of the Amazon
-Queen", all AGI games, and all SCUMM games), ScummVM will by default
+Queen", all AGI games, and all SCUMM games), Cabal will by default
 automatically save the current state every five minutes (adjustable via
 the "autosave_period" config setting). For the AGI and SCUMM engines, it
 will save in Slot 0. For the SCUMM engine, this saved game can then be
@@ -1616,7 +1589,7 @@ versions.
   The Feeble Files
     - Rename the saved game to 'feeble.xxx'
 
-Where 'xxx' is exact the saved game slot (ie 001) under ScummVM
+Where 'xxx' is exact the saved game slot (ie 001) under Cabal
 
 
 6.3) Viewing/Loading saved games from the command line:
@@ -1694,7 +1667,7 @@ Where 'xxx' is exact the saved game slot (ie 001) under ScummVM
 
 7.0) Music and Sound:
 ---- ----------------
-On most operating systems and for most games, ScummVM will by default
+On most operating systems and for most games, Cabal will by default
 use MT-32 or AdLib emulation for music playback. MIDI may not be
 available on all operating systems or may need manual configuration. If
 you want to use MIDI, you have several different choices of output,
@@ -1719,26 +1692,26 @@ depending on your operating system and configuration.
     windows    - Windows MIDI. Uses built-in sequencer, for Windows users
 
 To select a sound driver, select it in the Launcher, or pass its name
-via the '-e' option to scummvm, for example:
+via the '-e' option to cabalexec, for example:
 
-    scummvm -eadlib monkey2
+    cabalexec -eadlib monkey2
 
 
 7.1) Playing sound with AdLib emulation:
 ---- -----------------------------------
-By default an AdLib card will be emulated and ScummVM will output the
+By default an AdLib card will be emulated and Cabal will output the
 music as sampled waves. This is the default mode for several games, and
 offers the best compatibility between machines and games.
 
 
 7.2) Playing sound with FluidSynth MIDI emulation:
 ---- ----------------------------------------------
-If ScummVM was build with libfluidsynth support it will be able to play
+If Cabal was build with libfluidsynth support it will be able to play
 MIDI music through the FluidSynth driver. You will have to specify a
 SoundFont to use, however.
 
 Since the default output volume from FluidSynth can be fairly low,
-ScummVM will set the gain by default to get a stronger signal. This can
+Cabal will set the gain by default to get a stronger signal. This can
 be further adjusted using the --midi-gain command-line option, or the
 "midi_gain" config file setting.
 
@@ -1753,14 +1726,14 @@ some cases. A fast CPU is recommended.
 7.3) Playing sound with MT-32 emulation:
 ---- -----------------------------------
 Some games which contain MIDI music data also have improved tracks
-designed for the MT-32 sound module. ScummVM can now emulate this
-device, however you must provide original MT-32 ROMs to make it work:
+designed for the MT-32 sound module. Cabal can emulate this device,
+however you must provide original MT-32 ROMs to make it work:
 
 MT32_PCM.ROM     - IC21 (512KB)
 MT32_CONTROL.ROM - IC26 (32KB) and IC27 (32KB), interleaved byte-wise
 
 Place these ROMs in the game directory, in your extrapath, or in the
-directory where your ScummVM executable resides.
+directory where your Cabal executable resides.
 
 You don't need to specify --native-mt32 with this driver, as it
 automatically gets turned on.
@@ -1774,7 +1747,7 @@ CPU is strongly recommended.
 Some games (such as Sam & Max) only contain MIDI music data.  This once
 prevented music for these games from working on platforms that do not
 support MIDI, or soundcards that do not provide MIDI drivers (e.g. many
-soundcards will not play MIDI under Linux). ScummVM can now emulate MIDI
+soundcards will not play MIDI under Linux). Cabal can now emulate MIDI
 mode using sampled waves and AdLib, FluidSynth MIDI emulation or MT-32
 emulation using the -eadlib, -efluidsynth or -emt32 options
 respectively.  However, if you are capable of using native MIDI, we
@@ -1790,19 +1763,19 @@ Windows MIDI driver, use the -ewindows option.
 
 7.5.1) Using MIDI options to customize Native MIDI output:
 ------ ---------------------------------------------------
-ScummVM supports a variety of MIDI modes, depending on the capabilities
+Cabal supports a variety of MIDI modes, depending on the capabilities
 of your MIDI device.
 
-If --native-mt32 is specified, ScummVM will treat your device as a real
+If --native-mt32 is specified, Cabal will treat your device as a real
 MT-32. Because the instrument mappings and system exclusive commands of
 the MT-32 vary from those of General MIDI devices, you should only
 enable this option if you are using an actual Roland MT-32, LAPC-I,
 CM-64, CM-32L, CM-500, or GS device with an MT-32 map.
 
-If --enable-gs is specified, ScummVM will initialize your GS-compatible
+If --enable-gs is specified, Cabal will initialize your GS-compatible
 device with settings that mimic the MT-32's reverb, (lack of) chorus,
 pitch bend sensitivity, etc. If it is specified in conjunction with
---native-mt32, ScummVM will select the MT-32-compatible map and drumset
+--native-mt32, Cabal will select the MT-32-compatible map and drumset
 on your GS device. This setting works better than default GM or GS
 emulation with games that do not have custom instrument mappings (Loom
 and Monkey1). You should only specify both settings if you are using a
@@ -1810,7 +1783,7 @@ GS device that has an MT-32 map, such as an SC-55, SC-88, SC-88 Pro,
 SC-8820, SC-8850, etc. Please note that --enable-gs is automatically
 disabled in both DOTT and Samnmax, since they use General MIDI natively.
 
-If neither of the above settings is enabled, ScummVM will initialize
+If neither of the above settings is enabled, Cabal will initialize
 your device in General MIDI mode and use GM emulation in games with
 MT-32 soundtracks.
 
@@ -1828,7 +1801,7 @@ example, to /dev/sequencer
 If you have problems with not hearing audio in this configuration, you
 may need to set the environment variable "SCUMMVM_MIDIPORT" to 1 or 2.
 This selects the port on the selected sequencer to use. Then start
-scummvm with the -eseq parameter. This should work on several cards, and
+cabalexec with the -eseq parameter. This should work on several cards, and
 may offer better performance and quality than AdLib emulation. However,
 for those systems where sequencer support does not work, you can always
 fall back on AdLib emulation.
@@ -1911,12 +1884,12 @@ To get a list of configured midi interfaces on your system, run
           Serial Port 2
           Software Synth
 
-In this example, you can configure ScummVM to use the "Software Synth"
+In this example, you can configure Cabal to use the "Software Synth"
 instead of the default "Serial Port 2" by adding a line
 
    dmedia_port=Software Synth
 
-to your configuration file in the section [scummvm], or setting
+to your configuration file in the section [cabal], or setting
 SCUMMVM_PORT=Software Synth in your environment.
 
 
@@ -1931,7 +1904,7 @@ First, you need to start a daemon:
 
   timidity -ir 7777
 
-Now you can start ScummVM and try selection TiMidity music output.  By
+Now you can start Cabal and try selection TiMidity music output.  By
 default, it will connect to localhost:7777, but you can change host/port
 via the "TIMIDITY_HOST" environment variable. You can also specify
 a "device number" using the "SCUMMVM_MIDIPORT" environment variable.
@@ -1943,7 +1916,7 @@ a "device number" using the "SCUMMVM_MIDIPORT" environment variable.
 7.8.0) Using MP3 files for CD audio:
 ------ -----------------------------
 Use LAME or some other MP3 encoder to rip the cd audio tracks to files.
-Name the files track1.mp3 track2.mp3 etc. ScummVM must be compiled with
+Name the files track1.mp3 track2.mp3 etc. Cabal must be compiled with
 MAD support to use this option. You will need to rip the file from the
 CD as a WAV file, then encode the MP3 files in constant bit rate. This
 can be done with the following LAME command line:
@@ -1954,7 +1927,7 @@ can be done with the following LAME command line:
 7.8.1) Using Ogg Vorbis files for CD audio:
 ------ ------------------------------------
 Use oggenc or some other vorbis encoder to encode the audio tracks to
-files. Name the files track1.ogg track2.ogg etc. ScummVM must be
+files. Name the files track1.ogg track2.ogg etc. Cabal must be
 compiled with vorbis support to use this option. You will need to rip
 the files from the CD as a WAV file, then encode the vorbis files. This
 can be done with the following oggenc command line with the value after
@@ -1968,7 +1941,7 @@ q specifying the desired quality from 0 to 10:
 Use flac or some other flac encoder to encode the audio tracks to files.
 Name the files track1.flac track2.flac etc. If your filesystem only
 allows three letter extensions, name the files track1.fla track2.fla
-etc. ScummVM must be compiled with flac support to use this option. You
+etc. Cabal must be compiled with flac support to use this option. You
 will need to rip the files from the CD as a WAV file, then encode the
 flac files. This can be done with the following flac command line:
 
@@ -1981,7 +1954,7 @@ will only affect the encoding time and resulting filesize.
 7.8.3) Compressing MONSTER.SOU with MP3:
 ------ ---------------------------------
 You need LAME, and our 'compress_scumm_sou' utility from the
-scummvm-tools package to perform this task, and ScummVM must be compiled
+cabal-tools package to perform this task, and Cabal must be compiled
 with MAD support.
 
   compress_scumm_sou monster.sou
@@ -1992,7 +1965,7 @@ to your game directory. You can safely remove the monster.sou file.
 
 7.8.4) Compressing MONSTER.SOU with Ogg Vorbis:
 ------ ----------------------------------------
-As above, but ScummVM must be compiled with OGG support. Run:
+As above, but Cabal must be compiled with OGG support. Run:
 
   compress_scumm_sou --vorbis monster.sou
 
@@ -2003,7 +1976,7 @@ of time than MP3, so have a good book handy.
 
 7.8.5) Compressing MONSTER.SOU with Flac:
 ------ ----------------------------------
-As above, but ScummVM must be compiled with Flac support. Run:
+As above, but Cabal must be compiled with Flac support. Run:
 
   compress_scumm_sou --flac monster.sou
 
@@ -2018,9 +1991,9 @@ before you use other values.
 
 7.8.6) Compressing music/sfx/speech in AGOS games:
 ------ -------------------------------------------
-Use our 'compress_agos' utility from the scummvm-tools package to
+Use our 'compress_agos' utility from the cabal-tools package to
 perform this task. You can choose between multiple target formats, but
-note that you can only use each if ScummVM was compiled with the
+note that you can only use each if Cabal was compiled with the
 respective decoder support enabled.
 
   compress_agos effects     (For Acorn CD version of Simon 1)
@@ -2053,7 +2026,7 @@ this file to your game directory. You can safely remove the old file.
 
 7.8.7) Compressing speech/music in Broken Sword:
 ------ -----------------------------------------
-The 'compress_sword1' tool from the scummvm-tools package can encode
+The 'compress_sword1' tool from the cabal-tools package can encode
 music and speech to MP3, Ogg Vorbis as well as Flac. The easiest way
 to encode the files is simply copying the executable into your
 BS1 directory (together with the lame encoder) and run it from there.
@@ -2071,9 +2044,9 @@ Use "compress_sword1 --help" to get a full list of the options.
 
 7.8.8) Compressing speech/music in Broken Sword II:
 ------ --------------------------------------------
-Use our 'compress_sword2' utility from the scummvm-tools package to
+Use our 'compress_sword2' utility from the cabal-tools package to
 perform this task. You can choose between multiple target formats, but
-note  that you can only use each if ScummVM was compiled with the
+note  that you can only use each if Cabal was compiled with the
 respective decoder support enabled.
 
   compress_sword2 speech1.clu
@@ -2098,14 +2071,14 @@ Sword.
 
 7.9) Output sample rate:
 ---- -------------------
-The output sample rate tells ScummVM how many sound samples to play per
+The output sample rate tells Cabal how many sound samples to play per
 channel per second. There is much that could be said on this subject,
 but most of it would be irrelevant here. The short version is that for
 most games 22050 Hz is fine, but in some cases 44100 Hz is preferable.
 On extremely low-end systems you may want to use 11025 Hz, but it is
 unlikely that you have to worry about that.
 
-To elaborate, most of the sounds ScummVM has to play were sampled at
+To elaborate, most of the sounds Cabal has to play were sampled at
 either 22050 Hz or 11025 Hz. Using a higher sample rate will not
 magically improve the quality of these sounds. Hence, 22050 Hz is fine.
 
@@ -2114,14 +2087,14 @@ probably sampled at 44100 Hz, so for these games that may be a better
 choice of sample rate.
 
 When using the AdLib, FM Towns, PC Speaker or IBM PCjr music drivers,
-ScummVM is responsible for generating the samples. Usually 22050 Hz will
+Cabal is responsible for generating the samples. Usually 22050 Hz will
 be plenty for these, but there is at least one piece of AdLib music in
 Beneath a Steel Sky that will sound a lot better at 44100 Hz.
 
 Using frequencies in between is not recommended. For one thing, your
-sound card may not support it. In theory, ScummVM should fall back on a
+sound card may not support it. In theory, Cabal should fall back on a
 sensible frequency in that case, but don't count on it. More
-importantly, ScummVM has to resample all sounds to its output frequency.
+importantly, Cabal has to resample all sounds to its output frequency.
 This is much easier to do well if the output frequency is a multiple of
 the original frequency.
 
@@ -2131,33 +2104,27 @@ the original frequency.
 By default, the configuration file is saved in, and loaded from:
 
     Windows Vista/7:
-    \Users\username\AppData\Roaming\ScummVM\scummvm.ini,
+    \Users\username\AppData\Roaming\Cabal\cabal.ini,
 
     Windows 2000/XP:
-    \Documents and Settings\username\Application Data\ScummVM\scummvm.ini,
+    \Documents and Settings\username\Application Data\Cabal\cabal.ini,
 
     Windows NT4:
-    <windir>\Profiles\username\Application Data\ScummVM\scummvm.ini,
-
-    Windows 95/98/ME:
-    <windir>\scummvm.ini,
-
-    If an earlier version of ScummVM was installed under Windows, the
-    previous default location of '<windir>\scummvm.ini' will be kept.
+    <windir>\Profiles\username\Application Data\Cabal\cabal.ini,
 
     Unix:
-    ~/.scummvmrc
+    ~/.cabalexecrc
 
     Mac OS X:
-    ~/Library/Preferences/ScummVM Preferences
+    ~/Library/Preferences/Cabal Preferences
     (here, ~ refers to your home directory)
 
     Others:
-    scummvm.ini in the current directory
+    cabalexec.ini in the current directory
 
 An example config file looks as follows:
 
-    [scummvm]
+    [cabal]
     gfx_mode=supereagle
     fullscreen=true
     savepath=C:\saves\
@@ -2202,7 +2169,7 @@ The following keywords are recognized:
     save_slot          number   The saved game number to load on startup.
     savepath           string   The path to where a game will store its
                                 saved games.
-    versioninfo        string   The version of the ScummVM that created the
+    versioninfo        string   The version of the Cabal that created the
                                 configuration file.
 
     gameid             string   The real id of a game. Useful if you have
@@ -2255,7 +2222,7 @@ The following keywords are recognized:
                                 supported by some MIDI drivers.)
 
     copy_protection    bool     Enable copy protection in certain games, in
-                                those cases where ScummVM disables it by
+                                those cases where Cabal disables it by
                                 default.
     demo_mode          bool     Start demo in Maniac Mansion
     alt_intro          bool     Use alternative intro for CD versions of
@@ -2267,7 +2234,7 @@ The following keywords are recognized:
 Sierra games using the AGI engine add the following non-standard keywords:
 
     originalsaveload   bool     If true, the original save/load screens are
-                                used instead of the enhanced ScummVM ones
+                                used instead of the enhanced Cabal ones
     altamigapalette    bool     Use an alternative palette, common for all
                                 Amiga games. This was the old behavior
     mousesupport       bool     Enables mouse support. Allows to use mouse
@@ -2279,7 +2246,7 @@ Sierra games using the SCI engine add the following non-standard keywords:
     prefer_digitalsfx  bool     If true, digital sound effects are preferred
                                 instead of synthesized ones
     originalsaveload   bool     If true, the original save/load screens are
-                                used instead of the enhanced ScummVM ones
+                                used instead of the enhanced Cabal ones
     native_fb01        bool     If true, the music driver for an IBM Music
                                 Feature card or a Yamaha FB-01 FM synth module
                                 is used for MIDI output
@@ -2366,7 +2333,7 @@ keywords:
 The Neverhood adds the following non-standard keywords:
 
     originalsaveload   bool     If true, the original save/load screens are
-                                used instead of the enhanced ScummVM ones
+                                used instead of the enhanced Cabal ones
     skiphallofrecordsscenes     bool
                                 If true, allows the player to skip
                                 past the Hall of Records storyboard scenes
@@ -2384,7 +2351,7 @@ The 7th Guest adds the following non-standard keyword:
 Zork Nemesis: The Forbidden Lands adds the following non-standard keywords:
 
     originalsaveload   bool     If true, the original save/load screens are
-                                used instead of the enhanced ScummVM ones
+                                used instead of the enhanced Cabal ones
     doublefps          bool     If true, game FPS are increased from 30 to 60
     venusenabled       bool     If true, the in-game Venus help system is
                                 enabled
@@ -2394,7 +2361,7 @@ Zork Nemesis: The Forbidden Lands adds the following non-standard keywords:
 Zork: Grand Inquisitor adds the following non-standard keywords:
 
     originalsaveload   bool     If true, the original save/load screens are
-                                used instead of the enhanced ScummVM ones
+                                used instead of the enhanced Cabal ones
     doublefps          bool     If true, game FPS are increased from 30 to 60
     noanimwhileturning bool     If true, animations are disabled while turning
                                 in panoramic mode
@@ -2409,13 +2376,13 @@ A lot of the custom game options in the previous section can be toggled via the
 GUI. If a custom option is available for a specific game, a new tab called
 "Engine" will appear when adding or editing the configuration of that game.
 If the custom options are not shown, the games in question will need to be run
-once or readded in the ScummVM launcher's game list. This will update the
+once or readded in the Cabal launcher's game list. This will update the
 configuration of each entry, allowing the custom options to be shown.
 
 
 9.0) Compiling:
 ---- ----------
-For an up-to-date overview on how to compile ScummVM for various
+For an up-to-date overview on how to compile Cabal for various
 platforms, please consult our Wiki, in particular this page:
    http://wiki.scummvm.org/index.php/Compiling_ScummVM
 
@@ -2427,7 +2394,7 @@ tracks or .SOU files, you will need to install the MAD library; likewise
 you will need the appropriate libraries for Ogg Vorbis and FLAC
 compressed sound. For compressed save states, zlib is required.
 
-Some parts of ScummVM, particularly scalers, have highly optimized
+Some parts of Cabal, particularly scalers, have highly optimized
 versions written in assembler. If you wish to use this option, you will
 need to install nasm assembler (see http://nasm.sf.net). Note that
 currently we have only x86 MMX optimized versions, and they will not
@@ -2440,7 +2407,7 @@ debug messages (see https://technet.microsoft.com/en-us/sysinternals/debugview.a
   GCC and MinGW32:
     * Type "./configure"
     * Type "make" (or "gmake", or "gnumake", depending on what GNU make is
-      called on your system) and hopefully ScummVM will compile for you.
+      called on your system) and hopefully Cabal will compile for you.
     * For more information refer to:
       http://wiki.scummvm.org/index.php/Compiling_ScummVM/GCC
       respectively
@@ -2467,10 +2434,10 @@ debug messages (see https://technet.microsoft.com/en-us/sysinternals/debugview.a
       way to get that is to install SDL via Fink (http://fink.sf.net).
       Alternatively you could compile SDL manually from source using its
       unix build system (configure && make).
-    * Type "./configure" in the ScummVM directory.
+    * Type "./configure" in the Cabal directory.
     * You can now type 'make' to create a command line binary.
     * To get a version you can run from Finder, type 'make bundle' which
-      will create ScummVM.app (this tries to detect where the static libraries
+      will create Cabal.app (this tries to detect where the static libraries
       are installed, which should work in most cases, but if it doesn't you
       will need to specify this path with --with-staticlib-prefix= when calling
       configure - for example "./configure --with-staticlib-prefix=/Users/foo"
@@ -2501,6 +2468,6 @@ debug messages (see https://technet.microsoft.com/en-us/sysinternals/debugview.a
 
 ------------------------------------------------------------------------
 Good Luck and Happy Adventuring!
-The ScummVM team.
-http://www.scummvm.org/
+The Cabal team.
+http://project-cabal.org/
 ------------------------------------------------------------------------

@@ -1,4 +1,4 @@
-Thank you for considering contributing to ScummVM.
+Thank you for considering contributing to Cabal.
 
 Please make sure to read our guidelines for contributions on our
 [wiki](http://wiki.scummvm.org/index.php/Developer_Central). In particular:
@@ -9,4 +9,4 @@ Please make sure to read our guidelines for contributions on our
 * License: GPLv2+
 
 If you have any questions about code, style, procedure, or anything else, feel
-free to contact us on our mailing list at scummvm-devel@lists.sourceforge.net.
+free to contact us at <clone2727 at gmail.com>.

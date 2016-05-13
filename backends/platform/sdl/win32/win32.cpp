@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -19,6 +19,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
  */
+
+// Based on the ScummVM (GPLv2+) file of the same name
 
 // Disable symbol overrides so that we can use system headers.
 #define FORBIDDEN_SYMBOL_ALLOW_ALL
@@ -43,7 +45,7 @@
 
 #include "common/memstream.h"
 
-#define DEFAULT_CONFIG_FILE "scummvm.ini"
+#define DEFAULT_CONFIG_FILE "cabalexec.ini"
 
 void OSystem_Win32::init() {
 	// Initialize File System Factory
@@ -72,7 +74,7 @@ void OSystem_Win32::initBackend() {
 			freopen("CONOUT$","w",stdout);
 			freopen("CONOUT$","w",stderr);
 		}
-		SetConsoleTitle("ScummVM Status Window");
+		SetConsoleTitle("Cabal Status Window");
 	} else {
 		FreeConsole();
 	}
@@ -155,10 +157,10 @@ Common::String OSystem_Win32::getDefaultConfigFileName() {
 			}
 		}
 
-		strcat(configFile, "\\ScummVM");
+		strcat(configFile, "\\Cabal");
 		if (!CreateDirectory(configFile, NULL)) {
 			if (GetLastError() != ERROR_ALREADY_EXISTS)
-				error("Cannot create ScummVM application data folder");
+				error("Cannot create Cabal application data folder");
 		}
 
 		strcat(configFile, "\\" DEFAULT_CONFIG_FILE);
@@ -217,11 +219,11 @@ Common::WriteStream *OSystem_Win32::createLogFile() {
 			CreateDirectory(logFile, NULL);
 		}
 
-		strcat(logFile, "\\ScummVM");
+		strcat(logFile, "\\Cabal");
 		CreateDirectory(logFile, NULL);
 		strcat(logFile, "\\Logs");
 		CreateDirectory(logFile, NULL);
-		strcat(logFile, "\\scummvm.log");
+		strcat(logFile, "\\cabalexec.log");
 
 		Common::FSNode file(logFile);
 		Common::WriteStream *stream = file.createWriteStream();

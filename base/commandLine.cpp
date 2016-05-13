@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -19,6 +19,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
  */
+
+// Based on the ScummVM (GPLv2+) file of the same namea
 
 // FIXME: Avoid using printf
 #define FORBIDDEN_SYMBOL_EXCEPTION_printf
@@ -61,9 +63,9 @@ static const char USAGE_STRING[] =
 static const char HELP_STRING[] = "NoUsageString"; // save more data segment space
 #else
 static const char HELP_STRING[] =
-	"ScummVM - Graphical Adventure Game Interpreter\n"
+	"Cabal - Legacy Game Interpreter\n"
 	"Usage: %s [OPTIONS]... [GAME]\n"
-	"  -v, --version            Display ScummVM version information and exit\n"
+	"  -v, --version            Display Cabal version information and exit\n"
 	"  -h, --help               Display a brief help text and exit\n"
 	"  -z, --list-games         Display list of supported games and exit\n"
 	"  -t, --list-targets       Display list of configured targets and exit\n"
@@ -124,7 +126,7 @@ static const char HELP_STRING[] =
 	"                           Steel Sky and Flight of the Amazon Queen\n"
 #endif
 	"  --copy-protection        Enable copy protection in SCUMM games, when\n"
-	"                           ScummVM disables it by default.\n"
+	"                           Cabal disables it by default.\n"
 	"  --talkspeed=NUM          Set talk speed for games (default: 60)\n"
 #if defined(ENABLE_SCUMM) || defined(ENABLE_GROOVIE)
 	"  --demo-mode              Start demo mode of Maniac Mansion or The 7th Guest\n"
@@ -143,7 +145,7 @@ static const char HELP_STRING[] =
 ;
 #endif
 
-static const char *s_appName = "scummvm";
+static const char *s_appName = "cabalexec";
 
 static void NORETURN_PRE usage(const char *s, ...) GCC_PRINTF(1, 2) NORETURN_POST;
 
@@ -897,7 +899,7 @@ void upgradeTargets() {
 
 		// TODO: We could also update the description. But not everybody will want that.
 		// Esp. because for some games (e.g. the combined Zak/Loom FM-TOWNS demo etc.)
-		// ScummVM still generates an incorrect description string. So, the description
+		// Cabal still generates an incorrect description string. So, the description
 		// should only be updated if the user explicitly requests this.
 #if 0
 		if (desc != g->description()) {
@@ -947,8 +949,8 @@ bool processSettings(Common::String &command, Common::StringMap &settings, Commo
 		listAudioDevices();
 		return true;
 	} else if (command == "version") {
-		printf("%s\n", gScummVMFullVersion);
-		printf("Features compiled in: %s\n", gScummVMFeatures);
+		printf("%s\n", Cabal::getFullVersion());
+		printf("Features compiled in: %s\n", Cabal::getFeatures());
 		return true;
 	} else if (command == "help") {
 		printf(HELP_STRING, s_appName);

@@ -1,12 +1,12 @@
 .\"	$Id$
-.Dd December 15, 2004
-.Dt SCUMMVM 6
+.Dd May 13, 2016
+.Dt CABAL 6
 .Os
 .Sh NAME
-.Nm scummvm
-.Nd graphic adventure game interpreter
+.Nm cabalexec
+.Nd legacy game interpreter
 .Sh SYNOPSIS
-.Nm scummvm
+.Nm cabalexec
 .Op Ar options
 .Op Ar game
 .Sh DESCRIPTION
@@ -150,7 +150,7 @@ Enable script dumping if a directory called
 .Ql dumps
 exists in the current directory.
 .It Fl v
-Display ScummVM version information and exit.
+Display Cabal version information and exit.
 .It Fl x Ar slot
 Save game
 .Ar slot
@@ -166,7 +166,7 @@ Enable aspect ratio correction.
 .It Fl -cdrom= Ns Ar num
 CD drive to play CD audio from (default: 0 = first drive).
 .It Fl -copy-protection
-Enable copy protection in SCUMM games, when ScummVM disables it
+Enable copy protection in SCUMM games, when Cabal disables it
 by default.
 .It Fl -demo-mode
 Start demo mode of Maniac Mansion.
@@ -227,7 +227,7 @@ Toggle aspect-ratio correction
 Toggle full screen/windowed
 .El
 .Sh ENVIRONMENT
-.Bl -tag -width SCUMMVM
+.Bl -tag -width CABAL
 .It Ev SCUMMVM_MIDI
 The sequencer device to use with the
 .Ql seq
@@ -243,31 +243,32 @@ MIDI driver.
 .El
 .Sh FILES
 .Bl -tag -width Ds
-.It Pa $HOME/.scummvmrc
+.It Pa $HOME/.cabalexecrc
 Configuration file on UNIX.
-.It Pa "$HOME/Library/Preferences/ScummVM Preferences"
+.It Pa "$HOME/Library/Preferences/Cabal Preferences"
 Configuration file on Mac OS X.
 .El
 .Sh EXAMPLES
 Running the builtin game launcher:
 .Pp
-.Dl $ scummvm
+.Dl $ cabalexec
 .Pp
 Running Day of the Tentacle specifying the path:
 .Pp
-.Dl $ scummvm -p /usr/local/share/games/tentacle tentacle
+.Dl $ cabalexec -p /usr/local/share/games/tentacle tentacle
 .Pp
 Running The Dig with advmame2x filter with subtitles:
 .Pp
-.Dl $ scummvm -g advmame2x -n dig
+.Dl $ cabalexec -g advmame2x -n dig
 .Pp
 Running the Italian version of Maniac Mansion fullscreen:
 .Pp
-.Dl $ scummvm -q it -f maniac
+.Dl $ cabalexec -q it -f maniac
 .Sh SEE ALSO
 More information can be found in the README and on the website
-.Pa http://www.scummvm.org .
+.Pa http://project-cabal.org .
 .Sh AUTHORS
-This manual page written by Jonathan Gray <khalek at scummvm.org>.
-ScummVM was written by the ScummVM team.
+This manual page written by Matthew Hoops <clone2727 at gmail.com>
+based on work done by Jonathan Gray <khalek at scummvm.org>.
+Cabal was written by the Cabal team.
 See AUTHORS file for more information.

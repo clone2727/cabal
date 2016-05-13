@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -19,6 +19,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
  */
+
+// Based on the ScummVM (GPLv2+) file of the same name
 
 #include "base/version.h"
 
@@ -414,7 +416,7 @@ void EditGameDialog::open() {
 	// Set the state of engine-specific checkboxes
 	for (uint j = 0; j < _engineOptions.size(); ++j) {
 		// The default values for engine-specific checkboxes are not set when
-		// ScummVM starts, as this would require us to load and poll all of the
+		// Cabal starts, as this would require us to load and poll all of the
 		// engine plugins on startup. Thus, we set the state of each custom
 		// option checkbox to what is specified by the engine plugin, and
 		// update it only if a value has been set in the configuration of the
@@ -610,17 +612,17 @@ LauncherDialog::LauncherDialog()
 		_logo->useThemeTransparency(true);
 		_logo->setGfx(g_gui.theme()->getImageSurface(ThemeEngine::kImageLogo));
 
-		new StaticTextWidget(this, "Launcher.Version", gScummVMVersionDate);
+		new StaticTextWidget(this, "Launcher.Version", Cabal::getVersionDate());
 	} else
-		new StaticTextWidget(this, "Launcher.Version", gScummVMFullVersion);
+		new StaticTextWidget(this, "Launcher.Version", Cabal::getFullVersion());
 #else
-	// Show ScummVM version
-	new StaticTextWidget(this, "Launcher.Version", gScummVMFullVersion);
+	// Show Cabal version
+	new StaticTextWidget(this, "Launcher.Version", Cabal::getFullVersion());
 #endif
 
-	new ButtonWidget(this, "Launcher.QuitButton", _("~Q~uit"), _("Quit ScummVM"), kQuitCmd);
-	new ButtonWidget(this, "Launcher.AboutButton", _("A~b~out..."), _("About ScummVM"), kAboutCmd);
-	new ButtonWidget(this, "Launcher.OptionsButton", _("~O~ptions..."), _("Change global ScummVM options"), kOptionsCmd);
+	new ButtonWidget(this, "Launcher.QuitButton", _("~Q~uit"), _("Quit Cabal"), kQuitCmd);
+	new ButtonWidget(this, "Launcher.AboutButton", _("A~b~out..."), _("About Cabal"), kAboutCmd);
+	new ButtonWidget(this, "Launcher.OptionsButton", _("~O~ptions..."), _("Change global Cabal options"), kOptionsCmd);
 	_startButton =
 		new ButtonWidget(this, "Launcher.StartButton", _("~S~tart"), _("Start selected game"), kStartCmd);
 
@@ -833,7 +835,7 @@ void LauncherDialog::addGame() {
 			Common::FSNode dir(_browser->getResult());
 			Common::FSList files;
 			if (!dir.getChildren(files, Common::FSNode::kListAll)) {
-				MessageDialog alert(_("ScummVM couldn't open the specified directory!"));
+				MessageDialog alert(_("Cabal couldn't open the specified directory!"));
 				alert.runModal();
 				return;
 			}
@@ -845,7 +847,7 @@ void LauncherDialog::addGame() {
 			int idx;
 			if (candidates.empty()) {
 				// No game was found in the specified directory
-				MessageDialog alert(_("ScummVM could not find any game in the specified directory!"));
+				MessageDialog alert(_("Cabal could not find any game in the specified directory!"));
 				alert.runModal();
 				idx = -1;
 
@@ -951,7 +953,7 @@ void LauncherDialog::removeGame(int item) {
 
 void LauncherDialog::editGame(int item) {
 	// Set game specific options. Most of these should be "optional", i.e. by
-	// default set nothing and use the global ScummVM settings. E.g. the user
+	// default set nothing and use the global Cabal settings. E.g. the user
 	// can set here an optional alternate music volume, or for specific games
 	// a different music driver etc.
 	// This is useful because e.g. MonkeyVGA needs AdLib music to have decent
@@ -1005,7 +1007,7 @@ void LauncherDialog::loadGame(int item) {
 			dialog.runModal();
 		}
 	} else {
-		MessageDialog dialog(_("ScummVM could not find any engine capable of running the selected game!"), _("OK"));
+		MessageDialog dialog(_("Cabal could not find any engine capable of running the selected game!"), _("OK"));
 		dialog.runModal();
 	}
 }
@@ -1137,7 +1139,7 @@ void LauncherDialog::reflowLayout() {
 		StaticTextWidget *ver = (StaticTextWidget *)findWidget("Launcher.Version");
 		if (ver) {
 			ver->setAlign(g_gui.xmlEval()->getWidgetTextHAlign("Launcher.Version"));
-			ver->setLabel(gScummVMVersionDate);
+			ver->setLabel(Cabal::getVersionDate());
 		}
 
 		if (!_logo)
@@ -1148,7 +1150,7 @@ void LauncherDialog::reflowLayout() {
 		StaticTextWidget *ver = (StaticTextWidget *)findWidget("Launcher.Version");
 		if (ver) {
 			ver->setAlign(g_gui.xmlEval()->getWidgetTextHAlign("Launcher.Version"));
-			ver->setLabel(gScummVMFullVersion);
+			ver->setLabel(Cabal::getFullVersion());
 		}
 
 		if (_logo) {

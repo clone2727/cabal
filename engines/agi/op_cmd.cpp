@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -19,6 +19,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
  */
+
+// Based on the ScummVM (GPLv2+) file of the same name
 
 #include "base/version.h"
 
@@ -50,13 +52,12 @@ namespace Agi {
 
 #define getGameID() state->_vm->getGameID()
 #define getFeatures() state->_vm->getFeatures()
-#define getVersion() state->_vm->getVersion()
 #define getLanguage() state->_vm->getLanguage()
 #define setflag(a,b) state->_vm->setflag(a,b)
 #define getflag(a) state->_vm->getflag(a)
 
 void cmdIncrement(AgiGame *state, uint8 *p) {
-	if (getVersion() < 0x2000) {
+	if (state->_vm->getVersion() < 0x2000) {
 		if (_v[p0] < 0xf0)
 			++_v[p0];
 	} else {
@@ -153,7 +154,7 @@ void cmdToggle(AgiGame *state, uint8 *p) {
 }
 
 void cmdSetV(AgiGame *state, uint8 *p) {
-	if (getVersion() < 0x2000) {
+	if (state->_vm->getVersion() < 0x2000) {
 		_v[p0] = 1;
 	} else {
 		setflag(_v[p0], true);
@@ -161,7 +162,7 @@ void cmdSetV(AgiGame *state, uint8 *p) {
 }
 
 void cmdResetV(AgiGame *state, uint8 *p) {
-	if (getVersion() < 0x2000) {
+	if (state->_vm->getVersion() < 0x2000) {
 		_v[p0] = 0;
 	} else {
 		setflag(_v[p0], false);
@@ -169,7 +170,7 @@ void cmdResetV(AgiGame *state, uint8 *p) {
 }
 
 void cmdToggleV(AgiGame *state, uint8 *p) {
-	if (getVersion() < 0x2000) {
+	if (state->_vm->getVersion() < 0x2000) {
 		_v[p0] ^= 1;
 	} else {
 		setflag(_v[p0], !getflag(_v[p0]));
@@ -327,7 +328,7 @@ void cmdLastCel(AgiGame *state, uint8 *p) {
 void cmdSetCel(AgiGame *state, uint8 *p) {
 	state->_vm->setCel(&vt, p1);
 
-	if (getVersion() >= 0x2000) {
+	if (state->_vm->getVersion() >= 0x2000) {
 		vt.flags &= ~fDontupdate;
 	}
 }
@@ -536,7 +537,7 @@ void cmdCancelLine(AgiGame *state, uint8 *p) {
 }
 
 // This implementation is based on observations of Amiga's Gold Rush.
-// You can try this out (in the original and in ScummVM) by writing "bird man"
+// You can try this out (in the original and in Cabal) by writing "bird man"
 // to enter Gold Rush's debug mode and then writing "show position" or "sp".
 // TODO: Make the cycle and motion status lines more like in Amiga's Gold Rush.
 // TODO: Add control status line (After stepsize, before cycle status).
@@ -642,19 +643,19 @@ void cmdSetSimple(AgiGame *state, uint8 *p) {
 }
 
 void cmdPopScript(AgiGame *state, uint8 *p) {
-	if (getVersion() >= 0x2915) {
+	if (state->_vm->getVersion() >= 0x2915) {
 		debug(0, "pop.script");
 	}
 }
 
 void cmdHoldKey(AgiGame *state, uint8 *p) {
-	if (getVersion() >= 0x3098) {
+	if (state->_vm->getVersion() >= 0x3098) {
 		state->_vm->_egoHoldKey = true;
 	}
 }
 
 void cmdDiscardSound(AgiGame *state, uint8 *p) {
-	if (getVersion() >= 0x2936) {
+	if (state->_vm->getVersion() >= 0x2936) {
 		debug(0, "discard.sound");
 	}
 }
@@ -673,7 +674,7 @@ void cmdHideMouse(AgiGame *state, uint8 *p) {
 }
 
 void cmdAllowMenu(AgiGame *state, uint8 *p) {
-	if (getVersion() >= 0x3098) {
+	if (state->_vm->getVersion() >= 0x3098) {
 		setflag(fMenusWork, ((p0 != 0) ? true : false));
 	}
 }
@@ -689,7 +690,7 @@ void cmdFenceMouse(AgiGame *state, uint8 *p) {
 }
 
 void cmdReleaseKey(AgiGame *state, uint8 *p) {
-	if (getVersion() >= 0x3098) {
+	if (state->_vm->getVersion() >= 0x3098) {
 		state->_vm->_egoHoldKey = false;
 	}
 }
@@ -853,7 +854,7 @@ void cmdShowPriScreen(AgiGame *state, uint8 *p) {
 }
 
 void cmdAnimateObj(AgiGame *state, uint8 *p) {
-	if (getVersion() < 0x2000) {
+	if (state->_vm->getVersion() < 0x2000) {
 		if (vt.flags & fDidntMove)
 			return;
 	} else {
@@ -864,7 +865,7 @@ void cmdAnimateObj(AgiGame *state, uint8 *p) {
 	debugC(4, kDebugLevelScripts, "animate vt entry #%d", p0);
 	vt.flags = fAnimated | fUpdate | fCycling;
 
-	if (getVersion() < 0x2000) {
+	if (state->_vm->getVersion() < 0x2000) {
 		vt.flags |= fDidntMove;
 	}
 
@@ -890,7 +891,7 @@ void cmdDraw(AgiGame *state, uint8 *p) {
 	debugC(4, kDebugLevelScripts, "draw entry %d", vt.entry);
 
 	vt.flags |= fUpdate;
-	if (getVersion() >= 0x3000) {
+	if (state->_vm->getVersion() >= 0x3000) {
 		state->_vm->setLoop(&vt, vt.currentLoop);
 		state->_vm->setCel(&vt, vt.currentCel);
 	}
@@ -905,7 +906,7 @@ void cmdDraw(AgiGame *state, uint8 *p) {
 	// WORKAROUND: This fixes a bug with AGI Fanmade game Space Trek.
 	// The original workaround checked if AGI version was <= 2.440, which could
 	// cause regressions with some AGI games. The original workaround no longer
-	// works for Space Trek in ScummVM, as all fanmade games are set to use
+	// works for Space Trek in Cabal, as all fanmade games are set to use
 	// AGI version 2.917, but it applies to all other games where AGI version is
 	// <= 2.440, which was not the original purpose of this workaround. It is
 	// assumed that this bug is caused by AGI Studio, so this applies to all
@@ -1147,7 +1148,7 @@ void cmdFollowEgo(AgiGame *state, uint8 *p) {
 	vt.parm2 = p2;
 	vt.parm3 = 0xff;
 
-	if (getVersion() < 0x2000) {
+	if (state->_vm->getVersion() < 0x2000) {
 		_v[p2] = 0;
 		vt.flags |= fUpdate | fAnimated;
 	} else {
@@ -1168,7 +1169,7 @@ void cmdMoveObj(AgiGame *state, uint8 *p) {
 	if (p3 != 0)
 		vt.stepSize = p3;
 
-	if (getVersion() < 0x2000) {
+	if (state->_vm->getVersion() < 0x2000) {
 		_v[p4] = 0;
 		vt.flags |= fUpdate | fAnimated;
 	} else {
@@ -1180,7 +1181,7 @@ void cmdMoveObj(AgiGame *state, uint8 *p) {
 		state->playerControl = false;
 
 	// AGI 2.272 (ddp, xmas) doesn't call move_obj!
-	if (getVersion() > 0x2272)
+	if (state->_vm->getVersion() > 0x2272)
 		state->_vm->moveObj(&vt);
 }
 
@@ -1201,7 +1202,7 @@ void cmdMoveObjF(AgiGame *state, uint8 *p) {
 		state->playerControl = false;
 
 	// AGI 2.272 (ddp, xmas) doesn't call move_obj!
-	if (getVersion() > 0x2272)
+	if (state->_vm->getVersion() > 0x2272)
 		state->_vm->moveObj(&vt);
 }
 
@@ -1210,7 +1211,7 @@ void cmdWander(AgiGame *state, uint8 *p) {
 		state->playerControl = false;
 
 	vt.motion = kMotionWander;
-	if (getVersion() < 0x2000) {
+	if (state->_vm->getVersion() < 0x2000) {
 		vt.flags |= fUpdate | fAnimated;
 	} else {
 		vt.flags |= fUpdate;
@@ -1271,12 +1272,12 @@ void cmdVersion(AgiGame *state, uint8 *p) {
 
 	Common::String verMsg = TITLE " v%s";
 
-	int ver = getVersion();
+	int ver = state->_vm->getVersion();
 	int maj = (ver >> 12) & 0xf;
 	int min = ver & 0xfff;
 
 	verMsg += (maj == 2 ? ver2Msg : ver3Msg);
-	verMsg = Common::String::format(verMsg.c_str(), gScummVMVersion, maj, min);
+	verMsg = Common::String::format(verMsg.c_str(), Cabal::getVersion(), maj, min);
 
 	state->_vm->messageBox(verMsg.c_str());
 }
@@ -1531,7 +1532,7 @@ void cmdSetString(AgiGame *state, uint8 *p) {
 
 void cmdDisplay(AgiGame *state, uint8 *p) {
 	// V1 has 4 args
-	int t = (getVersion() >= 0x2000 ? p2 : p3);
+	int t = (state->_vm->getVersion() >= 0x2000 ? p2 : p3);
 	int len = 40;
 
 	char *s = state->_vm->wordWrapString(state->_curLogic->texts[t - 1], &len);
@@ -1627,7 +1628,7 @@ void cmdPushScript(AgiGame *state, uint8 *p) {
 		state->vars[28] = state->_vm->_mouse.x / 2;
 		state->vars[29] = state->_vm->_mouse.y;
 	/*} else {
-		if (getVersion() >= 0x2915) {
+		if (state->_vm->getVersion() >= 0x2915) {
 			debug(0, "push.script");
 		}
 	}*/
@@ -1793,7 +1794,7 @@ int AgiEngine::runLogic(int n) {
 			debugC(2, kDebugLevelScripts, "%sreturn() // Logic %d", st, n);
 			debugC(2, kDebugLevelScripts, "=================");
 
-//			if (getVersion() < 0x2000) {
+//			if (state->_vm->getVersion() < 0x2000) {
 //				if (logic_index < state->max_logics) {
 //					n = state->logic_list[++logic_index];
 //					state->_curLogic = &state->logics[n];

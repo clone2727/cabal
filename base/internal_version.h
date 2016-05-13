@@ -4,16 +4,16 @@
 
 // Reads revision number from file
 // (this is used when building with Visual Studio)
-#ifdef SCUMMVM_INTERNAL_REVISION
+#ifdef CABAL_INTERNAL_REVISION
 #include "internal_revision.h"
 #endif
 
 #ifdef RELEASE_BUILD
-#undef SCUMMVM_REVISION
+#undef CABAL_REVISION
 #endif
 
-#ifndef SCUMMVM_REVISION
-#define SCUMMVM_REVISION
+#ifndef CABAL_REVISION
+#define CABAL_REVISION
 #endif
 
-#define SCUMMVM_VERSION "1.8.0git" SCUMMVM_REVISION
+#define CABAL_VERSION "1.0.0git" CABAL_REVISION

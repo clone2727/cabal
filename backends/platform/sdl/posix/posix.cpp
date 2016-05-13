@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -19,6 +19,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
  */
+
+// Based on the ScummVM (GPLv2+) file of the same name
 
 #define FORBIDDEN_SYMBOL_EXCEPTION_getenv
 #define FORBIDDEN_SYMBOL_EXCEPTION_mkdir
@@ -107,7 +109,7 @@ Common::WriteStream *OSystem_POSIX::createLogFile() {
 #ifdef MACOSX
 	logFile += "/Library";
 #else
-	logFile += "/.scummvm";
+	logFile += "/.cabalexec";
 #endif
 #ifdef SAMSUNGTV
 	logFile = "/mtd_ram";
@@ -151,7 +153,7 @@ Common::WriteStream *OSystem_POSIX::createLogFile() {
 		return 0;
 	}
 
-	logFile += "/scummvm.log";
+	logFile += "/cabalexec.log";
 
 	Common::FSNode file(logFile);
 	Common::WriteStream *stream = file.createWriteStream();
@@ -165,7 +167,7 @@ bool OSystem_POSIX::displayLogFile() {
 		return false;
 
 	// FIXME: This may not work perfectly when in fullscreen mode.
-	// On my system it drops from fullscreen without ScummVM noticing,
+	// On my system it drops from fullscreen without Cabal noticing,
 	// so the next Alt-Enter does nothing, going from windowed to windowed.
 	// (wjp, 20110604)
 

@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -19,6 +19,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
  */
+
+// Based on the ScummVM (GPLv2+) file of the same name
 
 #ifdef ENABLE_EOB
 
@@ -119,7 +121,7 @@ int DarkMoonEngine::mainMenu() {
 
 			of = _screen->setFont(Screen::FID_6_FNT);
 			op = _screen->setCurPage(2);
-			Common::String versionString(Common::String::format("ScummVM %s", gScummVMVersion));
+			Common::String versionString(Common::String::format("Cabal %s", Cabal::getVersion()));
 			_screen->printText(versionString.c_str(), 267 - versionString.size() * 6, 160, 13, 0);
 			_screen->setFont(of);
 			_screen->_curPage = op;

@@ -18,6 +18,8 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
+# TODO: Adapt for Cabal
+
 #!define _DEBUG
 #!define _INCLUDE_DATA_FILES
 !define _ENABLE_GAME_EXPLORER
@@ -72,7 +74,7 @@ Name ScummVM
 # General Symbol Definitions
 #########################################################################################
 !define REGKEY      "Software\$(^Name)\$(^Name)"
-!define VERSION     "1.8.0git"
+!define VERSION     "@VERSION@"
 !define COMPANY     "ScummVM Team"
 !define URL         "http://scummvm.org/"
 !define DESCRIPTION "ScummVM Installer. Look! A three headed monkey (TM)!"
@@ -92,7 +94,7 @@ XPStyle  on
 #TargetMinimalOS 5.0    ; Minimal version of windows for installer: Windows 2000 or more recent
                         ; (will build unicode installer with NSIS 2.50+)
 
-VIProductVersion 1.8.0.0
+VIProductVersion @VER_MAJOR@.@VER_MINOR@.@VER_PATCH@.0
 VIAddVersionKey  ProductName      $(^Name)
 VIAddVersionKey  ProductVersion  "${VERSION}"
 VIAddVersionKey  CompanyName     "${COMPANY}"

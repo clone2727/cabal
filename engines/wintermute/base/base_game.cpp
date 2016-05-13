@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -19,6 +19,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
  */
+
+// Based on the ScummVM (GPLv2+) file of the same name
 
 /*
  * This file is based on WME Lite.
@@ -478,7 +480,7 @@ void BaseGame::DEBUG_DebugEnable(const char *filename) {
 	LOG(0, "********** DEBUG LOG OPENED %02d-%02d-%02d (Release Build) *****************", hours, mins, secs);
 #endif
 
-	LOG(0, "%s - %s ver %d.%d.%d%s ", gScummVMFullVersion, DCGF_NAME, DCGF_VER_MAJOR, DCGF_VER_MINOR, DCGF_VER_BUILD, DCGF_VER_SUFFIX);
+	LOG(0, "%s - %s ver %d.%d.%d%s ", Cabal::getFullVersion(), DCGF_NAME, DCGF_VER_MAJOR, DCGF_VER_MINOR, DCGF_VER_BUILD, DCGF_VER_SUFFIX);
 
 	AnsiString platform = BasePlatform::getPlatformName();
 	LOG(0, "Platform: %s", platform.c_str());
@@ -2328,7 +2330,7 @@ ScValue *BaseGame::scGetProperty(const Common::String &name) {
 	//////////////////////////////////////////////////////////////////////////
 	else if (name == "Store") {
 		_scValue->setNULL();
-		error("Request for a SXStore-object, which is not supported by ScummVM");
+		error("Request for a SXStore-object, which is not supported by Cabal");
 
 		return _scValue;
 	} else {

@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -20,7 +20,7 @@
  *
  */
 
-
+// Based on the ScummVM (GPLv2+) file of the same name
 
 #include "base/version.h"
 
@@ -920,7 +920,7 @@ int32 IMuseInternal::doCommand_internal(int numargs, int a[]) {
 			// animation plays too slowly, and then the music is
 			// manually unpaused for the next part of the music.
 			//
-			// In ScummVM, the animation finishes slightly too
+			// In Cabal, the animation finishes slightly too
 			// quickly, and the pause command is run *after* the
 			// unpause command. So we work around it by ignoring
 			// all attempts at pausing this particular sound.
@@ -1448,7 +1448,7 @@ void IMuseInternal::initMidiDriver(TimerCallbackInfo *info) {
 
 void IMuseInternal::initMT32(MidiDriver *midi) {
 	byte buffer[52];
-	char info[256] = "ScummVM ";
+	char info[256] = "Cabal ";
 	int len;
 
 	// Reset the MT-32
@@ -1465,7 +1465,7 @@ void IMuseInternal::initMT32(MidiDriver *midi) {
 	_system->delayMillis(250);
 
 	// Compute version string (truncated to 20 chars max.)
-	strcat(info, gScummVMVersion);
+	strcat(info, Cabal::getVersion());
 	len = strlen(info);
 	if (len > 20)
 		len = 20;
