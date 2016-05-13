@@ -58,19 +58,12 @@ namespace Video {
 #define ID_MIDS MKTAG('m','i','d','s')
 #define ID_TXTS MKTAG('t','x','t','s')
 #define ID_JUNK MKTAG('J','U','N','K')
-#define ID_JUNQ MKTAG('J','U','N','Q')
-#define ID_DMLH MKTAG('d','m','l','h')
 #define ID_STRF MKTAG('s','t','r','f')
 #define ID_MOVI MKTAG('m','o','v','i')
 #define ID_REC  MKTAG('r','e','c',' ')
-#define ID_VEDT MKTAG('v','e','d','t')
 #define ID_IDX1 MKTAG('i','d','x','1')
-#define ID_STRD MKTAG('s','t','r','d')
 #define ID_INFO MKTAG('I','N','F','O')
-#define ID_ISFT MKTAG('I','S','F','T')
-#define ID_DISP MKTAG('D','I','S','P')
 #define ID_PRMI MKTAG('P','R','M','I')
-#define ID_STRN MKTAG('s','t','r','n')
 
 // Stream Types
 enum {
@@ -142,21 +135,15 @@ bool AVIDecoder::parseNextChunk() {
 	case ID_STRH:
 		handleStreamHeader(size);
 		break;
-	case ID_STRD: // Extra stream info, safe to ignore
-	case ID_VEDT: // Unknown, safe to ignore
-	case ID_JUNK: // Alignment bytes, should be ignored
-	case ID_JUNQ: // Same as JUNK, safe to ignore
-	case ID_ISFT: // Metadata, safe to ignore
-	case ID_DISP: // Metadata, should be safe to ignore
-	case ID_STRN: // Metadata, safe to ignore
-	case ID_DMLH: // OpenDML extension, contains an extra total frames field, safe to ignore
-		skipChunk(size);
-		break;
 	case ID_IDX1:
 		readOldIndex(size);
 		break;
 	default:
-		error("Unknown tag \'%s\' found", tag2str(tag));
+		// There are many other chunk types that are useless.
+		// Skip them all here.
+		debug(4, "Skipping AVI chunk: \'%s\'", tag2str(tag));
+		skipChunk(size);
+		break;
 	}
 
 	return true;
