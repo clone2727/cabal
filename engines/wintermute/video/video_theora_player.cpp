@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -20,6 +20,8 @@
  *
  */
 
+// Based on the ScummVM (GPLv2+) file of the same name
+
 /*
  * This file is based on WME Lite.
  * http://dead-code.org/redir.php?target=wmelite
@@ -34,7 +36,7 @@
 #include "engines/wintermute/base/gfx/base_image.h"
 #include "engines/wintermute/base/gfx/base_renderer.h"
 #include "engines/wintermute/base/sound/base_sound_manager.h"
-#include "video/theora_decoder.h"
+#include "video/ogg_decoder.h"
 #include "engines/wintermute/wintermute.h"
 #include "common/system.h"
 
@@ -125,7 +127,7 @@ bool VideoTheoraPlayer::initialize(const Common::String &filename, const Common:
 	}
 
 #if defined (USE_THEORADEC)
-	_theoraDecoder = new Video::TheoraDecoder();
+	_theoraDecoder = new Video::OggDecoder();
 #else
 	warning("VideoTheoraPlayer::initialize - Theora support not compiled in, video will be skipped: %s", filename.c_str());
 	return STATUS_FAILED;
@@ -168,7 +170,7 @@ bool VideoTheoraPlayer::resetStream() {
 	}
 
 #if defined (USE_THEORADEC)
-	_theoraDecoder = new Video::TheoraDecoder();
+	_theoraDecoder = new Video::OggDecoder();
 #else
 	return STATUS_FAILED;
 #endif

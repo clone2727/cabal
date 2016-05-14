@@ -36,7 +36,7 @@
  *
  */
 
-#include "video/theora_decoder.h"
+#include "video/ogg_decoder.h"
 
 #include "audio/audiostream.h"
 #include "audio/decoders/raw.h"
@@ -49,7 +49,7 @@
 
 namespace Video {
 
-TheoraDecoder::TheoraDecoder(Audio::Mixer::SoundType soundType) : _soundType(soundType) {
+OggDecoder::OggDecoder(Audio::Mixer::SoundType soundType) : _soundType(soundType) {
 	_fileStream = 0;
 
 	_videoTrack = 0;
@@ -61,11 +61,11 @@ TheoraDecoder::TheoraDecoder(Audio::Mixer::SoundType soundType) : _soundType(sou
 	_hasVideo = _hasAudio = false;
 }
 
-TheoraDecoder::~TheoraDecoder() {
+OggDecoder::~OggDecoder() {
 	close();
 }
 
-bool TheoraDecoder::loadStream(Common::SeekableReadStream *stream) {
+bool OggDecoder::loadStream(Common::SeekableReadStream *stream) {
 	close();
 
 	_fileStream = stream;
@@ -211,7 +211,7 @@ bool TheoraDecoder::loadStream(Common::SeekableReadStream *stream) {
 	return true;
 }
 
-void TheoraDecoder::close() {
+void OggDecoder::close() {
 	VideoDecoder::close();
 
 	if (!_fileStream)
@@ -239,7 +239,7 @@ void TheoraDecoder::close() {
 	_hasVideo = _hasAudio = false;
 }
 
-void TheoraDecoder::readNextPacket() {
+void OggDecoder::readNextPacket() {
 	// First, let's get our frame
 	if (_hasVideo) {
 		while (!_videoTrack->endOfTrack()) {
@@ -266,7 +266,7 @@ void TheoraDecoder::readNextPacket() {
 	ensureAudioBufferSize();
 }
 
-TheoraDecoder::TheoraVideoTrack::TheoraVideoTrack(const Graphics::PixelFormat &format, th_info &theoraInfo, th_setup_info *theoraSetup) {
+OggDecoder::TheoraVideoTrack::TheoraVideoTrack(const Graphics::PixelFormat &format, th_info &theoraInfo, th_setup_info *theoraSetup) {
 	_theoraDecode = th_decode_alloc(&theoraInfo, theoraSetup);
 
 	if (theoraInfo.pixel_fmt != TH_PF_420)
@@ -290,14 +290,14 @@ TheoraDecoder::TheoraVideoTrack::TheoraVideoTrack(const Graphics::PixelFormat &f
 	_curFrame = -1;
 }
 
-TheoraDecoder::TheoraVideoTrack::~TheoraVideoTrack() {
+OggDecoder::TheoraVideoTrack::~TheoraVideoTrack() {
 	th_decode_free(_theoraDecode);
 
 	_surface.free();
 	_displaySurface.setPixels(0);
 }
 
-bool TheoraDecoder::TheoraVideoTrack::decodePacket(ogg_packet &oggPacket) {
+bool OggDecoder::TheoraVideoTrack::decodePacket(ogg_packet &oggPacket) {
 	if (th_decode_packetin(_theoraDecode, &oggPacket, 0) == 0) {
 		_curFrame++;
 
@@ -329,7 +329,7 @@ enum TheoraYUVBuffers {
 	kBufferV = 2
 };
 
-void TheoraDecoder::TheoraVideoTrack::translateYUVtoRGBA(th_ycbcr_buffer &YUVBuffer) {
+void OggDecoder::TheoraVideoTrack::translateYUVtoRGBA(th_ycbcr_buffer &YUVBuffer) {
 	// Width and height of all buffers have to be divisible by 2.
 	assert((YUVBuffer[kBufferY].width & 1) == 0);
 	assert((YUVBuffer[kBufferY].height & 1) == 0);
@@ -349,7 +349,7 @@ void TheoraDecoder::TheoraVideoTrack::translateYUVtoRGBA(th_ycbcr_buffer &YUVBuf
 
 static vorbis_info *info = 0;
 
-TheoraDecoder::VorbisAudioTrack::VorbisAudioTrack(Audio::Mixer::SoundType soundType, vorbis_info &vorbisInfo) : _soundType(soundType) {
+OggDecoder::VorbisAudioTrack::VorbisAudioTrack(Audio::Mixer::SoundType soundType, vorbis_info &vorbisInfo) : _soundType(soundType) {
 	vorbis_synthesis_init(&_vorbisDSP, &vorbisInfo);
 	vorbis_block_init(&_vorbisDSP, &_vorbisBlock);
 	info = &vorbisInfo;
@@ -361,14 +361,14 @@ TheoraDecoder::VorbisAudioTrack::VorbisAudioTrack(Audio::Mixer::SoundType soundT
 	_endOfAudio = false;
 }
 
-TheoraDecoder::VorbisAudioTrack::~VorbisAudioTrack() {
+OggDecoder::VorbisAudioTrack::~VorbisAudioTrack() {
 	vorbis_dsp_clear(&_vorbisDSP);
 	vorbis_block_clear(&_vorbisBlock);
 	delete _audStream;
 	free(_audioBuffer);
 }
 
-Audio::AudioStream *TheoraDecoder::VorbisAudioTrack::getAudioStream() const {
+Audio::AudioStream *OggDecoder::VorbisAudioTrack::getAudioStream() const {
 	return _audStream;
 }
 
@@ -378,7 +378,7 @@ static double rint(double v) {
 	return floor(v + 0.5);
 }
 
-bool TheoraDecoder::VorbisAudioTrack::decodeSamples() {
+bool OggDecoder::VorbisAudioTrack::decodeSamples() {
 #ifdef USE_TREMOR
 	ogg_int32_t **pcm;
 #else
@@ -433,23 +433,23 @@ bool TheoraDecoder::VorbisAudioTrack::decodeSamples() {
 	return false;
 }
 
-bool TheoraDecoder::VorbisAudioTrack::hasAudio() const {
+bool OggDecoder::VorbisAudioTrack::hasAudio() const {
 	return _audStream->numQueuedStreams() > 0;
 }
 
-bool TheoraDecoder::VorbisAudioTrack::needsAudio() const {
+bool OggDecoder::VorbisAudioTrack::needsAudio() const {
 	// TODO: 5 is very arbitrary. We probably should do something like QuickTime does.
 	return !_endOfAudio && _audStream->numQueuedStreams() < 5;
 }
 
-void TheoraDecoder::VorbisAudioTrack::synthesizePacket(ogg_packet &oggPacket) {
+void OggDecoder::VorbisAudioTrack::synthesizePacket(ogg_packet &oggPacket) {
 	if (vorbis_synthesis(&_vorbisBlock, &oggPacket) == 0) // test for success
 		vorbis_synthesis_blockin(&_vorbisDSP, &_vorbisBlock);
 }
 
 #endif
 
-void TheoraDecoder::queuePage(ogg_page *page) {
+void OggDecoder::queuePage(ogg_page *page) {
 	if (_hasVideo)
 		ogg_stream_pagein(&_theoraOut, page);
 
@@ -457,7 +457,7 @@ void TheoraDecoder::queuePage(ogg_page *page) {
 		ogg_stream_pagein(&_vorbisOut, page);
 }
 
-int TheoraDecoder::bufferData() {
+int OggDecoder::bufferData() {
 	char *buffer = ogg_sync_buffer(&_oggSync, 4096);
 	int bytes = _fileStream->read(buffer, 4096);
 
@@ -466,7 +466,7 @@ int TheoraDecoder::bufferData() {
 	return bytes;
 }
 
-bool TheoraDecoder::queueAudio() {
+bool OggDecoder::queueAudio() {
 #ifdef USE_VORBIS
 	if (!_hasAudio)
 		return false;
@@ -492,7 +492,7 @@ bool TheoraDecoder::queueAudio() {
 #endif
 }
 
-void TheoraDecoder::ensureAudioBufferSize() {
+void OggDecoder::ensureAudioBufferSize() {
 #ifdef USE_VORBIS
 	if (!_hasAudio)
 		return;

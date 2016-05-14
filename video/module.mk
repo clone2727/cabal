@@ -14,7 +14,7 @@ MODULE_OBJS := \
 
 ifdef USE_THEORADEC
 MODULE_OBJS += \
-	theora_decoder.o
+	ogg_decoder.o
 endif
 
 # Include common rules

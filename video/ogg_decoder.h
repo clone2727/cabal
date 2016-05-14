@@ -26,8 +26,8 @@
 
 #ifdef USE_THEORADEC
 
-#ifndef VIDEO_THEORA_DECODER_H
-#define VIDEO_THEORA_DECODER_H
+#ifndef VIDEO_OGG_DECODER_H
+#define VIDEO_OGG_DECODER_H
 
 #include "common/rational.h"
 #include "video/video_decoder.h"
@@ -57,16 +57,16 @@ namespace Video {
 
 /**
  *
- * Decoder for Theora videos.
+ * Decoder for ogg videos.
  * Video decoder used in engines:
  *  - pegasus
  *  - sword25
  *  - wintermute
  */
-class TheoraDecoder : public VideoDecoder {
+class OggDecoder : public VideoDecoder {
 public:
-	TheoraDecoder(Audio::Mixer::SoundType soundType = Audio::Mixer::kMusicSoundType);
-	virtual ~TheoraDecoder();
+	OggDecoder(Audio::Mixer::SoundType soundType = Audio::Mixer::kMusicSoundType);
+	virtual ~OggDecoder();
 
 	/**
 	 * Load a video file
