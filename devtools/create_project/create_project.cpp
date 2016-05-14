@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -19,6 +19,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
  */
+
+// Based on the ScummVM (GPLv2+) code of the same name
 
 #define ENABLE_XCODE
 
@@ -929,7 +931,6 @@ const Feature s_features[] = {
 	{    "jpeg",        "USE_JPEG", "jpeg-static",      true, "libjpeg support" },
 
 	// Feature flags
-	{            "bink",             "USE_BINK",         "", true,  "Bink video support" },
 	{         "scalers",          "USE_SCALERS",         "", true,  "Scalers" },
 	{       "hqscalers",       "USE_HQ_SCALERS",         "", true,  "HQ scalers" },
 	{           "16bit",        "USE_RGB_COLOR",         "", true,  "16bit color support" },

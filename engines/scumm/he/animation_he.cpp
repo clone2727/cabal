@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -20,26 +20,23 @@
  *
  */
 
+// Based on the ScummVM (GPLv2+) file of the same name
+
 #ifdef ENABLE_HE
 
 #include "scumm/he/animation_he.h"
 #include "scumm/he/intern_he.h"
 
 #include "audio/audiostream.h"
-#include "video/smk_decoder.h"
-
-#ifdef USE_BINK
 #include "video/bink_decoder.h"
-#endif
+#include "video/smk_decoder.h"
 
 namespace Scumm {
 
 MoviePlayer::MoviePlayer(ScummEngine_v90he *vm, Audio::Mixer *mixer) : _vm(vm) {
-#ifdef USE_BINK
 	if (_vm->_game.heversion >= 100 && (_vm->_game.features & GF_16BIT_COLOR))
 		_video = new Video::BinkDecoder();
 	else
-#endif
 		_video = new Video::SmackerDecoder();
 
 	_flags = 0;

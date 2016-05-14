@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -20,19 +20,19 @@
  *
  */
 
-// Based on eos' Bink decoder which is in turn
-// based quite heavily on the Bink decoder found in FFmpeg.
-// Many thanks to Kostya Shishkov for doing the hard work.
+// Based on the ScummVM (GPLv2+) file of the same name
 
-#include "common/scummsys.h"
-
-#ifdef USE_BINK
+// Based on xoreos' Bink decoder (with permission from Matthew
+// Hoops and Sven Hesse) which is in turn based quite heavily on
+// the Bink decoder found in FFmpeg. Many thanks to Kostya Shishkov
+// for doing the hard work.
 
 #ifndef VIDEO_BINK_DECODER_H
 #define VIDEO_BINK_DECODER_H
 
 #include "common/array.h"
 #include "common/rational.h"
+#include "common/scummsys.h"
 
 #include "video/video_decoder.h"
 
@@ -357,6 +357,5 @@ private:
 
 } // End of namespace Video
 
-#endif // VIDEO_BINK_DECODER_H
+#endif
 
-#endif // USE_BINK

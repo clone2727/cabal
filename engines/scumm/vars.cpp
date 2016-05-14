@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -20,6 +20,7 @@
  *
  */
 
+// Based on the ScummVM (GPLv2+) file of the same name
 
 #include "common/config-manager.h"
 #include "scumm/scumm.h"
@@ -707,14 +708,9 @@ void ScummEngine_v99he::resetScummVars() {
 	VAR(VAR_NUM_PALETTES) = _numPalettes;
 	VAR(VAR_NUM_UNK) = _numUnk;
 
-	if (_game.heversion >= 100 && (_game.features & GF_16BIT_COLOR)) {
-		// Enable Bink video in 16bit color games
-#ifdef USE_BINK
+	// Enable Bink video in 16bit color games
+	if (_game.heversion >= 100 && (_game.features & GF_16BIT_COLOR))
 		VAR(140) = 1;
-#else
-		VAR(140) = 0;
-#endif
-	}
 
 	if (_game.id == GID_PUTTZOO && _game.heversion == 100 && _game.platform == Common::kPlatformWindows) {
 		// Specific to Nimbus Games version.

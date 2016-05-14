@@ -2,6 +2,7 @@ MODULE := video
 
 MODULE_OBJS := \
 	avi_decoder.o \
+	bink_decoder.o \
 	coktel_decoder.o \
 	dxa_decoder.o \
 	flic_decoder.o \
@@ -10,11 +11,6 @@ MODULE_OBJS := \
 	qt_decoder.o \
 	smk_decoder.o \
 	video_decoder.o
-
-ifdef USE_BINK
-MODULE_OBJS += \
-	bink_decoder.o
-endif
 
 ifdef USE_THEORADEC
 MODULE_OBJS += \
