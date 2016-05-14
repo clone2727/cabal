@@ -288,8 +288,6 @@ Common::Error DrasculaEngine::run() {
 		loadGame(directSaveSlotLoading);
 	}
 
-	checkCD();
-
 	while (!shouldQuit()) {
 		int i;
 		takeObject = 0;

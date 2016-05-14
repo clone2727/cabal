@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -19,6 +19,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
  */
+
+// Based on the ScummVM (GPLv2+) file of the same name
 
 #ifndef ENGINES_ENGINE_H
 #define ENGINES_ENGINE_H
@@ -321,11 +323,6 @@ public:
 	inline Common::TimerManager *getTimerManager() { return _timer; }
 	inline Common::EventManager *getEventManager() { return _eventMan; }
 	inline Common::SaveFileManager *getSaveFileManager() { return _saveFileMan; }
-
-public:
-
-	/** On some systems, check if the game appears to be run from CD. */
-	void checkCD();
 
 protected:
 

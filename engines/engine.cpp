@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -20,15 +20,7 @@
  *
  */
 
-#define FORBIDDEN_SYMBOL_EXCEPTION_getcwd
-
-#if defined(WIN32) && !defined(_WIN32_WCE) && !defined(__SYMBIAN32__)
-#define WIN32_LEAN_AND_MEAN
-#include <windows.h>
-#include <direct.h>
-// winnt.h defines ARRAYSIZE, but we want our own one...
-#undef ARRAYSIZE
-#endif
+// Based on the ScummVM (GPLv2+) file of the same name
 
 #include "engines/engine.h"
 #include "engines/dialogs.h"
@@ -345,75 +337,6 @@ void GUIErrorMessage(const Common::String &msg) {
 	} else {
 		error("%s", msg.c_str());
 	}
-}
-
-void Engine::checkCD() {
-#if defined(WIN32) && !defined(_WIN32_WCE) && !defined(__SYMBIAN32__)
-	// It is a known bug under Windows that games that play CD audio cause
-	// ScummVM to crash if the data files are read from the same CD. Check
-	// if this appears to be the case and issue a warning.
-
-	// If we can find a compressed audio track, then it should be ok even
-	// if it's running from CD.
-
-#ifdef USE_VORBIS
-	if (Common::File::exists("track1.ogg") ||
-	    Common::File::exists("track01.ogg"))
-		return;
-#endif
-#ifdef USE_FLAC
-	if (Common::File::exists("track1.fla") ||
-            Common::File::exists("track1.flac") ||
-	    Common::File::exists("track01.fla") ||
-	    Common::File::exists("track01.flac"))
-		return;
-#endif
-#ifdef USE_MAD
-	if (Common::File::exists("track1.mp3") ||
-	    Common::File::exists("track01.mp3"))
-		return;
-#endif
-
-	char buffer[MAXPATHLEN];
-	int i;
-
-	const Common::FSNode gameDataDir(ConfMan.get("path"));
-
-	if (gameDataDir.getPath().empty()) {
-		// That's it! I give up!
-		if (getcwd(buffer, MAXPATHLEN) == NULL)
-			return;
-	} else
-		Common::strlcpy(buffer, gameDataDir.getPath().c_str(), sizeof(buffer));
-
-	for (i = 0; i < MAXPATHLEN - 1; i++) {
-		if (buffer[i] == '\\')
-			break;
-	}
-
-	buffer[i + 1] = 0;
-
-	if (GetDriveType(buffer) == DRIVE_CDROM) {
-		GUI::MessageDialog dialog(
-			_("You appear to be playing this game directly\n"
-			"from the CD. This is known to cause problems,\n"
-			"and it is therefore recommended that you copy\n"
-			"the data files to your hard disk instead.\n"
-			"See the README file for details."), _("OK"));
-		dialog.runModal();
-	} else {
-		// If we reached here, the game has audio tracks,
-		// it's not ran from the CD and the tracks have not
-		// been ripped.
-		GUI::MessageDialog dialog(
-			_("This game has audio tracks in its disk. These\n"
-			"tracks need to be ripped from the disk using\n"
-			"an appropriate CD audio extracting tool in\n"
-			"order to listen to the game's music.\n"
-			"See the README file for details."), _("OK"));
-		dialog.runModal();
-	}
-#endif
 }
 
 bool Engine::shouldPerformAutoSave(int lastSaveTime) {

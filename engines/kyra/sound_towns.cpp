@@ -53,7 +53,6 @@ SoundTowns::~SoundTowns() {
 }
 
 bool SoundTowns::init() {
-	_vm->checkCD();
 	int unused = 0;
 	_musicFadeTable = _vm->staticres()->loadRawData(k1TownsMusicFadeTable, unused);
 	_sfxWDTable = _vm->staticres()->loadRawData(k1TownsSFXwdTable, unused);
@@ -535,10 +534,6 @@ bool SoundTownsPC98_v2::init() {
 		TownsPC98_AudioDriver::kType86 : TownsPC98_AudioDriver::kTypeTowns);
 
 	if (_vm->gameFlags().platform == Common::kPlatformFMTowns) {
-		if (_resInfo[_currentResourceSet])
-			if (_resInfo[_currentResourceSet]->cdaTableSize)
-				_vm->checkCD();
-
 		// Initialize CD for audio
 		bool hasRealCD = g_system->getAudioCDManager()->open();
 

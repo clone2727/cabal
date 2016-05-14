@@ -255,12 +255,9 @@ Common::Error GroovieEngine::run() {
 	// Game timer counter
 	uint16 tmr = 0;
 
-	// Check that the game files and the audio tracks aren't together run from
-	// the same cd
-	if (getPlatform() != Common::kPlatformIOS) {
-		checkCD();
+	// Open the audio CD device for non-iOS versions
+	if (getPlatform() != Common::kPlatformIOS)
 		_system->getAudioCDManager()->open();
-	}
 
 	while (!shouldQuit()) {
 		// Give the debugger a chance to act
