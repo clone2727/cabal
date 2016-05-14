@@ -4453,8 +4453,6 @@ for engine in $_engines; do
 	fi
 done
 
-add_to_config_h_if_yes `get_var _tainted_build` '#define TAINTED_BUILD'
-
 #
 # Show which engines ("frontends") are to be built
 #
