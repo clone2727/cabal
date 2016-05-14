@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -20,11 +20,12 @@
  *
  */
 
+// Based on the ScummVM (GPLv2+) file of the same name
+
 #ifndef __PS2DEBUG_H__
 #define __PS2DEBUG_H__
 
 #ifdef LOGORRHEIC
-  #define FORBIDDEN_SYMBOL_EXCEPTION_printf
   // #define dbg_printf sio_printf
   #define dbg_printf printf
 #else

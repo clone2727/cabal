@@ -5,8 +5,6 @@
 */
 
 
-#define FORBIDDEN_SYMBOL_EXCEPTION_ctype_h
-
 #define lstrlib_c
 #define LUA_LIB
 

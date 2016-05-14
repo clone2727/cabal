@@ -416,7 +416,4 @@
 	#endif
 #endif
 
-
-#include "common/forbidden.h"
-
 #endif

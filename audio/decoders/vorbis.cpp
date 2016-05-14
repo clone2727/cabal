@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -20,10 +20,7 @@
  *
  */
 
-// Disable symbol overrides for FILE and fseek as those are used in the
-// Vorbis headers.
-#define FORBIDDEN_SYMBOL_EXCEPTION_FILE
-#define FORBIDDEN_SYMBOL_EXCEPTION_fseek
+// Based on the ScummVM (GPLv2+) file of the same name
 
 #include "audio/decoders/vorbis.h"
 

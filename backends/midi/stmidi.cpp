@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -20,6 +20,8 @@
  *
  */
 
+// Based on the ScummVM (GPLv2+) file of the same name
+
 /*
  * Raw MIDI output for the Atari ST line of computers.
  * Based on the ScummVM SEQ & CoreMIDI drivers.
@@ -31,9 +33,6 @@
  * in most cases we are only sending up to 3 bytes, I believe this saves a few
  * cycles.  I might change so sysex messages are sent the other way later.
  */
-
-// Disable symbol overrides so that we can use system headers.
-#define FORBIDDEN_SYMBOL_ALLOW_ALL
 
 #include "common/scummsys.h"
 

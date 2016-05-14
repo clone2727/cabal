@@ -20,8 +20,6 @@
  *
  */
 
-#define FORBIDDEN_SYMBOL_ALLOW_ALL
-
 #include "backends/audiodev/win32/win32_pcspk.h"
 
 #include "common/debug.h"

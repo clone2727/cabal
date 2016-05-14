@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -20,37 +20,14 @@
  *
  */
 
-// Based on eos' math code
+// Based on the ScummVM (GPLv2+) file of the same name, which is in turn
+// based on xoreos' math code (used with permission from Sven Hesse and
+// Matthew Hoops).
 
 #ifndef COMMON_MATH_H
 #define COMMON_MATH_H
 
 #include "common/scummsys.h"
-#ifdef _MSC_VER
-// HACK:
-// intrin.h on MSVC includes setjmp.h, which will fail compiling due to our
-// forbidden symbol colde. Since we also can not assure that defining
-// FORBIDDEN_SYMBOL_EXCEPTION_setjmp and FORBIDDEN_SYMBOL_EXCEPTION_longjmp
-// will actually allow the symbols, since forbidden.h might be included
-// earlier already we need to undefine them here...
-#undef setjmp
-#undef longjmp
-#include <intrin.h>
-// ...and redefine them here so no code can actually use it.
-// This could be resolved by including intrin.h on MSVC in scummsys.h before
-// the forbidden.h include. This might make sense, in case we use MSVC
-// extensions like _BitScanReverse in more places. But for now this hack should
-// be ok...
-#ifndef FORBIDDEN_SYMBOL_EXCEPTION_setjmp
-#undef setjmp
-#define setjmp(a)	FORBIDDEN_SYMBOL_REPLACEMENT
-#endif
-
-#ifndef FORBIDDEN_SYMBOL_EXCEPTION_longjmp
-#undef longjmp
-#define longjmp(a,b)	FORBIDDEN_SYMBOL_REPLACEMENT
-#endif
-#endif
 
 #ifndef FLT_MIN
 	#define FLT_MIN 1E-37

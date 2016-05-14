@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -20,13 +20,12 @@
  *
  */
 
+// Based on the ScummVM (GPLv2+) file of the same name
+
 /*
  * IRIX dmedia support by Rainer Canavan <scumm@canavan.de>
  *    some code liberated from seq.cpp and coremidi.cpp
  */
-
-// Disable symbol overrides so that we can use system headers.
-#define FORBIDDEN_SYMBOL_ALLOW_ALL
 
 #include "common/scummsys.h"
 

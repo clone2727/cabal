@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -20,10 +20,9 @@
  *
  */
 
-#if defined(OPENPANDORA)
+// Based on the ScummVM (GPLv2+) file of the same name
 
-// Disable symbol overrides so that we can use system headers.
-#define FORBIDDEN_SYMBOL_ALLOW_ALL
+#if defined(OPENPANDORA)
 
 #include "backends/platform/sdl/sdl-sys.h"
 

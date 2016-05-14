@@ -22,11 +22,6 @@
 
 // Based on the ScummVM (GPLv2+) file of the same namea
 
-// FIXME: Avoid using printf
-#define FORBIDDEN_SYMBOL_EXCEPTION_printf
-
-#define FORBIDDEN_SYMBOL_EXCEPTION_exit
-
 #include <limits.h>
 
 #include "engines/metaengine.h"

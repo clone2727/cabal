@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -20,6 +20,8 @@
  *
  */
 
+// Based on the ScummVM (GPLv2+) file of the same name
+
 #ifndef BACKEND_SDL_SYS_H
 #define BACKEND_SDL_SYS_H
 
@@ -31,52 +33,12 @@
 
 #include "common/scummsys.h"
 
-// Remove FILE override from common/forbidden.h, and replace
-// it with an alternate slightly less unfriendly override.
-#if !defined(FORBIDDEN_SYMBOL_ALLOW_ALL) && !defined(FORBIDDEN_SYMBOL_EXCEPTION_FILE)
-#undef FILE
-// Solaris has typedef __FILE FILE in several places already
-#if !defined(__sun)
-typedef struct { int FAKE; } FAKE_FILE;
-#define FILE FAKE_FILE
-#endif   // (__sun)
-#endif
-
-#if !defined(FORBIDDEN_SYMBOL_ALLOW_ALL) && !defined(FORBIDDEN_SYMBOL_EXCEPTION_strcasecmp)
-#undef strcasecmp
-#define strcasecmp FAKE_strcasecmp
-#endif
-
-#if !defined(FORBIDDEN_SYMBOL_ALLOW_ALL) && !defined(FORBIDDEN_SYMBOL_EXCEPTION_strncasecmp)
-#undef strncasecmp
-#define strncasecmp FAKE_strncasecmp
-#endif
-
 // HACK: SDL might include windows.h which defines its own ARRAYSIZE.
 // However, we want to use the version from common/util.h. Thus, we make sure
 // that we actually have this definition after including the SDL headers.
 #if defined(ARRAYSIZE) && defined(COMMON_UTIL_H)
 #define HACK_REDEFINE_ARRAYSIZE
 #undef ARRAYSIZE
-#endif
-
-// HACK to fix compilation with SDL 2.0 in MSVC.
-// In SDL 2.0, intrin.h is now included in SDL_cpuinfo.h, which includes
-// setjmp.h. SDL_cpuinfo.h is included from SDL.h and SDL_syswm.h.
-// Thus, we remove the exceptions for setjmp and longjmp before these two
-// includes. Unfortunately, we can't use SDL_VERSION_ATLEAST here, as SDL.h
-// hasn't been included yet at this point.
-#if !defined(FORBIDDEN_SYMBOL_ALLOW_ALL) && defined(_MSC_VER)
-// We unset any fake definitions of setjmp/longjmp here
-
-#ifndef FORBIDDEN_SYMBOL_EXCEPTION_setjmp
-#undef setjmp
-#endif
-
-#ifndef FORBIDDEN_SYMBOL_EXCEPTION_longjmp
-#undef longjmp
-#endif
-
 #endif
 
 #if defined(__SYMBIAN32__)
@@ -86,21 +48,6 @@ typedef struct { int FAKE; } FAKE_FILE;
 #endif
 
 #include <SDL_syswm.h>
-
-// Restore the forbidden exceptions from the hack above
-#if !defined(FORBIDDEN_SYMBOL_ALLOW_ALL) && defined(_MSC_VER)
-
-#ifndef FORBIDDEN_SYMBOL_EXCEPTION_setjmp
-#undef setjmp
-#define setjmp(a)	FORBIDDEN_SYMBOL_REPLACEMENT
-#endif
-
-#ifndef FORBIDDEN_SYMBOL_EXCEPTION_longjmp
-#undef longjmp
-#define longjmp(a,b)	FORBIDDEN_SYMBOL_REPLACEMENT
-#endif
-
-#endif
 
 // SDL_syswm.h will include windows.h on Win32. We need to undefine its
 // ARRAYSIZE definition because we supply our own.
@@ -128,22 +75,6 @@ typedef struct { int FAKE; } FAKE_FILE;
 
 #ifdef False
 #undef False
-#endif
-
-// Finally forbid FILE again (if it was forbidden to start with)
-#if !defined(FORBIDDEN_SYMBOL_ALLOW_ALL) && !defined(FORBIDDEN_SYMBOL_EXCEPTION_FILE)
-#undef FILE
-#define FILE	FORBIDDEN_SYMBOL_REPLACEMENT
-#endif
-
-#if !defined(FORBIDDEN_SYMBOL_ALLOW_ALL) && !defined(FORBIDDEN_SYMBOL_EXCEPTION_strcasecmp)
-#undef strcasecmp
-#define strcasecmp     FORBIDDEN_SYMBOL_REPLACEMENT
-#endif
-
-#if !defined(FORBIDDEN_SYMBOL_ALLOW_ALL) && !defined(FORBIDDEN_SYMBOL_EXCEPTION_strncasecmp)
-#undef strncasecmp
-#define strncasecmp    FORBIDDEN_SYMBOL_REPLACEMENT
 #endif
 
 // SDL 2 has major API changes. We redefine constants which got renamed to

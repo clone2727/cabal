@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -20,8 +20,7 @@
  *
  */
 
-// Disable symbol overrides for FILE as that is used in FLAC headers
-#define FORBIDDEN_SYMBOL_EXCEPTION_FILE
+// Based on the ScummVM (GPLv2+) file of the same name
 
 #if defined(__DS__)
 #include "backends/fs/ds/ds-fs-factory.h"

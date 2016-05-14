@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -20,9 +20,9 @@
  *
  */
 
-#ifdef __N64__
+// Based on the ScummVM (GPLv2+) file of the same name
 
-#define FORBIDDEN_SYMBOL_EXCEPTION_unistd_h
+#ifdef __N64__
 
 #include "backends/fs/n64/n64-fs.h"
 #include "backends/fs/n64/romfsstream.h"

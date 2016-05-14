@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -20,9 +20,9 @@
  *
  */
 
-#if defined(MAEMO)
+// Based on the ScummVM (GPLv2+) file of the same name
 
-#define FORBIDDEN_SYMBOL_EXCEPTION_unistd_h
+#if defined(MAEMO)
 
 #include "backends/platform/maemo/maemo.h"
 #include "backends/plugins/sdl/sdl-provider.h"

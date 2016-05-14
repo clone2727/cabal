@@ -22,8 +22,6 @@
 
 // Based on the ScummVM (GPLv2+) file of the same name
 
-#define FORBIDDEN_SYMBOL_ALLOW_ALL
-
 #ifdef WIN32
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>

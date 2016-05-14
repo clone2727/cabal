@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -20,25 +20,12 @@
  *
  */
 
-// Disable printf override in common/forbidden.h to avoid
-// clashes with pspdebug.h from the PSP SDK.
-// That header file uses
-//   __attribute__((format(printf,1,2)));
-// which gets messed up by our override mechanism; this could
-// be avoided by either changing the PSP SDK to use the equally
-// legal and valid
-//   __attribute__((format(__printf__,1,2)));
-// or by refining our printf override to use a varadic macro
-// (which then wouldn't be portable, though).
-// Anyway, for now we just disable the printf override globally
-// for the PSP port
-#define FORBIDDEN_SYMBOL_EXCEPTION_printf
+// Based on the ScummVM (GPLv2+) file of the same name
 
 #include <pspkernel.h>
 #include <pspdebug.h>
 #include <stdarg.h>
 #include <stdio.h>
-#define FORBIDDEN_SYMBOL_ALLOW_ALL
 #include "common/scummsys.h"
 
 int psp_debug_indent = 0;

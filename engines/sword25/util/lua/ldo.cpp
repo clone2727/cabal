@@ -6,10 +6,8 @@
 
 
 // FIXME: LUAI_THROW and LUAI_TRY use either throw/catch or setjmp/longjmp.
-// Neither of these is supported in ScummVM. Calls to LUAI_THROW have been
-// replaced with error() in ScummVM, but the calls to LUAI_TRY remain
-#define FORBIDDEN_SYMBOL_EXCEPTION_setjmp	// for LUAI_TRY, i.e. try()
-#define FORBIDDEN_SYMBOL_EXCEPTION_longjmp	// for LUAI_TRY and LUAI_THROW, i.e. throw()
+// Neither of these is supported in Cabal. Calls to LUAI_THROW have been
+// replaced with error(), but the calls to LUAI_TRY remain
 
 #include "common/textconsole.h"
 

@@ -22,8 +22,6 @@
 
 // Based on the ScummVM (GPLv2+) file of the same name
 
-#define FORBIDDEN_SYMBOL_ALLOW_ALL
-
 #include <common/scummsys.h>
 #include <engines/engine.h>
 #include <base/main.h>

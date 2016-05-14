@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -20,9 +20,7 @@
  *
  */
 
-// libjpeg uses forbidden symbols in its header. Thus, we need to allow them
-// here.
-#define FORBIDDEN_SYMBOL_ALLOW_ALL
+// Based on the ScummVM (GPLv2+) file of the same name
 
 #include "image/jpeg.h"
 

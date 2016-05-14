@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -20,15 +20,7 @@
  *
  */
 
-#define FORBIDDEN_SYMBOL_EXCEPTION_isalnum
-#define FORBIDDEN_SYMBOL_EXCEPTION_isalpha
-#define FORBIDDEN_SYMBOL_EXCEPTION_isdigit
-#define FORBIDDEN_SYMBOL_EXCEPTION_isnumber
-#define FORBIDDEN_SYMBOL_EXCEPTION_islower
-#define FORBIDDEN_SYMBOL_EXCEPTION_isspace
-#define FORBIDDEN_SYMBOL_EXCEPTION_isupper
-#define FORBIDDEN_SYMBOL_EXCEPTION_isprint
-
+// Based on the ScummVM (GPLv2+) file of the same name
 
 #include "common/util.h"
 #include "common/debug.h"
@@ -150,4 +142,5 @@ bool isPrint(int c) {
 	ENSURE_ASCII_CHAR(c);
 	return isprint((byte)c);
 }
+
 } // End of namespace Common

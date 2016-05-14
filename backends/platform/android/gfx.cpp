@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -20,24 +20,9 @@
  *
  */
 
+// Based on the ScummVM (GPLv2+) file of the same name
+
 #if defined(__ANDROID__)
-
-// Allow use of stuff in <time.h>
-#define FORBIDDEN_SYMBOL_EXCEPTION_time_h
-
-// Disable printf override in common/forbidden.h to avoid
-// clashes with log.h from the Android SDK.
-// That header file uses
-//   __attribute__ ((format(printf, 3, 4)))
-// which gets messed up by our override mechanism; this could
-// be avoided by either changing the Android SDK to use the equally
-// legal and valid
-//   __attribute__ ((format(printf, 3, 4)))
-// or by refining our printf override to use a varadic macro
-// (which then wouldn't be portable, though).
-// Anyway, for now we just disable the printf override globally
-// for the Android port
-#define FORBIDDEN_SYMBOL_EXCEPTION_printf
 
 #include "common/endian.h"
 #include "graphics/conversion.h"
