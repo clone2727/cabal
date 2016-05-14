@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -19,6 +19,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
  */
+
+// Based on the ScummVM (GPLv2+) file of the same name
 
 /*
  * Source is based on the player example from libvorbis package,
@@ -51,7 +53,11 @@ TheoraDecoder::TheoraDecoder(Audio::Mixer::SoundType soundType) : _soundType(sou
 	_fileStream = 0;
 
 	_videoTrack = 0;
+
+#ifdef USE_VORBIS
 	_audioTrack = 0;
+#endif
+
 	_hasVideo = _hasAudio = false;
 }
 
@@ -67,10 +73,12 @@ bool TheoraDecoder::loadStream(Common::SeekableReadStream *stream) {
 	// start up Ogg stream synchronization layer
 	ogg_sync_init(&_oggSync);
 
+#ifdef USE_VORBIS
 	// init supporting Vorbis structures needed in header parsing
 	vorbis_info_init(&_vorbisInfo);
 	vorbis_comment vorbisComment;
 	vorbis_comment_init(&vorbisComment);
+#endif
 
 	// init supporting Theora structures needed in header parsing
 	th_info theoraInfo;
@@ -111,11 +119,13 @@ bool TheoraDecoder::loadStream(Common::SeekableReadStream *stream) {
 				memcpy(&_theoraOut, &test, sizeof(test));
 				theoraPackets = 1;
 				_hasVideo = true;
+#ifdef USE_VORBIS
 			} else if (vorbisPackets == 0 && vorbis_synthesis_headerin(&_vorbisInfo, &vorbisComment, &_oggPacket) >= 0) {
 				// it is vorbis
 				memcpy(&_vorbisOut, &test, sizeof(test));
 				vorbisPackets = 1;
 				_hasAudio = true;
+#endif
 			} else {
 				// whatever it is, we don't care about it
 				ogg_stream_clear(&test);
@@ -139,6 +149,7 @@ bool TheoraDecoder::loadStream(Common::SeekableReadStream *stream) {
 			theoraPackets++;
 		}
 
+#ifdef USE_VORBIS
 		// look for more vorbis header packets
 		while (vorbisPackets && (vorbisPackets < 3) && (ret = ogg_stream_packetout(&_vorbisOut, &_oggPacket))) {
 			if (ret < 0)
@@ -152,6 +163,7 @@ bool TheoraDecoder::loadStream(Common::SeekableReadStream *stream) {
 			if (vorbisPackets == 3)
 				break;
 		}
+#endif
 
 		// The header pages/packets will arrive before anything else we
 		// care about, or the stream is not obeying spec
@@ -176,6 +188,7 @@ bool TheoraDecoder::loadStream(Common::SeekableReadStream *stream) {
 	th_comment_clear(&theoraComment);
 	th_setup_free(theoraSetup);
 
+#ifdef USE_VORBIS
 	if (_hasAudio) {
 		_audioTrack = new VorbisAudioTrack(_soundType, _vorbisInfo);
 
@@ -193,6 +206,7 @@ bool TheoraDecoder::loadStream(Common::SeekableReadStream *stream) {
 	}
 
 	vorbis_comment_clear(&vorbisComment);
+#endif
 
 	return true;
 }
@@ -208,13 +222,16 @@ void TheoraDecoder::close() {
 		_videoTrack = 0;
 	}
 
+#ifdef USE_VORBIS
 	if (_audioTrack) {
 		ogg_stream_clear(&_vorbisOut);
 		_audioTrack = 0;
 	}
 
-	ogg_sync_clear(&_oggSync);
 	vorbis_info_clear(&_vorbisInfo);
+#endif
+
+	ogg_sync_clear(&_oggSync);
 
 	delete _fileStream;
 	_fileStream = 0;
@@ -328,6 +345,8 @@ void TheoraDecoder::TheoraVideoTrack::translateYUVtoRGBA(th_ycbcr_buffer &YUVBuf
 	YUVToRGBMan.convert420(&_surface, Graphics::YUVToRGBManager::kScaleITU, YUVBuffer[kBufferY].data, YUVBuffer[kBufferU].data, YUVBuffer[kBufferV].data, YUVBuffer[kBufferY].width, YUVBuffer[kBufferY].height, YUVBuffer[kBufferY].stride, YUVBuffer[kBufferU].stride);
 }
 
+#ifdef USE_VORBIS
+
 static vorbis_info *info = 0;
 
 TheoraDecoder::VorbisAudioTrack::VorbisAudioTrack(Audio::Mixer::SoundType soundType, vorbis_info &vorbisInfo) : _soundType(soundType) {
@@ -428,6 +447,8 @@ void TheoraDecoder::VorbisAudioTrack::synthesizePacket(ogg_packet &oggPacket) {
 		vorbis_synthesis_blockin(&_vorbisDSP, &_vorbisBlock);
 }
 
+#endif
+
 void TheoraDecoder::queuePage(ogg_page *page) {
 	if (_hasVideo)
 		ogg_stream_pagein(&_theoraOut, page);
@@ -446,6 +467,7 @@ int TheoraDecoder::bufferData() {
 }
 
 bool TheoraDecoder::queueAudio() {
+#ifdef USE_VORBIS
 	if (!_hasAudio)
 		return false;
 
@@ -465,9 +487,13 @@ bool TheoraDecoder::queueAudio() {
 	}
 
 	return queuedAudio;
+#else
+	return false;
+#endif
 }
 
 void TheoraDecoder::ensureAudioBufferSize() {
+#ifdef USE_VORBIS
 	if (!_hasAudio)
 		return;
 
@@ -483,6 +509,7 @@ void TheoraDecoder::ensureAudioBufferSize() {
 			break;
 		}
 	}
+#endif
 }
 
 } // End of namespace Video

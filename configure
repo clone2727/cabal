@@ -3652,10 +3652,6 @@ echo "$_png"
 # Check for Theora Decoder
 #
 echocheck "libtheoradec >= 1.0"
-if test "$_vorbis" = no ; then
-	echo "skipping. no vorbis"
-	_theoradec=notsupported
-fi
 if test "$_theoradec" = auto ; then
 	_theoradec=no
 	cat > $TMPC << EOF
@@ -3663,16 +3659,14 @@ if test "$_theoradec" = auto ; then
 #include <vorbis/codec.h>
 int main(void) { th_ycbcr_buffer yuv; th_decode_ycbcr_out(NULL, yuv);  }
 EOF
-	cc_check $THEORADEC_CFLAGS $THEORADEC_LIBS -ltheoradec && _theoradec=yes
+	cc_check $THEORADEC_CFLAGS $THEORADEC_LIBS -ltheoradec -logg && _theoradec=yes
 fi
 if test "$_theoradec" = yes ; then
-	append_var LIBS "$THEORADEC_LIBS -ltheoradec"
+	append_var LIBS "$THEORADEC_LIBS -ltheoradec -logg"
 	append_var INCLUDES "$THEORADEC_CFLAGS"
 fi
 define_in_config_if_yes "$_theoradec" 'USE_THEORADEC'
-if test ! "$_theoradec" = notsupported ; then
-	echo "$_theoradec"
-fi
+echo "$_theoradec"
 
 #
 # Check for the AAC decoder

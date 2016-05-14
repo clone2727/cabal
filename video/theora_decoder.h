@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -20,6 +20,8 @@
  *
  */
 
+// Based on the ScummVM (GPLv2+) file of the same name
+
 #include "common/scummsys.h"	// for USE_THEORADEC
 
 #ifdef USE_THEORADEC
@@ -34,10 +36,12 @@
 
 #include <theora/theoradec.h>
 
+#ifdef USE_VORBIS
 #ifdef USE_TREMOR
 #include <tremor/ivorbiscodec.h>
 #else
 #include <vorbis/codec.h>
+#endif
 #endif
 
 namespace Common {
@@ -105,6 +109,7 @@ private:
 		void translateYUVtoRGBA(th_ycbcr_buffer &YUVBuffer);
 	};
 
+#ifdef USE_VORBIS
 	class VorbisAudioTrack : public AudioTrack {
 	public:
 		VorbisAudioTrack(Audio::Mixer::SoundType soundType, vorbis_info &vorbisInfo);
@@ -134,6 +139,7 @@ private:
 
 		bool _endOfAudio;
 	};
+#endif
 
 	void queuePage(ogg_page *page);
 	int bufferData();
@@ -151,10 +157,12 @@ private:
 	ogg_stream_state _theoraOut, _vorbisOut;
 	bool _hasVideo, _hasAudio;
 
-	vorbis_info _vorbisInfo;
-
 	TheoraVideoTrack *_videoTrack;
+
+#ifdef USE_VORBIS
+	vorbis_info _vorbisInfo;
 	VorbisAudioTrack *_audioTrack;
+#endif
 };
 
 } // End of namespace Video
