@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -19,6 +19,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
  */
+
+// Based on the ScummVM (GPLv2+) file of the same name
 
 #ifndef ENGINES_ADVANCED_DETECTOR_H
 #define ENGINES_ADVANCED_DETECTOR_H
@@ -82,7 +84,6 @@ typedef Common::HashMap<Common::String, ADFileProperties, Common::IgnoreCase_Has
 enum ADGameFlags {
 	ADGF_NO_FLAGS = 0,
 	ADGF_UNSTABLE = (1 << 21),    	// flag to designate not yet officially-supported games that are not fit for public testing
-	ADGF_TESTING = (1 << 22),    	// flag to designate not yet officially-supported games that are fit for public testing
 	ADGF_PIRATED = (1 << 23), ///< flag to designate well known pirated versions with cracks
 	ADGF_ADDENGLISH = (1 << 24), ///< always add English as language option
 	ADGF_MACRESFORK = (1 << 25), ///< the md5 for this entry will be calculated from the resource fork

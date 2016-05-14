@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -8,17 +8,19 @@
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
-
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
-
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
  */
+
+// Based on the ScummVM (GPLv2+) file of the same name
 
 #ifndef PRINCE_DETECTION_H
 #define PRINCE_DETECTION_H
@@ -52,7 +54,7 @@ static const PrinceGameDescription gameDescriptions[] = {
 			AD_ENTRY1s("databank.ptc", "5fa03833177331214ec1354761b1d2ee", 3565031),
 			Common::DE_DEU,
 			Common::kPlatformWindows,
-			ADGF_TESTING,
+			ADGF_UNSTABLE,
 			GUIO1(GUIO_NONE)
 		},
 		kPrinceDataDE
@@ -64,7 +66,7 @@ static const PrinceGameDescription gameDescriptions[] = {
 			AD_ENTRY1s("databank.ptc", "48ec9806bda9d152acbea8ce31c93c49", 3435298),
 			Common::PL_POL,
 			Common::kPlatformWindows,
-			ADGF_TESTING,
+			ADGF_UNSTABLE,
 			GUIO1(GUIO_NONE)
 		},
 		kPrinceDataPL
@@ -76,7 +78,7 @@ static const PrinceGameDescription gameDescriptions[] = {
 			AD_ENTRY1s("databank.ptc", "5fa03833177331214ec1354761b1d2ee", 3565031),
 			Common::EN_ANY,
 			Common::kPlatformWindows,
-			ADGF_TESTING,
+			ADGF_UNSTABLE,
 			GUIO1(GUIO_NONE)
 		},
 		kPrinceDataDE
@@ -88,7 +90,7 @@ static const PrinceGameDescription gameDescriptions[] = {
 			AD_ENTRY1s("databank.ptc", "48ec9806bda9d152acbea8ce31c93c49", 3435298),
 			Common::EN_ANY,
 			Common::kPlatformWindows,
-			ADGF_TESTING,
+			ADGF_UNSTABLE,
 			GUIO1(GUIO_NONE)
 		},
 		kPrinceDataPL

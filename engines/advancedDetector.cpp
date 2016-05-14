@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -19,6 +19,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
  */
+
+// Based on the ScummVM (GPLv2+) file of the same name
 
 #include "common/debug.h"
 #include "common/util.h"
@@ -52,8 +54,6 @@ static GameDescriptor toGameDescriptor(const ADGameDescription &g, const PlainGa
 	GameSupportLevel gsl = kStableGame;
 	if (g.flags & ADGF_UNSTABLE)
 		gsl = kUnstableGame;
-	else if (g.flags & ADGF_TESTING)
-		gsl = kTestingGame;
 
 	GameDescriptor gd(g.gameid, title, g.language, g.platform, 0, gsl);
 	gd.updateDesc(extra);
@@ -287,17 +287,10 @@ Common::Error AdvancedMetaEngine::createInstance(OSystem *syst, Engine **engine)
 
 	GameDescriptor gameDescriptor = toGameDescriptor(*agdDesc, _gameids);
 
-	bool showTestingWarning = false;
-
 #ifdef RELEASE_BUILD
-	showTestingWarning = true;
-#endif
-
-	if (((gameDescriptor.getSupportLevel() == kUnstableGame
-			|| (gameDescriptor.getSupportLevel() == kTestingGame
-					&& showTestingWarning)))
-			&& !Engine::warnUserAboutUnsupportedGame())
+	if (gameDescriptor.getSupportLevel() == kUnstableGame && !Engine::warnUserAboutUnsupportedGame())
 		return Common::kUserCanceled;
+#endif
 
 	debug(2, "Running %s", gameDescriptor.description().c_str());
 	initSubSystems(agdDesc);

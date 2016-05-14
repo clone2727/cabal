@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -19,6 +19,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
  */
+
+// Based on the ScummVM (GPLv2+) file of the same name
 
 namespace Wintermute {
 
@@ -202,16 +204,16 @@ static const WMEGameDescription gameDescriptions[] = {
 		WME_ENTRY1s("data.dcp", "2b343b48a7aee508d728a546b414a255", 620005266), Common::EN_ANY, ADGF_UNSTABLE, LATEST_VERSION),
 	// Chivalry is Not Dead
 	WME_WINENTRY("chivalry", "", 
-		WME_ENTRY1s("data.dcp", "ebd0915d9a12df5224be22f53bb23eb6", 7278306), Common::EN_ANY, ADGF_TESTING, LATEST_VERSION),
+		WME_ENTRY1s("data.dcp", "ebd0915d9a12df5224be22f53bb23eb6", 7278306), Common::EN_ANY, ADGF_UNSTABLE, LATEST_VERSION),
 	// Chivalry is Not Dead (Version from deirdrakai.com)
 	WME_WINENTRY("chivalry", "", 
-		WME_ENTRY1s("data.dcp", "ae6d91b9517f4d2851a8ad94c96951c8", 7278302), Common::EN_ANY, ADGF_TESTING, LATEST_VERSION),
+		WME_ENTRY1s("data.dcp", "ae6d91b9517f4d2851a8ad94c96951c8", 7278302), Common::EN_ANY, ADGF_UNSTABLE, LATEST_VERSION),
 	// Conspiracao Dumont
 	WME_WINENTRY("conspiracao", "", 
 		WME_ENTRY1s("ConspiracaoDumont.exe", "106f3f2c8f18bb5ffffeed634ace256c", 32908032), Common::EN_ANY, ADGF_UNSTABLE | ADGF_DEMO, LATEST_VERSION),
 	// Corrosion: Cold Winter Waiting
 	WME_WINENTRY("corrosion", "", 
-		WME_ENTRY1s("data.dcp", "ae885b1a8faa0b27f43c0e8f0df02fc9", 525931618), Common::EN_ANY, ADGF_TESTING, LATEST_VERSION),
+		WME_ENTRY1s("data.dcp", "ae885b1a8faa0b27f43c0e8f0df02fc9", 525931618), Common::EN_ANY, ADGF_UNSTABLE, LATEST_VERSION),
 	// Dead City (Czech)
 	// The Czech data are in data.dcp, so in this case we'll have to
 	// just detect the english version twice, to give the user a choice.
