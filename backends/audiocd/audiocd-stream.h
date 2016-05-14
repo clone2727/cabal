@@ -63,6 +63,8 @@ protected:
 		kBufferThreshold = kFramesPerSecond
 	};
 
+	void onTimer();
+
 private:
 	int16 _buffer[kSamplesPerFrame];
 	int _frame;
@@ -79,7 +81,6 @@ private:
 
 	bool readNextFrame();
 	static void timerProc(void *refCon);
-	void onTimer();
 	void emptyQueue();
 };
 

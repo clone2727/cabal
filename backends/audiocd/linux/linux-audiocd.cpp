@@ -95,6 +95,10 @@ private:
 
 LinuxAudioCDStream::LinuxAudioCDStream(int fd, const cdrom_tocentry &startEntry, const cdrom_tocentry &endEntry) :
 		_fd(fd), _startEntry(startEntry), _endEntry(endEntry) {
+
+	// Read the first bit without the timer to ensure that the sound starts synchronously
+	onTimer();
+
 	startTimer();
 }
 

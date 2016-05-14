@@ -67,6 +67,10 @@ private:
 
 Win32AudioCDStream::Win32AudioCDStream(HANDLE handle, const TRACK_DATA &startEntry, const TRACK_DATA &endEntry) :
 		_driveHandle(handle), _startEntry(startEntry), _endEntry(endEntry) {
+
+	// Read the first bit without the timer to ensure that the sound starts synchronously
+	onTimer();
+
 	startTimer();
 }
 
