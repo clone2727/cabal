@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -19,6 +19,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
  */
+
+// Based on the ScummVM (GPLv2+) file of the same name
 
 #include "agos/agos.h"
 #include "agos/drivers/accolade/mididriver.h"
@@ -61,7 +63,7 @@ public:
 			_driver->setTimerCallback(timer_param, timer_proc);
 	}
 
-	uint32 getBaseTempo() {
+	uint32 getBaseTempo() const {
 		if (_driver) {
 			return _driver->getBaseTempo();
 		}

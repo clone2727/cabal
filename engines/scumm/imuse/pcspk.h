@@ -49,7 +49,7 @@ public:
 
 	bool isOpen() const { return _isOpen; }
 	void setTimerCallback(void *timerParam, Common::TimerManager::TimerProc timerProc);
-	uint32 getBaseTempo();
+	uint32 getBaseTempo() const;
 
 protected:
 	void generateSamples(int16 *buf, int len);

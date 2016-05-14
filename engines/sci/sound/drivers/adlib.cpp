@@ -63,7 +63,7 @@ public:
 	MidiChannel *allocateChannel() { return NULL; }
 	MidiChannel *getPercussionChannel() { return NULL; }
 	bool isOpen() const { return _isOpen; }
-	uint32 getBaseTempo() { return 1000000 / OPL::OPL::kDefaultCallbackFrequency; }
+	uint32 getBaseTempo() const { return 1000000 / OPL::OPL::kDefaultCallbackFrequency; }
 
 	// MidiDriver
 	void setTimerCallback(void *timerParam, Common::TimerManager::TimerProc timerProc);

@@ -127,7 +127,7 @@ public:
 	MidiChannel *getPercussionChannel() { return NULL; }
 
 	bool isOpen() const { return _isOpen; }
-	uint32 getBaseTempo() { return 1000000 / OPL::OPL::kDefaultCallbackFrequency; }
+	uint32 getBaseTempo() const { return 1000000 / OPL::OPL::kDefaultCallbackFrequency; }
 
 	void setVolume(byte volume);
 	virtual uint32 property(int prop, uint32 param);

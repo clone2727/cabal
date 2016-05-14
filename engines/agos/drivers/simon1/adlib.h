@@ -43,7 +43,7 @@ public:
 	virtual void send(uint32 b);
 
 	virtual void setTimerCallback(void *timer_param, Common::TimerManager::TimerProc timer_proc);
-	virtual uint32 getBaseTempo();
+	virtual uint32 getBaseTempo() const;
 
 	virtual MidiChannel *allocateChannel() { return 0; }
 	virtual MidiChannel *getPercussionChannel() { return 0; }

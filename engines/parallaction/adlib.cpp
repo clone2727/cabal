@@ -287,7 +287,7 @@ public:
 	MidiChannel *allocateChannel();
 	MidiChannel *getPercussionChannel() { return &_channels[9]; }
 	bool isOpen() const { return _isOpen; }
-	uint32 getBaseTempo() { return 1000000 / OPL::OPL::kDefaultCallbackFrequency; }
+	uint32 getBaseTempo() const { return 1000000 / OPL::OPL::kDefaultCallbackFrequency; }
 
 	virtual void setTimerCallback(void *timerParam, Common::TimerManager::TimerProc timerProc) {
 		_adlibTimerProc = timerProc;

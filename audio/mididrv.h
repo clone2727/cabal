@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -19,6 +19,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
  */
+
+// Based on the ScummVM (GPLv2+) file of the same name
 
 #ifndef AUDIO_MIDIDRV_H
 #define AUDIO_MIDIDRV_H
@@ -245,7 +247,7 @@ public:
 	virtual void setTimerCallback(void *timer_param, Common::TimerManager::TimerProc timer_proc) = 0;
 
 	/** The time in microseconds between invocations of the timer callback. */
-	virtual uint32 getBaseTempo() = 0;
+	virtual uint32 getBaseTempo() const = 0;
 
 	// Channel allocation functions
 	virtual MidiChannel *allocateChannel() = 0;

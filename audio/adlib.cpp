@@ -942,7 +942,7 @@ public:
 	void send(byte channel, uint32 b); // Supports higher than channel 15
 	uint32 property(int prop, uint32 param);
 	bool isOpen() const { return _isOpen; }
-	uint32 getBaseTempo() { return 1000000 / OPL::OPL::kDefaultCallbackFrequency; }
+	uint32 getBaseTempo() const { return 1000000 / OPL::OPL::kDefaultCallbackFrequency; }
 
 	void setPitchBendRange(byte channel, uint range);
 	void sysEx_customInstrument(byte channel, uint32 type, const byte *instr);

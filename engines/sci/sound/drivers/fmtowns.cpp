@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -19,6 +19,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
  */
+
+// Based on the ScummVM (GPLv2+) file of the same name
 
 #include "sci/sci.h"
 
@@ -112,7 +114,7 @@ public:
 
 	void setSoundOn(bool toggle);
 
-	uint32 getBaseTempo();
+	uint32 getBaseTempo() const;
 	MidiChannel *allocateChannel() { return 0; }
 	MidiChannel *getPercussionChannel() { return 0; }
 
@@ -547,7 +549,7 @@ void MidiDriver_FMTowns::setSoundOn(bool toggle) {
 	_soundOn = toggle;
 }
 
-uint32 MidiDriver_FMTowns::getBaseTempo() {
+uint32 MidiDriver_FMTowns::getBaseTempo() const {
 	return _baseTempo;
 }
 

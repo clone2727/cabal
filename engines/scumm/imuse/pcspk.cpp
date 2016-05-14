@@ -99,7 +99,7 @@ void PcSpkDriver::setTimerCallback(void *timerParam, Common::TimerManager::Timer
 	_timerParam = timerParam;
 }
 
-uint32 PcSpkDriver::getBaseTempo() {
+uint32 PcSpkDriver::getBaseTempo() const {
 	return 1000000 / Audio::AudioDevice::kDefaultCallbackFrequency;
 }
 

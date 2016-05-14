@@ -46,7 +46,7 @@ public:
 	MidiChannel *getPercussionChannel() { return 0; }
 	void setTimerCallback(void *timerParam, Common::TimerManager::TimerProc timerProc);
 	bool isOpen() const { return _isOpen; }
-	uint32 getBaseTempo() { return 1000000 / OPL::OPL::kDefaultCallbackFrequency; }
+	uint32 getBaseTempo() const { return 1000000 / OPL::OPL::kDefaultCallbackFrequency; }
 
 	void setVolume(uint32 volume);
 
