@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -19,6 +19,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
  */
+
+// Based on the ScummVM (GPLv2+) file of the same name
 
 #include "common/scummsys.h"
 
@@ -113,7 +115,6 @@ void GPHGraphicsManager::setGraphicsModeIntern() {
 void GPHGraphicsManager::initSize(uint w, uint h, const Graphics::PixelFormat *format) {
 	assert(_transactionMode == kTransactionActive);
 
-#ifdef USE_RGB_COLOR
 	// Avoid redundant format changes
 	Graphics::PixelFormat newFormat;
 	if (!format)
@@ -128,8 +129,6 @@ void GPHGraphicsManager::initSize(uint w, uint h, const Graphics::PixelFormat *f
 		_transactionDetails.formatChanged = true;
 		_screenFormat = newFormat;
 	}
-#endif
-
 
 	// Avoid redundant res changes
 	if ((int)w == _videoMode.screenWidth && (int)h == _videoMode.screenHeight)
@@ -459,7 +458,7 @@ void GPHGraphicsManager::hideOverlay() {
 
 bool GPHGraphicsManager::loadGFXMode() {
 
-	// We don't offer anything other than fullscreen on GPH devices so let’s not even pretend.
+	// We don't offer anything other than fullscreen on GPH devices so let's not even pretend.
 	_videoMode.fullscreen = true;
 
 	// Set the hardware stats to match the LCD.

@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -19,6 +19,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
  */
+
+// Based on the ScummVM (GPLv2+) file of the same name
 
 #ifndef BACKENDS_GRAPHICS_OPENGLSDL_OPENGLSDL_GRAPHICS_H
 #define BACKENDS_GRAPHICS_OPENGLSDL_OPENGLSDL_GRAPHICS_H
@@ -46,9 +48,7 @@ public:
 	virtual bool setGraphicsMode(int mode);
 	virtual void resetGraphicsScale();
 
-#ifdef USE_RGB_COLOR
 	virtual Common::List<Graphics::PixelFormat> getSupportedFormats() const;
-#endif
 
 	virtual void updateScreen();
 

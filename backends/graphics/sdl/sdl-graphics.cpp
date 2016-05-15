@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -19,6 +19,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
  */
+
+// Based on the ScummVM (GPLv2+) file of the same name
 
 #include "backends/graphics/sdl/sdl-graphics.h"
 
@@ -49,19 +51,15 @@ SdlGraphicsManager::State SdlGraphicsManager::getState() {
 	state.aspectRatio   = getFeatureState(OSystem::kFeatureAspectRatioCorrection);
 	state.fullscreen    = getFeatureState(OSystem::kFeatureFullscreenMode);
 	state.cursorPalette = getFeatureState(OSystem::kFeatureCursorPalette);
-#ifdef USE_RGB_COLOR
 	state.pixelFormat   = getScreenFormat();
-#endif
+
 	return state;
 }
 
 bool SdlGraphicsManager::setState(const State &state) {
 	beginGFXTransaction();
-#ifdef USE_RGB_COLOR
 		initSize(state.screenWidth, state.screenHeight, &state.pixelFormat);
-#else
-		initSize(state.screenWidth, state.screenHeight, 0);
-#endif
+
 		setFeatureState(OSystem::kFeatureAspectRatioCorrection, state.aspectRatio);
 		setFeatureState(OSystem::kFeatureFullscreenMode, state.fullscreen);
 		setFeatureState(OSystem::kFeatureCursorPalette, state.cursorPalette);

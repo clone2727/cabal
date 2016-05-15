@@ -154,8 +154,6 @@ int OSystem_PSP::getGraphicsMode() const {
 	return _displayManager.getGraphicsMode();
 }
 
-#ifdef USE_RGB_COLOR
-
 Graphics::PixelFormat OSystem_PSP::getScreenFormat() const {
 	return _screen.getScummvmPixelFormat();
 }
@@ -163,8 +161,6 @@ Graphics::PixelFormat OSystem_PSP::getScreenFormat() const {
 Common::List<Graphics::PixelFormat> OSystem_PSP::getSupportedFormats() const {
 	return _displayManager.getSupportedPixelFormats();
 }
-
-#endif
 
 void OSystem_PSP::initSize(uint width, uint height, const Graphics::PixelFormat *format) {
 	DEBUG_ENTER_FUNC();

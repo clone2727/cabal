@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -20,6 +20,8 @@
  *
  */
 
+// Based on the ScummVM (GPLv2+) file of the same name
+
 /*
  * The PSG_HuC6280 class is based on the HuC6280 sound chip emulator
  * by Charles MacDonald (E-mail: cgfm2@hotmail.com, WWW: http://cgfm2.emuviews.com)
@@ -31,9 +33,6 @@
 #include <math.h>
 #include "scumm/players/player_pce.h"
 #include "common/endian.h"
-
-// PCE sound engine is only used by Loom, which requires 16bit color support
-#ifdef USE_RGB_COLOR
 
 namespace Scumm {
 
@@ -753,4 +752,3 @@ int Player_PCE::getMusicTimer() {
 
 } // End of namespace Scumm
 
-#endif // USE_RGB_COLOR

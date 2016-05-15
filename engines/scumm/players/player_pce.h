@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -20,6 +20,8 @@
  *
  */
 
+// Based on the ScummVM (GPLv2+) file of the same name
+
 #ifndef SCUMM_PLAYERS_PLAYER_PCE_H
 #define SCUMM_PLAYERS_PLAYER_PCE_H
 
@@ -28,9 +30,6 @@
 #include "scumm/music.h"
 #include "audio/audiostream.h"
 #include "audio/mixer.h"
-
-// PCE sound engine is only used by Loom, which requires 16bit color support
-#ifdef USE_RGB_COLOR
 
 namespace Scumm {
 
@@ -127,7 +126,5 @@ private:
 };
 
 } // End of namespace Scumm
-
-#endif // USE_RGB_COLOR
 
 #endif

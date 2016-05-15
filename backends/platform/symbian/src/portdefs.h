@@ -70,7 +70,6 @@ typedef signed long int int32;
 #define SMALL_SCREEN_DEVICE
 
 #define DISABLE_COMMAND_LINE
-#define USE_RGB_COLOR
 
 #if defined(USE_TREMOR) && !defined(USE_VORBIS)
 #define USE_VORBIS // make sure this one is defined together with USE_TREMOR!

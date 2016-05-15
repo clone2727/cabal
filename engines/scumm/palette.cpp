@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -19,6 +19,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
  */
+
+// Based on the ScummVM (GPLv2+) file of the same name
 
 #include "common/system.h"
 #include "common/textconsole.h"
@@ -137,7 +139,6 @@ void ScummEngine::resetPalette() {
 		0x00, 0x00, 0x00, 	0x00, 0xFF, 0x00
 	};
 
-#ifdef USE_RGB_COLOR
 #ifndef DISABLE_TOWNS_DUAL_LAYER_MODE
 	static const byte tableTownsV3Palette[] = {
 		0x00, 0x00, 0x00,	0x00, 0x00, 0xA0,	0x00, 0xA0, 0x00,	0x00, 0xA0, 0xA0,
@@ -152,7 +153,6 @@ void ScummEngine::resetPalette() {
 		0x57, 0x3F, 0x57,	0x57, 0x57, 0xFF,	0x57, 0xFF, 0x57,	0x57, 0xFF, 0xFF,
 		0xFF, 0x57, 0x57,	0xD6, 0x94, 0x40,	0xFF, 0xFF, 0x57,	0xFF, 0xFF, 0xFF
 	};
-#endif
 #endif
 
 	if (_game.version <= 1) {
@@ -218,12 +218,10 @@ void ScummEngine::resetPalette() {
 		} else if (_game.platform == Common::kPlatformFMTowns) {
 			if (_game.id == GID_INDY4 || _game.id == GID_MONKEY2)
 				_townsClearLayerFlag = 0;
-#ifdef USE_RGB_COLOR
 			else if (_game.id == GID_LOOM)
 				towns_setTextPaletteFromPtr(tableTownsLoomPalette);
 			else if (_game.version == 3)
 				towns_setTextPaletteFromPtr(tableTownsV3Palette);
-#endif
 
 			_townsScreen->toggleLayers(_townsActiveLayerFlags);
 #endif // DISABLE_TOWNS_DUAL_LAYER_MODE
@@ -1270,11 +1268,9 @@ void ScummEngine::setCurrentPalette(int palindex) {
 	pals = getPalettePtr(_curPalIndex, _roomResource);
 	if (_game.id == GID_LOOM && _game.platform == Common::kPlatformPCEngine) {
 		setPCEPaletteFromPtr(pals);
-#ifdef USE_RGB_COLOR
 #ifndef DISABLE_TOWNS_DUAL_LAYER_MODE
 	} else if (_game.platform == Common::kPlatformFMTowns) {
 		towns_setPaletteFromPtr(pals);
-#endif
 #endif
 	} else if (_game.id == GID_INDY4 && _game.platform == Common::kPlatformAmiga) {
 		setAmigaPaletteFromPtr(pals);
@@ -1407,7 +1403,6 @@ void ScummEngine::updatePalette() {
 	_palDirtyMax = -1;
 	_palDirtyMin = 256;
 
-#ifdef USE_RGB_COLOR
 #ifndef DISABLE_TOWNS_DUAL_LAYER_MODE
 	if (_game.platform == Common::kPlatformFMTowns) {
 		p = palette_colors;
@@ -1417,7 +1412,6 @@ void ScummEngine::updatePalette() {
 		}
 		return;
 	}
-#endif
 #endif
 
 	_system->getPaletteManager()->setPalette(palette_colors, first, num);

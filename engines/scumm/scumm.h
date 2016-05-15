@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -19,6 +19,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
  */
+
+// Based on the ScummVM (GPLv2+) file of the same name
 
 #ifndef SCUMM_H
 #define SCUMM_H
@@ -1369,10 +1371,8 @@ public:
 	// Exists both in V7 and in V72HE:
 	byte VAR_NUM_GLOBAL_OBJS;
 
-#ifdef USE_RGB_COLOR
 	// FM-Towns / PC-Engine specific
 	Graphics::FontSJIS *_cjkFont;
-#endif
 
 	// FM-Towns specific
 #ifndef DISABLE_TOWNS_DUAL_LAYER_MODE
@@ -1383,10 +1383,8 @@ public:
 
 protected:
 	void towns_drawStripToScreen(VirtScreen *vs, int dstX, int dstY, int srcX, int srcY, int w, int h);
-#ifdef USE_RGB_COLOR
 	void towns_setPaletteFromPtr(const byte *ptr, int numcolor = -1);
 	void towns_setTextPaletteFromPtr(const byte *ptr);
-#endif
 	void towns_setupPalCycleField(int x1, int y1, int x2, int y2);
 	void towns_processPalCycleField();
 	void towns_resetPalCycleFields();

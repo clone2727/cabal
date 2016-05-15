@@ -111,10 +111,6 @@ const char *g_CabalFeatures = ""
 	"TiMidity "
 #endif
 
-#ifdef USE_RGB_COLOR
-	"RGB "
-#endif
-
 #ifdef USE_ZLIB
 	"zLib "
 #endif

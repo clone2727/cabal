@@ -67,13 +67,11 @@ OSystem_Wii::OSystem_Wii() :
 	_configGraphicsMode(0),
 	_actualGraphicsMode(0),
 	_bilinearFilter(false),
-#ifdef USE_RGB_COLOR
 	_pfRGB565(Graphics::PixelFormat(2, 5, 6, 5, 0, 11, 5, 0, 0)),
 	_pfRGB3444(Graphics::PixelFormat(2, 4, 4, 4, 3, 8, 4, 0, 12)),
 	_pfGame(Graphics::PixelFormat::createFormatCLUT8()),
 	_pfGameTexture(Graphics::PixelFormat::createFormatCLUT8()),
 	_pfCursor(Graphics::PixelFormat::createFormatCLUT8()),
-#endif
 
 	_optionsDlgActive(false),
 	_consoleVisible(false),

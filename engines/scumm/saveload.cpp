@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -19,6 +19,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
  */
+
+// Based on the ScummVM (GPLv2+) file of the same name
 
 #include "common/config-manager.h"
 #include "common/memstream.h"
@@ -1557,12 +1559,10 @@ void ScummEngine_v5::saveOrLoad(Serializer *s) {
 	// Regenerate 16bit palette after loading.
 	// This avoids color issues when loading savegames that have been saved with a different ScummVM port
 	// that uses a different 16bit color mode than the ScummVM port which is currently used.
-#ifdef USE_RGB_COLOR
 	if (_game.platform == Common::kPlatformPCEngine && s->isLoading()) {
 		for (int i = 0; i < 256; ++i)
 			_16BitPalette[i] = get16BitColor(_currentPalette[i * 3 + 0], _currentPalette[i * 3 + 1], _currentPalette[i * 3 + 2]);
 	}
-#endif
 }
 
 #ifdef ENABLE_SCUMM_7_8

@@ -1,11 +1,8 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
- *
- * Additional copyright for this file:
- * Copyright (C) 1994-1998 Revolution Software Ltd.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -20,7 +17,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+ *
  */
+
+// Based on the ScummVM (GPLv2+) file of the same name
 
 #include "common/file.h"
 #include "common/mutex.h"
@@ -418,14 +418,8 @@ MoviePlayer *makeMoviePlayer(const char *name, Sword2Engine *vm, OSystem *system
 	filename = Common::String::format("%s.str", name);
 
 	if (Common::File::exists(filename)) {
-#ifdef USE_RGB_COLOR
 		Video::VideoDecoder *psxDecoder = new Video::PSXStreamDecoder(Video::PSXStreamDecoder::kCD2x, frameCount);
 		return new MoviePlayer(vm, system, psxDecoder, kVideoDecoderPSX);
-#else
-		GUI::MessageDialog dialog(_("PSX cutscenes found but ScummVM has been built without RGB color support"), _("OK"));
-		dialog.runModal();
-		return NULL;
-#endif
 	}
 
 	filename = Common::String::format("%s.smk", name);

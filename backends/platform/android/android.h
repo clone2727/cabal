@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -19,6 +19,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
  */
+
+// Based on the ScummVM (GPLv2+) file of the same name
 
 #ifndef _ANDROID_H_
 #define _ANDROID_H_
@@ -156,11 +158,9 @@ private:
 
 	void initOverlay();
 
-#ifdef USE_RGB_COLOR
 	Common::String getPixelFormatName(const Graphics::PixelFormat &format) const;
 	void initTexture(GLESBaseTexture **texture, uint width, uint height,
 						const Graphics::PixelFormat *format);
-#endif
 
 	void setupKeymapper();
 	void setCursorPaletteInternal(const byte *colors, uint start, uint num);
@@ -181,10 +181,8 @@ public:
 	virtual bool setGraphicsMode(int mode);
 	virtual int getGraphicsMode() const;
 
-#ifdef USE_RGB_COLOR
 	virtual Graphics::PixelFormat getScreenFormat() const;
 	virtual Common::List<Graphics::PixelFormat> getSupportedFormats() const;
-#endif
 
 	virtual void initSize(uint width, uint height,
 							const Graphics::PixelFormat *format);

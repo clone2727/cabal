@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -20,6 +20,7 @@
  *
  */
 
+// Based on the ScummVM (GPLv2+) file of the same name
 
 #include "scumm/scumm.h"
 #include "scumm/actor.h"
@@ -923,7 +924,6 @@ void NESCostumeRenderer::setCostume(int costume, int shadow) {
 	_loaded.loadCostume(costume);
 }
 
-#ifdef USE_RGB_COLOR
 void PCEngineCostumeRenderer::setPalette(uint16 *palette) {
 	const byte* ptr = _loaded._palette;
 	byte rgb[45];
@@ -934,7 +934,6 @@ void PCEngineCostumeRenderer::setPalette(uint16 *palette) {
 	for (int i = 0; i < 15; ++i)
 		_palette[i + 1] = _vm->get16BitColor(rgb[i * 3 + 0], rgb[i * 3 + 1], rgb[i * 3 + 2]);
 }
-#endif
 
 void ClassicCostumeLoader::costumeDecodeData(Actor *a, int frame, uint usemask) {
 	const byte *r;

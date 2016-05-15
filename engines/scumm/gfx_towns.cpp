@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -19,6 +19,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
  */
+
+// Based on the ScummVM (GPLv2+) file of the same name
 
 #include "common/endian.h"
 
@@ -124,7 +126,6 @@ void ScummEngine::towns_restoreCharsetBg() {
 	_nextTop = _string[0].ypos;
 }
 
-#ifdef USE_RGB_COLOR
 void ScummEngine::towns_setPaletteFromPtr(const byte *ptr, int numcolor) {
 	setPaletteFromPtr(ptr, numcolor);
 
@@ -145,7 +146,6 @@ void ScummEngine::towns_setPaletteFromPtr(const byte *ptr, int numcolor) {
 void ScummEngine::towns_setTextPaletteFromPtr(const byte *ptr) {
 	memcpy(_textPalette, ptr, 48);
 }
-#endif
 
 void ScummEngine::towns_setupPalCycleField(int x1, int y1, int x2, int y2) {
 	if (_numCyclRects >= 10)

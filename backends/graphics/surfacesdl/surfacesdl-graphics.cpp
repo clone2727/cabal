@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -20,6 +20,8 @@
  *
  */
 
+// Based on the ScummVM (GPLv2+) file of the same name
+
 #include "common/scummsys.h"
 
 #if defined(SDL_BACKEND)
@@ -33,9 +35,7 @@
 #include "common/translation.h"
 #include "common/util.h"
 #include "common/frac.h"
-#ifdef USE_RGB_COLOR
 #include "common/list.h"
-#endif
 #include "graphics/font.h"
 #include "graphics/fontman.h"
 #include "graphics/scaler.h"
@@ -130,10 +130,8 @@ SurfaceSdlGraphicsManager::SurfaceSdlGraphicsManager(SdlEventSource *sdlEventSou
 	_originalBitsPerPixel(0),
 #endif
 	_screen(0), _tmpscreen(0),
-#ifdef USE_RGB_COLOR
 	_screenFormat(Graphics::PixelFormat::createFormatCLUT8()),
 	_cursorFormat(Graphics::PixelFormat::createFormatCLUT8()),
-#endif
 	_overlayVisible(false),
 	_overlayscreen(0), _tmpscreen2(0),
 	_scalerProc(0), _screenChangeCount(0),
@@ -294,9 +292,7 @@ void SurfaceSdlGraphicsManager::beginGFXTransaction() {
 	_transactionDetails.needUpdatescreen = false;
 
 	_transactionDetails.normal1xScaler = false;
-#ifdef USE_RGB_COLOR
 	_transactionDetails.formatChanged = false;
-#endif
 
 	_oldVideoMode = _videoMode;
 }
@@ -320,13 +316,11 @@ OSystem::TransactionError SurfaceSdlGraphicsManager::endGFXTransaction() {
 
 			_videoMode.mode = _oldVideoMode.mode;
 			_videoMode.scaleFactor = _oldVideoMode.scaleFactor;
-#ifdef USE_RGB_COLOR
 		} else if (_videoMode.format != _oldVideoMode.format) {
 			errors |= OSystem::kTransactionFormatNotSupported;
 
 			_videoMode.format = _oldVideoMode.format;
 			_screenFormat = _videoMode.format;
-#endif
 		} else if (_videoMode.screenWidth != _oldVideoMode.screenWidth || _videoMode.screenHeight != _oldVideoMode.screenHeight) {
 			errors |= OSystem::kTransactionSizeChangeFailed;
 
@@ -350,11 +344,7 @@ OSystem::TransactionError SurfaceSdlGraphicsManager::endGFXTransaction() {
 		}
 	}
 
-#ifdef USE_RGB_COLOR
 	if (_transactionDetails.sizeChanged || _transactionDetails.formatChanged) {
-#else
-	if (_transactionDetails.sizeChanged) {
-#endif
 		unloadGFXMode();
 		if (!loadGFXMode()) {
 			if (_oldVideoMode.setup) {
@@ -401,7 +391,6 @@ OSystem::TransactionError SurfaceSdlGraphicsManager::endGFXTransaction() {
 	return (OSystem::TransactionError)errors;
 }
 
-#ifdef USE_RGB_COLOR
 Common::List<Graphics::PixelFormat> SurfaceSdlGraphicsManager::getSupportedFormats() const {
 	assert(!_supportedFormats.empty());
 	return _supportedFormats;
@@ -422,12 +411,11 @@ void SurfaceSdlGraphicsManager::detectSupportedFormats() {
 	// available format, it will get one that is "cheap" to
 	// use.
 	const Graphics::PixelFormat RGBList[] = {
-#ifdef USE_RGB_COLOR
 		// RGBA8888, ARGB8888, RGB888
 		Graphics::PixelFormat(4, 8, 8, 8, 8, 24, 16, 8, 0),
 		Graphics::PixelFormat(4, 8, 8, 8, 8, 16, 8, 0, 24),
 		Graphics::PixelFormat(3, 8, 8, 8, 0, 16, 8, 0, 0),
-#endif
+
 		// RGB565, XRGB1555, RGB555, RGBA4444, ARGB4444
 		Graphics::PixelFormat(2, 5, 6, 5, 0, 11, 5, 0, 0),
 		Graphics::PixelFormat(2, 5, 5, 5, 1, 10, 5, 0, 15),
@@ -436,12 +424,11 @@ void SurfaceSdlGraphicsManager::detectSupportedFormats() {
 		Graphics::PixelFormat(2, 4, 4, 4, 4, 8, 4, 0, 12)
 	};
 	const Graphics::PixelFormat BGRList[] = {
-#ifdef USE_RGB_COLOR
 		// ABGR8888, BGRA8888, BGR888
 		Graphics::PixelFormat(4, 8, 8, 8, 8, 0, 8, 16, 24),
 		Graphics::PixelFormat(4, 8, 8, 8, 8, 8, 16, 24, 0),
 		Graphics::PixelFormat(3, 8, 8, 8, 0, 0, 8, 16, 0),
-#endif
+
 		// BGR565, XBGR1555, BGR555, ABGR4444, BGRA4444
 		Graphics::PixelFormat(2, 5, 6, 5, 0, 0, 5, 11, 0),
 		Graphics::PixelFormat(2, 5, 5, 5, 1, 0, 5, 10, 15),
@@ -489,7 +476,6 @@ void SurfaceSdlGraphicsManager::detectSupportedFormats() {
 	// Finally, we always supposed 8 bit palette graphics
 	_supportedFormats.push_back(Graphics::PixelFormat::createFormatCLUT8());
 }
-#endif
 
 bool SurfaceSdlGraphicsManager::setGraphicsMode(int mode) {
 	Common::StackLock lock(_graphicsMutex);
@@ -642,8 +628,7 @@ int SurfaceSdlGraphicsManager::getGraphicsMode() const {
 void SurfaceSdlGraphicsManager::initSize(uint w, uint h, const Graphics::PixelFormat *format) {
 	assert(_transactionMode == kTransactionActive);
 
-#ifdef USE_RGB_COLOR
-	//avoid redundant format changes
+	// Avoid redundant format changes
 	Graphics::PixelFormat newFormat;
 	if (!format)
 		newFormat = Graphics::PixelFormat::createFormatCLUT8();
@@ -657,7 +642,6 @@ void SurfaceSdlGraphicsManager::initSize(uint w, uint h, const Graphics::PixelFo
 		_transactionDetails.formatChanged = true;
 		_screenFormat = newFormat;
 	}
-#endif
 
 	// Avoid redundant res changes
 	if ((int)w == _videoMode.screenWidth && (int)h == _videoMode.screenHeight)
@@ -759,7 +743,6 @@ bool SurfaceSdlGraphicsManager::loadGFXMode() {
 	//
 	// Create the surface that contains the 8 bit game data
 	//
-#ifdef USE_RGB_COLOR
 	_screen = SDL_CreateRGBSurface(SDL_SWSURFACE, _videoMode.screenWidth, _videoMode.screenHeight,
 						_screenFormat.bytesPerPixel << 3,
 						((1 << _screenFormat.rBits()) - 1) << _screenFormat.rShift ,
@@ -771,11 +754,6 @@ bool SurfaceSdlGraphicsManager::loadGFXMode() {
 
 	// Avoid having SDL_SRCALPHA set even if we supplied an alpha-channel in the format.
 	SDL_SetAlpha(_screen, 0, 255);
-#else
-	_screen = SDL_CreateRGBSurface(SDL_SWSURFACE, _videoMode.screenWidth, _videoMode.screenHeight, 8, 0, 0, 0, 0);
-	if (_screen == NULL)
-		error("allocating _screen failed");
-#endif
 
 	// SDL 1.2 palettes default to all black,
 	// SDL 1.3 palettes default to all white,
@@ -802,9 +780,7 @@ bool SurfaceSdlGraphicsManager::loadGFXMode() {
 	_hwscreen = SDL_SetVideoMode(_videoMode.hardwareWidth, _videoMode.hardwareHeight, 16,
 		_videoMode.fullscreen ? (SDL_FULLSCREEN|SDL_SWSURFACE) : SDL_SWSURFACE);
 
-#ifdef USE_RGB_COLOR
 	detectSupportedFormats();
-#endif
 
 	if (_hwscreen == NULL) {
 		// DON'T use error(), as this tries to bring up the debug
@@ -1305,7 +1281,6 @@ void SurfaceSdlGraphicsManager::copyRectToScreen(const void *buf, int pitch, int
 	if (SDL_LockSurface(_screen) == -1)
 		error("SDL_LockSurface failed: %s", SDL_GetError());
 
-#ifdef USE_RGB_COLOR
 	byte *dst = (byte *)_screen->pixels + y * _screen->pitch + x * _screenFormat.bytesPerPixel;
 	if (_videoMode.screenWidth == w && pitch == _screen->pitch) {
 		memcpy(dst, buf, h*pitch);
@@ -1317,19 +1292,6 @@ void SurfaceSdlGraphicsManager::copyRectToScreen(const void *buf, int pitch, int
 			dst += _screen->pitch;
 		} while (--h);
 	}
-#else
-	byte *dst = (byte *)_screen->pixels + y * _screen->pitch + x;
-	if (_screen->pitch == pitch && pitch == w) {
-		memcpy(dst, buf, h*w);
-	} else {
-		const byte *src = (const byte *)buf;
-		do {
-			memcpy(dst, src, w);
-			src += pitch;
-			dst += _screen->pitch;
-		} while (--h);
-	}
-#endif
 
 	// Unlock the screen surface
 	SDL_UnlockSurface(_screen);
@@ -1349,13 +1311,7 @@ Graphics::Surface *SurfaceSdlGraphicsManager::lockScreen() {
 	if (SDL_LockSurface(_screen) == -1)
 		error("SDL_LockSurface failed: %s", SDL_GetError());
 
-	_framebuffer.init(_screen->w, _screen->h, _screen->pitch, _screen->pixels,
-#ifdef USE_RGB_COLOR
-	                  _screenFormat
-#else
-	                  Graphics::PixelFormat::createFormatCLUT8()
-#endif
-	                 );
+	_framebuffer.init(_screen->w, _screen->h, _screen->pitch, _screen->pixels, _screenFormat);
 
 	return &_framebuffer;
 }
@@ -1462,10 +1418,7 @@ int16 SurfaceSdlGraphicsManager::getWidth() {
 
 void SurfaceSdlGraphicsManager::setPalette(const byte *colors, uint start, uint num) {
 	assert(colors);
-
-#ifdef USE_RGB_COLOR
 	assert(_screenFormat.bytesPerPixel == 1);
-#endif
 
 	// Setting the palette before _screen is created is allowed - for now -
 	// since we don't actually set the palette until the screen is updated.
@@ -1499,10 +1452,7 @@ void SurfaceSdlGraphicsManager::setPalette(const byte *colors, uint start, uint 
 
 void SurfaceSdlGraphicsManager::grabPalette(byte *colors, uint start, uint num) {
 	assert(colors);
-
-#ifdef USE_RGB_COLOR
 	assert(_screenFormat.bytesPerPixel == 1);
-#endif
 
 	const SDL_Color *base = _currentPalette + start;
 
@@ -1788,7 +1738,6 @@ void SurfaceSdlGraphicsManager::warpMouse(int x, int y) {
 }
 
 void SurfaceSdlGraphicsManager::setMouseCursor(const void *buf, uint w, uint h, int hotspot_x, int hotspot_y, uint32 keycolor, bool dontScale, const Graphics::PixelFormat *format) {
-#ifdef USE_RGB_COLOR
 	if (!format)
 		_cursorFormat = Graphics::PixelFormat::createFormatCLUT8();
 	else if (format->bytesPerPixel <= _screenFormat.bytesPerPixel)
@@ -1796,9 +1745,6 @@ void SurfaceSdlGraphicsManager::setMouseCursor(const void *buf, uint w, uint h, 
 
 	if (_cursorFormat.bytesPerPixel < 4)
 		assert(keycolor < (uint)(1 << (_cursorFormat.bytesPerPixel << 3)));
-#else
-	assert(keycolor <= 0xFF);
-#endif
 
 	if (w == 0 || h == 0)
 		return;
@@ -1833,13 +1779,9 @@ void SurfaceSdlGraphicsManager::setMouseCursor(const void *buf, uint w, uint h, 
 	}
 
 	free(_mouseData);
-#ifdef USE_RGB_COLOR
+
 	_mouseData = (byte *)malloc(w * h * _cursorFormat.bytesPerPixel);
 	memcpy(_mouseData, buf, w * h * _cursorFormat.bytesPerPixel);
-#else
-	_mouseData = (byte *)malloc(w * h);
-	memcpy(_mouseData, buf, w * h);
-#endif
 
 	blitCursor();
 }
@@ -1847,11 +1789,7 @@ void SurfaceSdlGraphicsManager::setMouseCursor(const void *buf, uint w, uint h, 
 void SurfaceSdlGraphicsManager::blitCursor() {
 	byte *dstPtr;
 	const byte *srcPtr = _mouseData;
-#ifdef USE_RGB_COLOR
 	uint32 color;
-#else
-	byte color;
-#endif
 	int w, h, i, j;
 
 	if (!_mouseOrigSurface || !_mouseData)
@@ -1885,7 +1823,6 @@ void SurfaceSdlGraphicsManager::blitCursor() {
 
 	for (i = 0; i < h; i++) {
 		for (j = 0; j < w; j++) {
-#ifdef USE_RGB_COLOR
 			if (_cursorFormat.bytesPerPixel > 1) {
 				if (_cursorFormat.bytesPerPixel == 2)
 					color = *(const uint16 *)srcPtr;
@@ -1900,7 +1837,6 @@ void SurfaceSdlGraphicsManager::blitCursor() {
 				dstPtr += 2;
 				srcPtr += _cursorFormat.bytesPerPixel;
 			} else {
-#endif
 				color = *srcPtr;
 				if (color != _mouseKeyColor) {	// transparent, don't draw
 					*(uint16 *)dstPtr = SDL_MapRGB(_mouseOrigSurface->format,
@@ -1908,9 +1844,7 @@ void SurfaceSdlGraphicsManager::blitCursor() {
 				}
 				dstPtr += 2;
 				srcPtr++;
-#ifdef USE_RGB_COLOR
 			}
-#endif
 		}
 		dstPtr += _mouseOrigSurface->pitch - w * 2;
 	}

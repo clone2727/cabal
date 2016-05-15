@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -19,6 +19,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
  */
+
+// Based on the ScummVM (GPLv2+) file of the same name
 
 #ifndef BACKENDS_GRAPHICS_SURFACESDL_GRAPHICS_H
 #define BACKENDS_GRAPHICS_SURFACESDL_GRAPHICS_H
@@ -101,10 +103,8 @@ public:
 	virtual bool setGraphicsMode(int mode);
 	virtual int getGraphicsMode() const;
 	virtual void resetGraphicsScale();
-#ifdef USE_RGB_COLOR
 	virtual Graphics::PixelFormat getScreenFormat() const { return _screenFormat; }
 	virtual Common::List<Graphics::PixelFormat> getSupportedFormats() const;
-#endif
 	virtual void initSize(uint w, uint h, const Graphics::PixelFormat *format = NULL);
 	virtual int getScreenChangeID() const { return _screenChangeCount; }
 
@@ -194,7 +194,6 @@ protected:
 
 	/** Unseen game screen */
 	SDL_Surface *_screen;
-#ifdef USE_RGB_COLOR
 	Graphics::PixelFormat _screenFormat;
 	Graphics::PixelFormat _cursorFormat;
 	Common::List<Graphics::PixelFormat> _supportedFormats;
@@ -204,7 +203,6 @@ protected:
 	 * This method is invoked by loadGFXMode().
 	 */
 	void detectSupportedFormats();
-#endif
 
 	/** Temporary screen (for scalers) */
 	SDL_Surface *_tmpscreen;
@@ -226,9 +224,7 @@ protected:
 		bool needHotswap;
 		bool needUpdatescreen;
 		bool normal1xScaler;
-#ifdef USE_RGB_COLOR
 		bool formatChanged;
-#endif
 	};
 	TransactionDetails _transactionDetails;
 
@@ -245,9 +241,7 @@ protected:
 		int screenWidth, screenHeight;
 		int overlayWidth, overlayHeight;
 		int hardwareWidth, hardwareHeight;
-#ifdef USE_RGB_COLOR
 		Graphics::PixelFormat format;
-#endif
 	};
 	VideoState _videoMode, _oldVideoMode;
 
@@ -308,11 +302,7 @@ protected:
 	byte *_mouseData;
 	SDL_Rect _mouseBackup;
 	MousePos _mouseCurState;
-#ifdef USE_RGB_COLOR
 	uint32 _mouseKeyColor;
-#else
-	byte _mouseKeyColor;
-#endif
 	bool _cursorDontScale;
 	bool _cursorPaletteDisabled;
 	SDL_Surface *_mouseOrigSurface;

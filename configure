@@ -159,7 +159,6 @@ _keymapper=no
 _translation=yes
 # Default platform settings
 _backend=sdl
-_16bit=auto
 _savegame_timestamp=auto
 _dynamic_modules=no
 _elf_loader=no
@@ -195,7 +194,6 @@ _need_memalign=yes
 _have_x86=no
 
 # Add (virtual) features
-add_feature 16bit "16bit color" "_16bit"
 add_feature faad "libfaad" "_faad"
 add_feature flac "FLAC" "_flac"
 add_feature freetype2 "FreeType2" "_freetype2"
@@ -1006,7 +1004,6 @@ done # for parm in ...
 
 for ac_option in $@; do
 	case "$ac_option" in
-	--disable-16bit)          _16bit=no       ;;
 	--disable-savegame-timestamp) _savegame_timestamp=no ;;
 	--disable-scalers)        _build_scalers=no ;;
 	--disable-hq-scalers)     _build_hq_scalers=no ;;
@@ -3136,22 +3133,6 @@ esac
 
 
 #
-# Enable 16bit support only for backends which support it
-#
-case $_backend in
-	android | dingux | dc | gph | iphone | maemo | openpandora | psp | samsungtv | sdl | tizen | webos | wii)
-		if test "$_16bit" = auto ; then
-			_16bit=yes
-		else
-			_16bit=no
-		fi
-		;;
-	*)
-		_16bit=no
-		;;
-esac
-
-#
 # Disable savegame timestamp support for backends which don't have a reliable real time clock
 #
 case $_backend in
@@ -3443,11 +3424,6 @@ fi
 # Check whether integrated MT-32 emulator support is requested
 #
 define_in_config_if_yes "$_mt32emu" 'USE_MT32EMU'
-
-#
-# Check whether 16bit color support is requested
-#
-define_in_config_if_yes "$_16bit" 'USE_RGB_COLOR'
 
 #
 # Check whether save games use the current time as default description
@@ -4307,10 +4283,6 @@ fi
 
 if test "$_nasm" = yes ; then
 	echo_n ", assembly routines"
-fi
-
-if test "$_16bit" = yes ; then
-	echo_n ", 16bit color"
 fi
 
 if test "$_savegame_timestamp" = yes ; then

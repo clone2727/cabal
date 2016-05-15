@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -19,6 +19,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
  */
+
+// Based on the ScummVM (GPLv2+) file of the same name
 
 #ifndef SCUMM_CHARSET_H
 #define SCUMM_CHARSET_H
@@ -149,7 +151,6 @@ public:
 	int getCharWidth(uint16 chr);
 };
 
-#ifdef USE_RGB_COLOR
 #ifndef DISABLE_TOWNS_DUAL_LAYER_MODE
 class CharsetRendererTownsClassic : public CharsetRendererClassic {
 public:
@@ -167,7 +168,6 @@ private:
 
 	uint16 _sjisCurChar;
 };
-#endif
 #endif
 
 class CharsetRendererNES : public CharsetRendererCommon {
@@ -223,7 +223,6 @@ private:
 	uint16 _sjisCurChar;
 };
 
-#ifdef USE_RGB_COLOR
 class CharsetRendererPCE : public CharsetRendererV3 {
 private:
 	void drawBits1(Graphics::Surface &dest, int x, int y, const byte *src, int drawTop, int width, int height);
@@ -239,7 +238,6 @@ public:
 
 	void setColor(byte color);
 };
-#endif
 
 class CharsetRendererV2 : public CharsetRendererV3 {
 protected:

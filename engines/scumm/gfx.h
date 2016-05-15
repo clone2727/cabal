@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -19,6 +19,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
  */
+
+// Based on the ScummVM (GPLv2+) file of the same name
 
 #ifndef SCUMM_GFX_H
 #define SCUMM_GFX_H
@@ -327,7 +329,6 @@ public:
 	virtual void roomChanged(byte *roomptr);
 };
 
-#ifdef USE_RGB_COLOR
 class GdiPCEngine : public Gdi {
 protected:
 	struct {
@@ -371,7 +372,6 @@ public:
 	virtual void loadTiles(byte *roomptr);
 	virtual void roomChanged(byte *roomptr);
 };
-#endif
 
 class GdiV1 : public Gdi {
 protected:
@@ -434,14 +434,12 @@ public:
 	virtual void roomChanged(byte *roomptr);
 };
 
-#ifdef USE_RGB_COLOR
 class GdiHE16bit : public GdiHE {
 protected:
 	virtual void writeRoomColor(byte *dst, byte color) const;
 public:
 	GdiHE16bit(ScummEngine *vm);
 };
-#endif
 
 #ifndef DISABLE_TOWNS_DUAL_LAYER_MODE
 // Helper class for FM-Towns output (required for specific hardware effects like

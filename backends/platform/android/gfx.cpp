@@ -70,7 +70,6 @@ int OSystem_Android::getGraphicsMode() const {
 	return _graphicsMode;
 }
 
-#ifdef USE_RGB_COLOR
 Graphics::PixelFormat OSystem_Android::getScreenFormat() const {
 	return _game_texture->getPixelFormat();
 }
@@ -152,7 +151,6 @@ void OSystem_Android::initTexture(GLESBaseTexture **texture,
 
 	(*texture)->allocBuffer(width, height);
 }
-#endif
 
 void OSystem_Android::initSurface() {
 	LOGD("initializing surface");
@@ -269,11 +267,7 @@ void OSystem_Android::initSize(uint width, uint height,
 
 	GLTHREADCHECK;
 
-#ifdef USE_RGB_COLOR
 	initTexture(&_game_texture, width, height, format);
-#else
-	_game_texture->allocBuffer(width, height);
-#endif
 
 	updateScreenRect();
 	updateEventScale();
@@ -377,9 +371,7 @@ int16 OSystem_Android::getWidth() {
 void OSystem_Android::setPalette(const byte *colors, uint start, uint num) {
 	ENTER("%p, %u, %u", colors, start, num);
 
-#ifdef USE_RGB_COLOR
 	assert(_game_texture->hasPalette());
-#endif
 
 	GLTHREADCHECK;
 
@@ -396,9 +388,7 @@ void OSystem_Android::setPalette(const byte *colors, uint start, uint num) {
 void OSystem_Android::grabPalette(byte *colors, uint start, uint num) {
 	ENTER("%p, %u, %u", colors, start, num);
 
-#ifdef USE_RGB_COLOR
 	assert(_game_texture->hasPalette());
-#endif
 
 	GLTHREADCHECK;
 
@@ -681,7 +671,6 @@ void OSystem_Android::setMouseCursor(const void *buf, uint w, uint h,
 
 	GLTHREADCHECK;
 
-#ifdef USE_RGB_COLOR
 	if (format && format->bytesPerPixel > 1) {
 		if (_mouse_texture != _mouse_texture_rgb) {
 			LOGD("switching to rgb mouse cursor");
@@ -701,7 +690,6 @@ void OSystem_Android::setMouseCursor(const void *buf, uint w, uint h,
 		delete _mouse_texture_rgb;
 		_mouse_texture_rgb = 0;
 	}
-#endif
 
 	_mouse_texture->allocBuffer(w, h);
 

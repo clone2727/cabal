@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -19,6 +19,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
  */
+
+// Based on the ScummVM (GPLv2+) file of the same name
 
 #ifndef COMMON_SYSTEM_H
 #define COMMON_SYSTEM_H
@@ -482,13 +484,14 @@ public:
 	 */
 	virtual void resetGraphicsScale() {}
 
-#ifdef USE_RGB_COLOR
 	/**
 	 * Determine the pixel format currently in use for screen rendering.
 	 * @return the active screen pixel format.
 	 * @see Graphics::PixelFormat
 	 */
-	virtual Graphics::PixelFormat getScreenFormat() const = 0;
+	virtual Graphics::PixelFormat getScreenFormat() const {
+		return Graphics::PixelFormat::createFormatCLUT8();
+	}
 
 	/**
 	 * Returns a list of all pixel formats supported by the backend.
@@ -511,18 +514,11 @@ public:
 	 * @note Backends supporting RGB color should accept game data in RGB color
 	 *       order, even if hardware uses BGR or some other color order.
 	 */
-	virtual Common::List<Graphics::PixelFormat> getSupportedFormats() const = 0;
-#else
-	inline Graphics::PixelFormat getScreenFormat() const {
-		return Graphics::PixelFormat::createFormatCLUT8();
-	};
-
-	inline Common::List<Graphics::PixelFormat> getSupportedFormats() const {
+	virtual Common::List<Graphics::PixelFormat> getSupportedFormats() const {
 		Common::List<Graphics::PixelFormat> list;
 		list.push_back(Graphics::PixelFormat::createFormatCLUT8());
 		return list;
-	};
-#endif
+	}
 
 	/**
 	 * Set the size and color format of the virtual screen. Typical sizes include:

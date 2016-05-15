@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -19,6 +19,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
  */
+
+// Based on the ScummVM (GPLv2+) file of the same name
 
 #ifndef SCUMM_DETECTION_TABLES_H
 #define SCUMM_DETECTION_TABLES_H
@@ -92,7 +94,6 @@ static const PlainGameDescriptor gameDescriptions[] = {
 	{ "puttputt", "Putt-Putt Joins the Parade" },
 
 #ifdef ENABLE_HE
-#ifdef USE_RGB_COLOR
 	{ "arttime", "Blue's Art Time Activities" },
 	{ "baseball2001", "Backyard Baseball 2001" },
 	{ "Baseball2003", "Backyard Baseball 2003" },
@@ -105,7 +106,6 @@ static const PlainGameDescriptor gameDescriptions[] = {
 	{ "Soccer2004", "Backyard Soccer 2004" },
 	{ "SoccerMLS", "Backyard Soccer MLS Edition" },
 	{ "spyozon", "SPY Fox 3: Operation Ozone" },
-#endif
 	{ "airport", "Let's Explore the Airport with Buzzy" },
 	{ "balloon", "Putt-Putt and Pep's Balloon-O-Rama" },
 	{ "baseball", "Backyard Baseball" },
@@ -229,9 +229,7 @@ static const GameSettings gameVariantsTable[] = {
 
 	{"loom", "EGA",      "ega", GID_LOOM, 3, 0, MDT_PCSPK | MDT_PCJR | MDT_CMS | MDT_ADLIB | MDT_MIDI | MDT_PREFER_MT32, 0, UNK, GUIO1(GUIO_NOSPEECH)},
 	{"loom", "No AdLib", "ega", GID_LOOM, 3, 0, MDT_PCSPK | MDT_PCJR | MDT_CMS,                        0, UNK, GUIO2(GUIO_NOSPEECH, GUIO_NOMIDI)},
-#ifdef USE_RGB_COLOR
 	{"loom", "PC-Engine",    0, GID_LOOM, 3, 0, MDT_NONE,                         GF_AUDIOTRACKS | GF_OLD256 | GF_16BIT_COLOR, Common::kPlatformPCEngine, GUIO2(GUIO_NOSPEECH, GUIO_NOMIDI)},
-#endif
 	{"loom", "FM-TOWNS",     0, GID_LOOM, 3, 0, MDT_TOWNS,                        GF_AUDIOTRACKS | GF_OLD256, Common::kPlatformFMTowns, GUIO4(GUIO_NOSPEECH, GUIO_NOMIDI, GUIO_MIDITOWNS, GUIO_NOASPECT)},
 	{"loom", "VGA",      "vga", GID_LOOM, 4, 0, MDT_NONE,                         GF_AUDIOTRACKS,             Common::kPlatformDOS, GUIO2(GUIO_NOSPEECH, GUIO_NOMIDI)},
 	{"loom", "Steam",  "steam", GID_LOOM, 4, 0, MDT_NONE,                         GF_AUDIOTRACKS,  UNK, GUIO2(GUIO_NOSPEECH, GUIO_NOMIDI)},
@@ -380,7 +378,6 @@ static const GameSettings gameVariantsTable[] = {
 	// Added the use of smacker videos
 	{"BluesTreasureHunt", 0, 0, GID_TREASUREHUNT, 6, 99, MDT_NONE, GF_HE_LOCALIZED | GF_USE_KEY, UNK, GUIO3(GUIO_NOLAUNCHLOAD, GUIO_NOMIDI, GUIO_NOASPECT)},
 
-#ifdef USE_RGB_COLOR
 	// Added 16bit color
 	{"arttime", 0, 0, GID_HEGAME, 6, 99, MDT_NONE, GF_USE_KEY | GF_HE_LOCALIZED | GF_16BIT_COLOR, UNK, GUIO3(GUIO_NOLAUNCHLOAD, GUIO_NOMIDI, GUIO_NOASPECT)},
 	{"baseball2001", 0, 0, GID_BASEBALL2001, 6, 99, MDT_NONE, GF_USE_KEY | GF_16BIT_COLOR, UNK, GUIO3(GUIO_NOLAUNCHLOAD, GUIO_NOMIDI, GUIO_NOASPECT)},
@@ -407,7 +404,6 @@ static const GameSettings gameVariantsTable[] = {
 	{"Baseball2003", 0, 0, GID_BASEBALL2003, 6, 101, MDT_NONE, GF_USE_KEY | GF_16BIT_COLOR, UNK, GUIO3(GUIO_NOLAUNCHLOAD, GUIO_NOMIDI, GUIO_NOASPECT)},
 	{"basketball", 0, 0, GID_BASKETBALL, 6, 101, MDT_NONE, GF_USE_KEY| GF_16BIT_COLOR, UNK, GUIO3(GUIO_NOLAUNCHLOAD, GUIO_NOMIDI, GUIO_NOASPECT)},
 	{"football2002", 0, 0, GID_FOOTBALL2002, 6, 101, MDT_NONE, GF_USE_KEY | GF_16BIT_COLOR, UNK, GUIO3(GUIO_NOLAUNCHLOAD, GUIO_NOMIDI, GUIO_NOASPECT)},
-#endif
 
 	// The following are meant to be generic HE game variants and as such do
 	// not specify a game ID. Make sure that these are last in the table, else
@@ -555,7 +551,6 @@ static const GameFilenamePattern gameFilenamesTable[] = {
 	{ "puttputt", "Putt-Putt", kGenHEMacNoParens, UNK_LANG, Common::kPlatformMacintosh, 0 },
 
 #ifdef ENABLE_HE
-#ifdef USE_RGB_COLOR
 	{ "arttime", "arttime", kGenHEPC, UNK_LANG, UNK, 0 },
 	{ "arttime", "Blues-ArtTime", kGenHEMac, UNK_LANG, Common::kPlatformMacintosh, 0 },
 	{ "arttime", "artdemo", kGenHEPC, UNK_LANG, UNK, 0 },
@@ -615,7 +610,6 @@ static const GameFilenamePattern gameFilenamesTable[] = {
 	{ "spyozon", "SPYFoxSOS", kGenHEMac, Common::FR_FRA, Common::kPlatformMacintosh, 0 },
 	{ "spyozon", "SpyOzon", kGenHEMac, UNK_LANG, Common::kPlatformMacintosh, 0 },
 	{ "spyozon", "ozonepre.cup", kGenUnchanged, UNK_LANG, UNK, "HE CUP" },
-#endif
 
 	{ "airport", "airport", kGenHEPC, UNK_LANG, UNK, 0 },
 	{ "airport", "airdemo", kGenHEPC, UNK_LANG, UNK, 0 },

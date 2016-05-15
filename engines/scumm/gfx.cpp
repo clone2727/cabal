@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -19,6 +19,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
  */
+
+// Based on the ScummVM (GPLv2+) file of the same name
 
 #include "common/system.h"
 #include "scumm/actor.h"
@@ -228,7 +230,6 @@ GdiNES::GdiNES(ScummEngine *vm) : Gdi(vm) {
 	memset(&_NES, 0, sizeof(_NES));
 }
 
-#ifdef USE_RGB_COLOR
 GdiPCEngine::GdiPCEngine(ScummEngine *vm) : Gdi(vm) {
 	memset(&_PCE, 0, sizeof(_PCE));
 }
@@ -238,7 +239,6 @@ GdiPCEngine::~GdiPCEngine() {
 	free(_PCE.staffTiles);
 	free(_PCE.masks);
 }
-#endif
 
 GdiV1::GdiV1(ScummEngine *vm) : Gdi(vm) {
 	memset(&_V1, 0, sizeof(_V1));
@@ -252,10 +252,8 @@ GdiV2::~GdiV2() {
 	free(_roomStrips);
 }
 
-#ifdef USE_RGB_COLOR
 GdiHE16bit::GdiHE16bit(ScummEngine *vm) : GdiHE(vm) {
 }
-#endif
 
 void Gdi::init() {
 	_numStrips = _vm->_screenWidth / 8;
@@ -281,20 +279,16 @@ void GdiNES::roomChanged(byte *roomptr) {
 	decodeNESGfx(roomptr);
 }
 
-#ifdef USE_RGB_COLOR
 void GdiPCEngine::roomChanged(byte *roomptr) {
 	decodePCEngineGfx(roomptr);
 }
-#endif
 
 void Gdi::loadTiles(byte *roomptr) {
 }
 
-#ifdef USE_RGB_COLOR
 void GdiPCEngine::loadTiles(byte *roomptr) {
 	decodePCEngineTileData(_vm->findResourceData(MKTAG('T','I','L','E'), roomptr));
 }
-#endif
 
 void GdiV1::roomChanged(byte *roomptr) {
 	for (int i = 0; i < 4; i++){
@@ -1553,7 +1547,6 @@ void GdiNES::prepareDrawBitmap(const byte *ptr, VirtScreen *vs,
 	}
 }
 
-#ifdef USE_RGB_COLOR
 void GdiPCEngine::prepareDrawBitmap(const byte *ptr, VirtScreen *vs,
 					const int x, const int y, const int width, const int height,
 	                int stripnr, int numstrip) {
@@ -1561,7 +1554,6 @@ void GdiPCEngine::prepareDrawBitmap(const byte *ptr, VirtScreen *vs,
 		decodePCEngineObject(ptr, x - stripnr, y, width, height);
 	}
 }
-#endif
 
 void GdiV2::prepareDrawBitmap(const byte *ptr, VirtScreen *vs,
 					const int x, const int y, const int width, const int height,
@@ -1919,14 +1911,12 @@ bool GdiNES::drawStrip(byte *dstPtr, VirtScreen *vs, int x, int y, const int wid
 	return false;
 }
 
-#ifdef USE_RGB_COLOR
 bool GdiPCEngine::drawStrip(byte *dstPtr, VirtScreen *vs, int x, int y, const int width, const int height,
 					int stripnr, const byte *smap_ptr) {
 	byte *mask_ptr = getMaskBuffer(x, y, 1);
 	drawStripPCEngine(dstPtr, mask_ptr, vs->pitch, stripnr, y, height);
 	return false;
 }
-#endif
 
 bool GdiV1::drawStrip(byte *dstPtr, VirtScreen *vs, int x, int y, const int width, const int height,
 					int stripnr, const byte *smap_ptr) {
@@ -2061,14 +2051,12 @@ void GdiNES::decodeMask(int x, int y, const int width, const int height,
 	drawStripNESMask(mask_ptr, stripnr, y, height);
 }
 
-#ifdef USE_RGB_COLOR
 void GdiPCEngine::decodeMask(int x, int y, const int width, const int height,
 	                int stripnr, int numzbuf, const byte *zplane_list[9],
 	                bool transpStrip, byte flag) {
 	byte *mask_ptr = getMaskBuffer(x, y, 1);
 	drawStripPCEngineMask(mask_ptr, stripnr, y, height);
 }
-#endif
 
 void GdiV1::decodeMask(int x, int y, const int width, const int height,
 	                int stripnr, int numzbuf, const byte *zplane_list[9],
@@ -2772,7 +2760,6 @@ void GdiNES::drawStripNESMask(byte *dst, int stripnr, int top, int height) const
 	}
 }
 
-#ifdef USE_RGB_COLOR
 void readOffsetTable(const byte *ptr, uint16 **table, int *count) {
 	int pos = 0;
 	*count = READ_LE_UINT16(ptr) / 2 + 1;
@@ -3090,7 +3077,6 @@ void GdiPCEngine::drawStripPCEngineMask(byte *dst, int stripnr, int top, int hei
 		}
 	}
 }
-#endif
 
 void GdiV1::drawStripV1Background(byte *dst, int dstPitch, int stripnr, int height) {
 	int charIdx;
@@ -3709,11 +3695,9 @@ void Gdi::unkDecode11(byte *dst, int dstPitch, const byte *src, int height) cons
 #undef NEXT_ROW
 #undef READ_BIT_256
 
-#ifdef USE_RGB_COLOR
 void GdiHE16bit::writeRoomColor(byte *dst, byte color) const {
 	WRITE_UINT16(dst, READ_LE_UINT16(_vm->_hePalettes + 2048 + color * 2));
 }
-#endif
 
 void Gdi::writeRoomColor(byte *dst, byte color) const {
 	// As described in bug #1294513 "FOA/Amiga: Palette problem (Regression)"

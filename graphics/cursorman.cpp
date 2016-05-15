@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -19,6 +19,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
  */
+
+// Based on the ScummVM (GPLv2+) file of the same name
 
 #include "graphics/cursorman.h"
 
@@ -111,15 +113,11 @@ void CursorManager::replaceCursor(const void *buf, uint w, uint h, int hotspotX,
 
 	Cursor *cur = _cursorStack.top();
 
-#ifdef USE_RGB_COLOR
 	uint size;
 	if (!format)
 		size = w * h;
 	else
 		size = w * h * format->bytesPerPixel;
-#else
-	uint size = w * h;
-#endif
 
 	if (cur->_size < size) {
 		delete[] cur->_data;
@@ -136,12 +134,11 @@ void CursorManager::replaceCursor(const void *buf, uint w, uint h, int hotspotX,
 	cur->_hotspotY = hotspotY;
 	cur->_keycolor = keycolor;
 	cur->_dontScale = dontScale;
-#ifdef USE_RGB_COLOR
+
 	if (format)
 		cur->_format = *format;
 	else
 		cur->_format = Graphics::PixelFormat::createFormatCLUT8();
-#endif
 
 	g_system->setMouseCursor(cur->_data, w, h, hotspotX, hotspotY, keycolor, dontScale, format);
 }
@@ -234,18 +231,13 @@ void CursorManager::lock(bool locked) {
 }
 
 CursorManager::Cursor::Cursor(const void *data, uint w, uint h, int hotspotX, int hotspotY, uint32 keycolor, bool dontScale, const Graphics::PixelFormat *format) {
-#ifdef USE_RGB_COLOR
 	if (!format)
 		_format = Graphics::PixelFormat::createFormatCLUT8();
 	 else
 		_format = *format;
 	_size = w * h * _format.bytesPerPixel;
 	_keycolor = keycolor & ((1 << (_format.bytesPerPixel << 3)) - 1);
-#else
-	_format = Graphics::PixelFormat::createFormatCLUT8();
-	_size = w * h;
-	_keycolor = keycolor & 0xFF;
-#endif
+
 	_data = new byte[_size];
 	if (data && _data)
 		memcpy(_data, data, _size);

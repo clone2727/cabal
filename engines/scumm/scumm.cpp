@@ -122,15 +122,12 @@ ScummEngine::ScummEngine(OSystem *syst, const DetectorResult &dr)
 	  _rnd("scumm")
 	  {
 
-#ifdef USE_RGB_COLOR
 	if (_game.features & GF_16BIT_COLOR) {
 		if (_game.platform == Common::kPlatformPCEngine)
 			_gdi = new GdiPCEngine(this);
 		else if (_game.heversion > 0)
 			_gdi = new GdiHE16bit(this);
-	} else
-#endif
-	if (_game.heversion > 0) {
+	} else if (_game.heversion > 0) {
 		_gdi = new GdiHE(this);
 	} else if (_game.platform == Common::kPlatformNES) {
 		_gdi = new GdiNES(this);
@@ -287,9 +284,7 @@ ScummEngine::ScummEngine(OSystem *syst, const DetectorResult &dr)
 	_16BitPalette = NULL;
 #ifndef DISABLE_TOWNS_DUAL_LAYER_MODE
 	_townsScreen = 0;
-#ifdef USE_RGB_COLOR
 	_cjkFont = 0;
-#endif
 #endif
 	_shadowPalette = NULL;
 	_shadowPaletteSize = 0;
@@ -557,11 +552,9 @@ ScummEngine::ScummEngine(OSystem *syst, const DetectorResult &dr)
 	_bytesPerPixel = (_game.features & GF_16BIT_COLOR) ? 2 : 1;
 	uint8 sizeMult = _bytesPerPixel;
 
-#ifdef USE_RGB_COLOR
 #ifndef DISABLE_TOWNS_DUAL_LAYER_MODE
 	if (_game.platform == Common::kPlatformFMTowns)
 		sizeMult = 2;
-#endif
 #endif
 
 	// Allocate gfx compositing buffer (not needed for V7/V8 games).
@@ -642,9 +635,7 @@ ScummEngine::~ScummEngine() {
 
 #ifndef DISABLE_TOWNS_DUAL_LAYER_MODE
 	delete _townsScreen;
-#ifdef USE_RGB_COLOR
 	delete _cjkFont;
-#endif
 #endif
 
 	delete _debugger;
@@ -1213,7 +1204,6 @@ Common::Error ScummEngine::init() {
 			|| _game.platform == Common::kPlatformFMTowns
 #endif
 			) {
-#ifdef USE_RGB_COLOR
 			_outputPixelFormat = Graphics::PixelFormat(2, 5, 5, 5, 0, 10, 5, 0, 0);
 
 			if (_game.platform != Common::kPlatformFMTowns && _game.platform != Common::kPlatformPCEngine) {
@@ -1236,14 +1226,6 @@ Common::Error ScummEngine::init() {
 				if (_system->getScreenFormat().bytesPerPixel != 2)
 					return Common::kUnsupportedColorMode;
 			}
-#else
-			if (_game.platform == Common::kPlatformFMTowns && _game.version == 3) {
-				warning("Starting game without the required 16bit color support.\nYou may experience color glitches");
-				initGraphics(screenWidth, screenHeight, (screenWidth > 320));
-			} else {
-				return Common::Error(Common::kUnsupportedColorMode, "16bit color support is required for this game");
-			}
-#endif
 		} else {
 #ifdef DISABLE_TOWNS_DUAL_LAYER_MODE
 		if (_game.platform == Common::kPlatformFMTowns && _game.version == 5)
@@ -1405,12 +1387,9 @@ void ScummEngine::setupCharsetRenderer() {
 		else
 			_charset = new CharsetRendererV2(this, _language);
 	} else if (_game.version == 3) {
-#ifdef USE_RGB_COLOR
 		if (_game.platform == Common::kPlatformPCEngine)
 			_charset = new CharsetRendererPCE(this);
-		else
-#endif
-		if (_game.platform == Common::kPlatformFMTowns)
+		else if (_game.platform == Common::kPlatformFMTowns)
 			_charset = new CharsetRendererTownsV3(this);
 		else
 			_charset = new CharsetRendererV3(this);
@@ -1419,12 +1398,10 @@ void ScummEngine::setupCharsetRenderer() {
 		_charset = new CharsetRendererNut(this);
 #endif
 	} else {
-#ifdef USE_RGB_COLOR
 #ifndef DISABLE_TOWNS_DUAL_LAYER_MODE
 		if (_game.platform == Common::kPlatformFMTowns)
 			_charset = new CharsetRendererTownsClassic(this);
 		else
-#endif
 #endif
 			_charset = new CharsetRendererClassic(this);
 	}
@@ -1440,11 +1417,9 @@ void ScummEngine::setupCostumeRenderer() {
 	} else if (_game.platform == Common::kPlatformNES) {
 		_costumeRenderer = new NESCostumeRenderer(this);
 		_costumeLoader = new NESCostumeLoader(this);
-#ifdef USE_RGB_COLOR
 	} else if (_game.platform == Common::kPlatformPCEngine) {
 		_costumeRenderer = new PCEngineCostumeRenderer(this);
 		_costumeLoader = new ClassicCostumeLoader(this);
-#endif
 	} else {
 		_costumeRenderer = new ClassicCostumeRenderer(this);
 		_costumeLoader = new ClassicCostumeLoader(this);
@@ -1456,14 +1431,12 @@ void ScummEngine::resetScumm() {
 
 	debug(9, "resetScumm");
 
-#ifdef USE_RGB_COLOR
 	if (_game.features & GF_16BIT_COLOR
 #ifndef DISABLE_TOWNS_DUAL_LAYER_MODE
 		|| (_game.platform == Common::kPlatformFMTowns)
 #endif
 		)
 		_16BitPalette = (uint16 *)calloc(512, sizeof(uint16));
-#endif
 
 	// Indy4 Amiga needs another palette map for the verb area.
 	if (_game.platform == Common::kPlatformAmiga && _game.id == GID_INDY4 && !_verbPalette)
@@ -1868,10 +1841,8 @@ void ScummEngine::setupMusic(int midi) {
 		_musicEngine = new Player_V2A(this, _mixer);
 	} else if (_game.platform == Common::kPlatformAmiga && _game.version == 3) {
 		_musicEngine = new Player_V3A(this, _mixer);
-#ifdef USE_RGB_COLOR
 	} else if (_game.platform == Common::kPlatformPCEngine && _game.version == 3) {
 		_musicEngine = new Player_PCE(this, _mixer);
-#endif
 	} else if (_game.platform == Common::kPlatformAmiga && _game.version <= 4) {
 		_musicEngine = new Player_V4A(this, _mixer);
 	} else if (_game.platform == Common::kPlatformMacintosh && _game.id == GID_LOOM) {

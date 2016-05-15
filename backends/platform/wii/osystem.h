@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -19,6 +19,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
  */
+
+// Based on the ScummVM (GPLv2+) file of the same name
 
 #ifndef _WII_OSYSTEM_H_
 #define _WII_OSYSTEM_H_
@@ -85,13 +87,11 @@ private:
 	s32 _configGraphicsMode;
 	s32 _actualGraphicsMode;
 	bool _bilinearFilter;
-#ifdef USE_RGB_COLOR
 	const Graphics::PixelFormat _pfRGB565;
 	const Graphics::PixelFormat _pfRGB3444;
 	Graphics::PixelFormat _pfGame;
 	Graphics::PixelFormat _pfGameTexture;
 	Graphics::PixelFormat _pfCursor;
-#endif
 
 	bool _consoleVisible;
 	bool _optionsDlgActive;
@@ -152,10 +152,8 @@ public:
 	virtual const GraphicsMode *getSupportedGraphicsModes() const;
 	virtual int getDefaultGraphicsMode() const;
 	virtual bool setGraphicsMode(int mode);
-#ifdef USE_RGB_COLOR
 	virtual Graphics::PixelFormat getScreenFormat() const;
 	virtual Common::List<Graphics::PixelFormat> getSupportedFormats() const;
-#endif
 	virtual int getGraphicsMode() const;
 	virtual void initSize(uint width, uint height,
 							const Graphics::PixelFormat *format);

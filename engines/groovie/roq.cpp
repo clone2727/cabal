@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -20,6 +20,8 @@
  *
  */
 
+// Based on the ScummVM (GPLv2+) file of the same name
+
 // ROQ video player based on this specification by Dr. Tim Ferguson:
 // http://www.csse.monash.edu.au/~timf/videocodec/idroq.txt
 
@@ -36,10 +38,8 @@
 #include "graphics/palette.h"
 #include "image/jpeg.h"
 
-#ifdef USE_RGB_COLOR
-// Required for the YUV to RGB conversion
 #include "graphics/conversion.h"
-#endif
+
 #include "audio/mixer.h"
 #include "audio/decoders/raw.h"
 

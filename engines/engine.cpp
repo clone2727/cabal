@@ -237,16 +237,13 @@ void initGraphics(int width, int height, bool defaultTo1xScaler, const Graphics:
 	g_system->beginGFXTransaction();
 
 		initCommonGFX(defaultTo1xScaler);
-#ifdef USE_RGB_COLOR
+
 		if (format)
 			g_system->initSize(width, height, format);
 		else {
 			Graphics::PixelFormat bestFormat = g_system->getSupportedFormats().front();
 			g_system->initSize(width, height, &bestFormat);
 		}
-#else
-		g_system->initSize(width, height);
-#endif
 
 	OSystem::TransactionError gfxError = g_system->endGFXTransaction();
 
@@ -263,14 +260,12 @@ void initGraphics(int width, int height, bool defaultTo1xScaler, const Graphics:
 	}
 
 	// Just show warnings then these occur:
-#ifdef USE_RGB_COLOR
 	if (gfxError & OSystem::kTransactionFormatNotSupported) {
 		Common::String message = _("Could not initialize color format.");
 
 		GUI::MessageDialog dialog(message);
 		dialog.runModal();
 	}
-#endif
 
 	if (gfxError & OSystem::kTransactionModeSwitchFailed) {
 		Common::String message = _("Could not switch to video mode: '");
@@ -304,14 +299,13 @@ using Graphics::PixelFormat;
  *					or PixelFormat::createFormatCLUT8() if no matching formats were found.
  */
 inline PixelFormat findCompatibleFormat(Common::List<PixelFormat> backend, Common::List<PixelFormat> frontend) {
-#ifdef USE_RGB_COLOR
 	for (Common::List<PixelFormat>::iterator i = backend.begin(); i != backend.end(); ++i) {
 		for (Common::List<PixelFormat>::iterator j = frontend.begin(); j != frontend.end(); ++j) {
 			if (*i == *j)
 				return *i;
 		}
 	}
-#endif
+
 	return PixelFormat::createFormatCLUT8();
 }
 

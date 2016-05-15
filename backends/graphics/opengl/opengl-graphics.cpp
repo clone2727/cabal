@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -20,6 +20,7 @@
  *
  */
 
+// Based on the ScummVM (GPLv2+) file of the same name
 
 #include "backends/graphics/opengl/opengl-graphics.h"
 #include "backends/graphics/opengl/texture.h"
@@ -159,11 +160,9 @@ int OpenGLGraphicsManager::getGraphicsMode() const {
 	return _currentState.graphicsMode;
 }
 
-#ifdef USE_RGB_COLOR
 Graphics::PixelFormat OpenGLGraphicsManager::getScreenFormat() const {
 	return _currentState.gameFormat;
 }
-#endif
 
 void OpenGLGraphicsManager::beginGFXTransaction() {
 	assert(_transactionMode == kTransactionNone);
@@ -184,7 +183,6 @@ OSystem::TransactionError OpenGLGraphicsManager::endGFXTransaction() {
 		setupNewGameScreen = true;
 	}
 
-#ifdef USE_RGB_COLOR
 	if (_oldState.gameFormat != _currentState.gameFormat) {
 		setupNewGameScreen = true;
 	}
@@ -196,7 +194,6 @@ OSystem::TransactionError OpenGLGraphicsManager::endGFXTransaction() {
 		_currentState.gameFormat = Graphics::PixelFormat::createFormatCLUT8();
 		transactionError |= OSystem::kTransactionFormatNotSupported;
 	}
-#endif
 
 	do {
 		uint requestedWidth  = _currentState.gameWidth;
@@ -204,13 +201,7 @@ OSystem::TransactionError OpenGLGraphicsManager::endGFXTransaction() {
 		const uint desiredAspect = getDesiredGameScreenAspect();
 		requestedHeight = intToFrac(requestedWidth) / desiredAspect;
 
-		if (!loadVideoMode(requestedWidth, requestedHeight,
-#ifdef USE_RGB_COLOR
-		                   _currentState.gameFormat
-#else
-		                   Graphics::PixelFormat::createFormatCLUT8()
-#endif
-		                  )
+		if (!loadVideoMode(requestedWidth, requestedHeight, _currentState.gameFormat)
 		   // HACK: This is really nasty but we don't have any guarantees of
 		   // a context existing before, which means we don't know the maximum
 		   // supported texture size before this. Thus, we check whether the
@@ -227,11 +218,9 @@ OSystem::TransactionError OpenGLGraphicsManager::endGFXTransaction() {
 						transactionError |= OSystem::kTransactionSizeChangeFailed;
 					}
 
-#ifdef USE_RGB_COLOR
 					if (_oldState.gameFormat != _currentState.gameFormat) {
 						transactionError |= OSystem::kTransactionFormatNotSupported;
 					}
-#endif
 
 					if (_oldState.aspectRatioCorrection != _currentState.aspectRatioCorrection) {
 						transactionError |= OSystem::kTransactionAspectRatioFailed;
@@ -266,11 +255,7 @@ OSystem::TransactionError OpenGLGraphicsManager::endGFXTransaction() {
 		delete _gameScreen;
 		_gameScreen = nullptr;
 
-#ifdef USE_RGB_COLOR
 		_gameScreen = createTexture(_currentState.gameFormat);
-#else
-		_gameScreen = createTexture(Graphics::PixelFormat::createFormatCLUT8());
-#endif
 		assert(_gameScreen);
 		if (_gameScreen->hasPalette()) {
 			_gameScreen->setPalette(0, 256, _gamePalette);
@@ -278,16 +263,13 @@ OSystem::TransactionError OpenGLGraphicsManager::endGFXTransaction() {
 
 		_gameScreen->allocate(_currentState.gameWidth, _currentState.gameHeight);
 		_gameScreen->enableLinearFiltering(_currentState.graphicsMode == GFX_LINEAR);
+
 		// We fill the screen to all black or index 0 for CLUT8.
-#ifdef USE_RGB_COLOR
 		if (_currentState.gameFormat.bytesPerPixel == 1) {
 			_gameScreen->fill(0);
 		} else {
 			_gameScreen->fill(_gameScreen->getSurface()->format.RGBToColor(0, 0, 0));
 		}
-#else
-		_gameScreen->fill(0);
-#endif
 	}
 
 	// Update our display area and cursor scaling. This makes sure we pick up
@@ -309,15 +291,14 @@ int OpenGLGraphicsManager::getScreenChangeID() const {
 
 void OpenGLGraphicsManager::initSize(uint width, uint height, const Graphics::PixelFormat *format) {
 	Graphics::PixelFormat requestedFormat;
-#ifdef USE_RGB_COLOR
+
 	if (!format) {
 		requestedFormat = Graphics::PixelFormat::createFormatCLUT8();
 	} else {
 		requestedFormat = *format;
 	}
-	_currentState.gameFormat = requestedFormat;
-#endif
 
+	_currentState.gameFormat = requestedFormat;
 	_currentState.gameWidth = width;
 	_currentState.gameHeight = height;
 }
@@ -580,15 +561,12 @@ void applyColorKey(DstPixel *dst, const SrcPixel *src, uint w, uint h, uint dstP
 
 void OpenGLGraphicsManager::setMouseCursor(const void *buf, uint w, uint h, int hotspotX, int hotspotY, uint32 keycolor, bool dontScale, const Graphics::PixelFormat *format) {
 	Graphics::PixelFormat inputFormat;
-#ifdef USE_RGB_COLOR
+
 	if (format) {
 		inputFormat = *format;
 	} else {
 		inputFormat = Graphics::PixelFormat::createFormatCLUT8();
 	}
-#else
-	inputFormat = Graphics::PixelFormat::createFormatCLUT8();
-#endif
 
 	// In case the color format has changed we will need to create the texture.
 	if (!_cursor || _cursor->getFormat() != inputFormat) {
