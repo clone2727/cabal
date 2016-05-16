@@ -34,7 +34,7 @@
 // Audio Codecs
 #include "audio/decoders/adpcm.h"
 #include "audio/decoders/mp3.h"
-#include "audio/decoders/raw.h"
+#include "audio/decoders/pcm.h"
 #include "audio/decoders/vorbis.h"
 
 // Video Codecs
@@ -996,7 +996,7 @@ void AVIDecoder::AVIAudioTrack::createAudioStream() {
 		if (_wvInfo.channels == 2)
 			flags |= Audio::FLAG_STEREO;
 
-		_packetStream = Audio::makePacketizedRawStream(_wvInfo.samplesPerSec, flags);
+		_packetStream = Audio::makePacketizedPCMStream(_wvInfo.samplesPerSec, flags);
 		break;
 	}
 	case kWaveFormatMSADPCM:

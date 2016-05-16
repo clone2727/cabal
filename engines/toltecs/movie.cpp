@@ -23,7 +23,7 @@
 // Based on the ScummVM (GPLv2+) file of the same name
 
 #include "audio/mixer.h"
-#include "audio/decoders/raw.h"
+#include "audio/decoders/pcm.h"
 
 #include "toltecs/toltecs.h"
 #include "toltecs/movie.h"

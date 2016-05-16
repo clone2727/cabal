@@ -35,7 +35,7 @@
 #include "audio/audiostream.h"
 #include "audio/mods/module.h"
 #include "audio/mods/protracker.h"
-#include "audio/decoders/raw.h"
+#include "audio/decoders/pcm.h"
 
 namespace Hopkins {
 
@@ -164,7 +164,7 @@ protected:
 		}
 
 		if (file->open(filename + ".RAW")) {
-			_cueStream = Audio::makeRawStream(file, 22050, Audio::FLAG_UNSIGNED, DisposeAfterUse::YES);
+			_cueStream = Audio::makePCMStream(file, 22050, Audio::FLAG_UNSIGNED, DisposeAfterUse::YES);
 			return true;
 		}
 
@@ -918,7 +918,7 @@ Audio::RewindableAudioStream *SoundManager::makeSoundStream(Common::SeekableRead
 	else if (_vm->getPlatform() == Common::kPlatformLinux)
 		return Audio::makeWAVStream(stream, DisposeAfterUse::YES);
 	else
-		return Audio::makeRawStream(stream, 22050, Audio::FLAG_UNSIGNED, DisposeAfterUse::YES);
+		return Audio::makePCMStream(stream, 22050, Audio::FLAG_UNSIGNED, DisposeAfterUse::YES);
 }
 
 // Blatant rip from gob engine. Hi DrMcCoy!

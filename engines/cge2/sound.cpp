@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -20,6 +20,8 @@
  *
  */
 
+// Based on the ScummVM (GPLv2+) file of the same name
+
 /*
  * This code is based on original Sfinx source code
  * Copyright (c) 1994-1997 Janus B. Wisniewski and L.K. Avalon
@@ -28,7 +30,6 @@
 #include "cge2/sound.h"
 #include "common/config-manager.h"
 #include "common/memstream.h"
-#include "audio/decoders/raw.h"
 #include "audio/audiostream.h"
 #include "cge2/cge2.h"
 

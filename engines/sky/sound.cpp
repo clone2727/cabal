@@ -33,7 +33,7 @@
 #include "sky/struc.h"
 
 #include "audio/audiostream.h"
-#include "audio/decoders/raw.h"
+#include "audio/decoders/pcm.h"
 
 namespace Sky {
 
@@ -1044,7 +1044,7 @@ void Sound::playSound(uint32 id, byte *sound, uint32 size, Audio::SoundHandle *h
 
 	_mixer->stopID(id);
 
-	Audio::AudioStream *stream = Audio::makeRawStream(buffer, size, 11025, flags);
+	Audio::AudioStream *stream = Audio::makePCMStream(buffer, size, 11025, flags);
 	_mixer->playStream(Audio::Mixer::kSFXSoundType, handle, stream, id);
 }
 
@@ -1110,7 +1110,7 @@ void Sound::playSound(uint16 sound, uint16 volume, uint8 channel) {
 	uint32 dataLoop = READ_BE_UINT16(_sfxInfo + (sound << 3) + 6);
 	dataOfs += _sfxBaseOfs;
 
-	Audio::SeekableAudioStream *stream = Audio::makeRawStream(_soundData + dataOfs, dataSize, sampleRate,
+	Audio::SeekableAudioStream *stream = Audio::makePCMStream(_soundData + dataOfs, dataSize, sampleRate,
 	                                                                Audio::FLAG_UNSIGNED, DisposeAfterUse::NO);
 
 	Audio::AudioStream *output = 0;
@@ -1250,7 +1250,7 @@ bool Sound::startSpeech(uint16 textNum) {
 
 	_mixer->stopID(SOUND_SPEECH);
 
-	Audio::AudioStream *stream = Audio::makeRawStream(playBuffer, speechSize, rate, Audio::FLAG_UNSIGNED);
+	Audio::AudioStream *stream = Audio::makePCMStream(playBuffer, speechSize, rate, Audio::FLAG_UNSIGNED);
 	_mixer->playStream(Audio::Mixer::kSpeechSoundType, &_ingameSpeech, stream, SOUND_SPEECH);
 	return true;
 }

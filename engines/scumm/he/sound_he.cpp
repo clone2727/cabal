@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -19,6 +19,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
  */
+
+// Based on the ScummVM (GPLv2+) file of the same name
 
 #include "scumm/actor.h"
 #include "scumm/file.h"
@@ -39,7 +41,7 @@
 #include "audio/mididrv.h"
 #include "audio/mixer.h"
 #include "audio/decoders/mp3.h"
-#include "audio/decoders/raw.h"
+#include "audio/decoders/pcm.h"
 #include "audio/decoders/voc.h"
 #include "audio/decoders/vorbis.h"
 #include "audio/decoders/wave.h"
@@ -572,7 +574,7 @@ void SoundHE::playHESound(int soundID, int heOffset, int heChannel, int heFlags)
 		musicFile.close();
 
 		if (_vm->_game.heversion == 70) {
-			stream = Audio::makeRawStream(spoolPtr, size, 11025, flags, DisposeAfterUse::NO);
+			stream = Audio::makePCMStream(spoolPtr, size, 11025, flags, DisposeAfterUse::NO);
 			_mixer->playStream(type, &_heSoundChannels[heChannel], stream, soundID);
 			return;
 		}
@@ -643,7 +645,7 @@ void SoundHE::playHESound(int soundID, int heOffset, int heChannel, int heFlags)
 		if (compType == 17) {
 			Audio::AudioStream *voxStream = Audio::makeADPCMStream(&memStream, DisposeAfterUse::NO, size, Audio::kADPCMMSIma, rate, (flags & Audio::FLAG_STEREO) ? 2 : 1, blockAlign);
 
-			// FIXME: Get rid of this crude hack to turn a ADPCM stream into a raw stream.
+			// FIXME: Get rid of this crude hack to turn a ADPCM stream into a PCM stream.
 			// It seems it is only there to allow looping -- if that is true, we certainly
 			// can do without it, using a LoopingAudioStream.
 
@@ -660,14 +662,14 @@ void SoundHE::playHESound(int soundID, int heOffset, int heChannel, int heFlags)
 			if (_heChannel[heChannel].timer)
 				_heChannel[heChannel].timer = size * 1000 / rate;
 
-			// makeADPCMStream returns a stream in native endianness, but RawMemoryStream
+			// makeADPCMStream returns a stream in native endianness, but PCMMemoryStream
 			// defaults to big endian. If we're on a little endian system, set the LE flag.
 #ifdef SCUMM_LITTLE_ENDIAN
 			flags |= Audio::FLAG_LITTLE_ENDIAN;
 #endif
-			stream = Audio::makeRawStream(sound + heOffset, size - heOffset, rate, flags);
+			stream = Audio::makePCMStream(sound + heOffset, size - heOffset, rate, flags);
 		} else {
-			stream = Audio::makeRawStream(ptr + memStream.pos() + heOffset, size - heOffset, rate, flags, DisposeAfterUse::NO);
+			stream = Audio::makePCMStream(ptr + memStream.pos() + heOffset, size - heOffset, rate, flags, DisposeAfterUse::NO);
 		}
 		_mixer->playStream(type, &_heSoundChannels[heChannel],
 						Audio::makeLoopingAudioStream(stream, (heFlags & 1) ? 0 : 1), soundID);
@@ -727,7 +729,7 @@ void SoundHE::playHESound(int soundID, int heOffset, int heChannel, int heFlags)
 
 		_mixer->stopHandle(_heSoundChannels[heChannel]);
 
-		stream = Audio::makeRawStream(ptr + heOffset + 8, size, rate, flags, DisposeAfterUse::NO);
+		stream = Audio::makePCMStream(ptr + heOffset + 8, size, rate, flags, DisposeAfterUse::NO);
 		_mixer->playStream(type, &_heSoundChannels[heChannel],
 						Audio::makeLoopingAudioStream(stream, (heFlags & 1) ? 0 : 1), soundID);
 	}
@@ -748,7 +750,7 @@ void SoundHE::playHESound(int soundID, int heOffset, int heChannel, int heFlags)
 		_mixer->stopID(_currentMusic);
 		_currentMusic = soundID;
 
-		stream = Audio::makeRawStream(sound, size, rate, 0);
+		stream = Audio::makePCMStream(sound, size, rate, 0);
 		_mixer->playStream(Audio::Mixer::kMusicSoundType, NULL, stream, soundID);
 	}
 	else if (READ_BE_UINT32(ptr) == MKTAG('M','I','D','I')) {

@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -20,8 +20,10 @@
  *
  */
 
+// Based on the ScummVM (GPLv2+) file of the same name
+
 #include "audio/audiostream.h"
-#include "audio/decoders/raw.h"
+#include "audio/decoders/pcm.h"
 #include "common/config-manager.h"
 
 #include "sci/sci.h"
@@ -338,7 +340,7 @@ void SciMusic::soundInitSnd(MusicEntry *pSnd) {
 			if (_soundVersion >= SCI_VERSION_1_EARLY && g_sci->getPlatform() == Common::kPlatformAmiga)
 				flags = 0;
 			int endPart = track->digitalSampleEnd > 0 ? (track->digitalSampleSize - track->digitalSampleEnd) : 0;
-			pSnd->pStreamAud = Audio::makeRawStream(channelData + track->digitalSampleStart,
+			pSnd->pStreamAud = Audio::makePCMStream(channelData + track->digitalSampleStart,
 								track->digitalSampleSize - track->digitalSampleStart - endPart,
 								track->digitalSampleRate, flags, DisposeAfterUse::NO);
 			delete pSnd->pLoopStream;

@@ -29,7 +29,7 @@
 
 #include "graphics/surface.h"
 
-#include "audio/decoders/raw.h"
+#include "audio/decoders/pcm.h"
 #include "audio/audiostream.h"
 
 namespace Made {
@@ -263,7 +263,7 @@ void SoundResource::load(byte *source, int size) {
 
 Audio::AudioStream *SoundResource::getAudioStream(int soundRate, bool loop) {
 	Audio::RewindableAudioStream *stream =
-			Audio::makeRawStream(_soundData, _soundSize, soundRate, Audio::FLAG_UNSIGNED, DisposeAfterUse::NO);
+			Audio::makePCMStream(_soundData, _soundSize, soundRate, Audio::FLAG_UNSIGNED, DisposeAfterUse::NO);
 
 	if (loop)
 		return Audio::makeLoopingAudioStream(stream, 0);

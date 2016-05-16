@@ -28,7 +28,7 @@
  *
  */
 
-#include "audio/decoders/raw.h"
+#include "audio/decoders/pcm.h"
 
 #include "lab/lab.h"
 
@@ -69,7 +69,7 @@ void Music::changeMusic(const Common::String filename, bool storeCurPos, bool se
 	if (seektoStoredPos)
 		_musicFile->seek(_storedPos);
 
-	Audio::SeekableAudioStream *audioStream = Audio::makeRawStream(_musicFile, SAMPLESPEED, getSoundFlags());
+	Audio::SeekableAudioStream *audioStream = Audio::makePCMStream(_musicFile, SAMPLESPEED, getSoundFlags());
 	_vm->_mixer->playStream(Audio::Mixer::kMusicSoundType, &_musicHandle, new Audio::LoopingAudioStream(audioStream, 0));
 }
 
@@ -81,7 +81,7 @@ void Music::playSoundEffect(uint16 sampleSpeed, uint32 length, bool loop, Common
 	byte *soundData = (byte *)malloc(length);
 	dataFile->read(soundData, length);
 
-	Audio::SeekableAudioStream *audioStream = Audio::makeRawStream((const byte *)soundData, length, MAX<uint16>(sampleSpeed, 4000), getSoundFlags());
+	Audio::SeekableAudioStream *audioStream = Audio::makePCMStream((const byte *)soundData, length, MAX<uint16>(sampleSpeed, 4000), getSoundFlags());
 	_vm->_mixer->playStream(Audio::Mixer::kSFXSoundType, &_sfxHandle, new Audio::LoopingAudioStream(audioStream, (loop) ? 0 : 1));
 }
 

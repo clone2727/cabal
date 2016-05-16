@@ -35,7 +35,7 @@
 #include "audio/decoders/flac.h"
 #include "audio/mixer.h"
 #include "audio/decoders/mp3.h"
-#include "audio/decoders/raw.h"
+#include "audio/decoders/pcm.h"
 #include "audio/decoders/voc.h"
 #include "audio/decoders/vorbis.h"
 #include "audio/decoders/wave.h"
@@ -308,7 +308,7 @@ Audio::AudioStream *RawSound::makeAudioStream(uint sound) {
 
 	file->seek(_offsets[sound], SEEK_SET);
 	uint size = file->readUint32BE();
-	return Audio::makeRawStream(new Common::SeekableSubReadStream(file, _offsets[sound] + 4, _offsets[sound] + 4 + size, DisposeAfterUse::YES), 22050, _flags, DisposeAfterUse::YES);
+	return Audio::makePCMStream(new Common::SeekableSubReadStream(file, _offsets[sound] + 4, _offsets[sound] + 4 + size, DisposeAfterUse::YES), 22050, _flags, DisposeAfterUse::YES);
 }
 
 void RawSound::playSound(uint sound, uint loopSound, Audio::Mixer::SoundType type, Audio::SoundHandle *handle, bool loop, int vol) {
@@ -689,7 +689,7 @@ void Sound::playRawData(byte *soundData, uint sound, uint size, uint freq) {
 	if (_vm->getPlatform() == Common::kPlatformDOS &&  _vm->getGameId() != GID_ELVIRA2)
 		flags = Audio::FLAG_UNSIGNED;
 
-	Audio::AudioStream *stream = Audio::makeRawStream(buffer, size, freq, flags);
+	Audio::AudioStream *stream = Audio::makePCMStream(buffer, size, freq, flags);
 	_mixer->playStream(Audio::Mixer::kSFXSoundType, &_effectsHandle, stream);
 }
 

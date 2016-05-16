@@ -31,7 +31,7 @@
 #include "common/debug-channels.h"
 #include "common/textconsole.h"
 #include "audio/mixer.h"
-#include "audio/decoders/raw.h"
+#include "audio/decoders/pcm.h"
 #include "graphics/palette.h"
 
 #define TILE_SIZE 4			// Size of each tile on the image: only ever seen 4 so far

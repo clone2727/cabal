@@ -36,7 +36,6 @@
 #include "common/substream.h"
 
 #include "audio/audiostream.h"
-#include "audio/decoders/raw.h"
 
 namespace Common {
 class SeekableReadStream;

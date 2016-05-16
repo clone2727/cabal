@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -20,6 +20,7 @@
  *
  */
 
+// Based on the ScummVM (GPLv2+) file of the same name
 
 #include "common/endian.h"
 #include "common/util.h"
@@ -37,7 +38,7 @@
 #include "sky/text.h"
 
 #include "audio/audiostream.h"
-#include "audio/decoders/raw.h"
+#include "audio/decoders/pcm.h"
 
 namespace Sky {
 
@@ -740,7 +741,7 @@ bool Intro::nextPart(uint16 *&data) {
 		// directly, but this will have to do for now.
 		memset(vData, 127, sizeof(DataFileHeader));
 
-		stream = Audio::makeRawStream(vData, _skyDisk->_lastLoadedFileSize, 11025, Audio::FLAG_UNSIGNED);
+		stream = Audio::makePCMStream(vData, _skyDisk->_lastLoadedFileSize, 11025, Audio::FLAG_UNSIGNED);
 		_mixer->playStream(Audio::Mixer::kSpeechSoundType, &_voice, stream, SOUND_VOICE);
 		return true;
 	case WAITVOICE:
@@ -756,12 +757,12 @@ bool Intro::nextPart(uint16 *&data) {
 		return true;
 	case LOOPBG:
 		_mixer->stopID(SOUND_BG);
-		stream = Audio::makeRawStream(_bgBuf + 256, _bgSize - 768, 11025, Audio::FLAG_UNSIGNED, DisposeAfterUse::NO);
+		stream = Audio::makePCMStream(_bgBuf + 256, _bgSize - 768, 11025, Audio::FLAG_UNSIGNED, DisposeAfterUse::NO);
 		_mixer->playStream(Audio::Mixer::kSFXSoundType, &_bgSfx, Audio::makeLoopingAudioStream(stream, 0), SOUND_BG);
 		return true;
 	case PLAYBG:
 		_mixer->stopID(SOUND_BG);
-		stream = Audio::makeRawStream(_bgBuf + 256, _bgSize - 768, 11025, Audio::FLAG_UNSIGNED, DisposeAfterUse::NO);
+		stream = Audio::makePCMStream(_bgBuf + 256, _bgSize - 768, 11025, Audio::FLAG_UNSIGNED, DisposeAfterUse::NO);
 		_mixer->playStream(Audio::Mixer::kSFXSoundType, &_bgSfx, stream, SOUND_BG);
 		return true;
 	case STOPBG:

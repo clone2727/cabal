@@ -31,7 +31,7 @@
 
 #include "graphics/surface.h"
 #include "audio/audiostream.h"
-#include "audio/decoders/raw.h"
+#include "audio/decoders/pcm.h"
 
 #include "sci/resource.h"
 #include "sci/util.h"

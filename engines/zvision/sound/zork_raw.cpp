@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -8,17 +8,19 @@
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
-
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
-
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
  */
+
+// Based on the ScummVM (GPLv2+) file of the same name
 
 #include "common/scummsys.h"
 #include "common/file.h"
@@ -29,7 +31,7 @@
 #include "common/util.h"
 #include "common/tokenizer.h"
 #include "audio/audiostream.h"
-#include "audio/decoders/raw.h"
+#include "audio/decoders/pcm.h"
 
 #include "zvision/sound/zork_raw.h"
 #include "zvision/zvision.h"
@@ -297,7 +299,7 @@ Audio::RewindableAudioStream *makeRawZorkStream(const Common::String &filePath, 
 		if (soundParams->stereo)
 			flags |= Audio::FLAG_STEREO;
 
-		return Audio::makeRawStream(file, soundParams->rate, flags, DisposeAfterUse::YES);
+		return Audio::makePCMStream(file, soundParams->rate, flags, DisposeAfterUse::YES);
 	}
 }
 

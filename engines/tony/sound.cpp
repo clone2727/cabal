@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -20,6 +20,8 @@
  *
  */
 
+// Based on the ScummVM (GPLv2+) file of the same name
+
 /*
  * This code is based on original Tony Tough source code
  *
@@ -28,7 +30,7 @@
 
 #include "audio/audiostream.h"
 #include "audio/decoders/adpcm.h"
-#include "audio/decoders/raw.h"
+#include "audio/decoders/pcm.h"
 #include "audio/decoders/wave.h"
 #include "common/textconsole.h"
 #include "tony/game.h"
@@ -251,7 +253,7 @@ bool FPSfx::loadFile(const char *fileName, uint32 codec) {
 		if (channels == 2)
 			flags |= Audio::FLAG_STEREO;
 
-		_rewindableStream = Audio::makeRawStream(buffer, rate, flags, DisposeAfterUse::YES);
+		_rewindableStream = Audio::makePCMStream(buffer, rate, flags, DisposeAfterUse::YES);
 	}
 
 	_fileLoaded = true;
@@ -496,7 +498,7 @@ bool FPStream::loadFile(const Common::String &fileName, uint32 codec, int bufSiz
 
 	switch (_codec) {
 	case FPCODEC_RAW:
-		_rewindableStream = Audio::makeRawStream(&_file, 44100, Audio::FLAG_16BITS | Audio::FLAG_LITTLE_ENDIAN | Audio::FLAG_STEREO, DisposeAfterUse::NO);
+		_rewindableStream = Audio::makePCMStream(&_file, 44100, Audio::FLAG_16BITS | Audio::FLAG_LITTLE_ENDIAN | Audio::FLAG_STEREO, DisposeAfterUse::NO);
 		break;
 
 	case FPCODEC_ADPCM:

@@ -40,7 +40,7 @@
 #include "tinsel/tinlib.h"
 #include "tinsel/tinsel.h"
 
-#include "audio/decoders/raw.h"
+#include "audio/decoders/pcm.h"
 
 #include "common/textconsole.h"
 

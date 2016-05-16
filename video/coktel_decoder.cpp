@@ -38,7 +38,7 @@
 #ifdef VIDEO_COKTELDECODER_H
 
 #include "audio/audiostream.h"
-#include "audio/decoders/raw.h"
+#include "audio/decoders/pcm.h"
 #include "audio/decoders/adpcm_intern.h"
 #include "common/memstream.h"
 
@@ -2554,7 +2554,7 @@ Audio::AudioStream *VMDDecoder::create8bitRaw(Common::SeekableReadStream *stream
 	if (_soundStereo != 0)
 		flags |= Audio::FLAG_STEREO;
 
-	return Audio::makeRawStream(stream, _soundFreq, flags, DisposeAfterUse::YES);
+	return Audio::makePCMStream(stream, _soundFreq, flags, DisposeAfterUse::YES);
 }
 
 class DPCMStream : public Audio::AudioStream {

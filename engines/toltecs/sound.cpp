@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -20,9 +20,11 @@
  *
  */
 
+// Based on the ScummVM (GPLv2+) file of the same name
+
 #include "audio/audiostream.h"
 #include "audio/mixer.h"
-#include "audio/decoders/raw.h"
+#include "audio/decoders/pcm.h"
 
 #include "toltecs/toltecs.h"
 #include "toltecs/resource.h"
@@ -121,7 +123,7 @@ void Sound::internalPlaySound(int16 resIndex, int16 type, int16 volume, int16 pa
 			Resource *soundResource = _vm->_res->load(resIndex);
 
 			Audio::AudioStream *stream = Audio::makeLoopingAudioStream(
-								Audio::makeRawStream(soundResource->data,
+								Audio::makePCMStream(soundResource->data,
 								soundResource->size, 22050, Audio::FLAG_UNSIGNED,
 								DisposeAfterUse::NO),
 								type == kChannelTypeBackground ? 0 : 1);
@@ -191,7 +193,7 @@ void Sound::loadState(Common::ReadStream *in, int version) {
 			Resource *soundResource = _vm->_res->load(channels[i].resIndex);
 
 			Audio::AudioStream *stream = Audio::makeLoopingAudioStream(
-								Audio::makeRawStream(soundResource->data,
+								Audio::makePCMStream(soundResource->data,
 								soundResource->size, 22050, Audio::FLAG_UNSIGNED,
 								DisposeAfterUse::NO),
 								channels[i].type == kChannelTypeBackground ? 0 : 1);

@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -20,6 +20,8 @@
  *
  */
 
+// Based on the ScummVM (GPLv2+) file of the same name
+
 /*
  * The code in this file is based on information found at
  * http://developer.apple.com/legacy/mac/library/documentation/mac/Sound/Sound-60.html#HEADING60-15
@@ -31,7 +33,7 @@
 #include "common/stream.h"
 
 #include "audio/decoders/mac_snd.h"
-#include "audio/decoders/raw.h"
+#include "audio/decoders/pcm.h"
 
 namespace Audio {
 
@@ -106,7 +108,7 @@ SeekableAudioStream *makeMacSndStream(Common::SeekableReadStream *stream,
 		delete stream;
 
 	// Since we allocated our own buffer for the data, we must specify DisposeAfterUse::YES.
-	return makeRawStream(data, size, rate, Audio::FLAG_UNSIGNED);
+	return makePCMStream(data, size, rate, Audio::FLAG_UNSIGNED);
 }
 
 } // End of namespace Audio

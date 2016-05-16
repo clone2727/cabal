@@ -27,7 +27,7 @@
 
 #include "audio/audiostream.h"
 #include "audio/mixer.h"
-#include "audio/decoders/raw.h"
+#include "audio/decoders/pcm.h"
 #include "common/bitstream.h"
 #include "common/huffman.h"
 #include "common/memstream.h"

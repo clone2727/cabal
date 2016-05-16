@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -20,6 +20,7 @@
  *
  */
 
+// Based on the ScummVM (GPLv2+) file of the same name
 
 #include "common/endian.h"
 
@@ -35,7 +36,7 @@
 #include "audio/audiostream.h"
 #include "audio/decoders/flac.h"
 #include "audio/decoders/mp3.h"
-#include "audio/decoders/raw.h"
+#include "audio/decoders/pcm.h"
 #include "audio/decoders/vorbis.h"
 #include "audio/decoders/wave.h"
 #include "audio/decoders/xa.h"
@@ -295,7 +296,7 @@ void Sound::playSample(QueueElement *elem) {
 					if (READ_LE_UINT16(sampleData + 0x16) == 2)
 						flags |= Audio::FLAG_STEREO;
 					Audio::AudioStream *stream = Audio::makeLoopingAudioStream(
-					                                 Audio::makeRawStream(sampleData + 0x2C, size, 11025, flags, DisposeAfterUse::NO),
+					                                 Audio::makePCMStream(sampleData + 0x2C, size, 11025, flags, DisposeAfterUse::NO),
 					                                 (_fxList[elem->id].type == FX_LOOP) ? 0 : 1);
 					_mixer->playStream(Audio::Mixer::kSFXSoundType, &elem->handle, stream, elem->id, volume, pan);
 				}
@@ -384,7 +385,7 @@ bool Sound::startSpeech(uint16 roomNo, uint16 localNo) {
 			uint32 size;
 			int16 *data = uncompressSpeech(index + _cowHeaderSize, sampleSize, &size);
 			if (data) {
-				stream = Audio::makeRawStream((byte *)data, size, 11025, SPEECH_FLAGS);
+				stream = Audio::makePCMStream((byte *)data, size, 11025, SPEECH_FLAGS);
 				_mixer->playStream(Audio::Mixer::kSpeechSoundType, &_speechHandle, stream, SOUND_SPEECH_ID, speechVol, speechPan);
 			}
 		} else if (_cowMode == CowPSX && sampleSize != 0xffffffff) {

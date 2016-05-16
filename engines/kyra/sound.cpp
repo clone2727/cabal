@@ -29,7 +29,7 @@
 
 #include "audio/decoders/flac.h"
 #include "audio/decoders/mp3.h"
-#include "audio/decoders/raw.h"
+#include "audio/decoders/pcm.h"
 #include "audio/decoders/voc.h"
 #include "audio/decoders/vorbis.h"
 

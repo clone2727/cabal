@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -20,8 +20,10 @@
  *
  */
 
-#ifndef AUDIO_RAW_H
-#define AUDIO_RAW_H
+// Based on the ScummVM (GPLv2+) "raw" audio code (originally at audio/decoders/raw.h)
+
+#ifndef AUDIO_DECODERS_PCM_H
+#define AUDIO_DECODERS_PCM_H
 
 #include "common/scummsys.h"
 #include "common/types.h"
@@ -40,14 +42,14 @@ class SeekableAudioStream;
 
 /**
  * Various flags which can be bit-ORed and then passed to
- * makeRawStream and some other AudioStream factories
+ * makePCMStream and some other AudioStream factories
  * to control their behavior.
  *
  * Engine authors are advised not to rely on a certain value or
  * order of these flags (in particular, do not store them verbatim
  * in savestates).
  */
-enum RawFlags {
+enum PCMFlags {
 	/** unsigned samples (default: signed) */
 	FLAG_UNSIGNED = 1 << 0,
 
@@ -68,11 +70,11 @@ enum RawFlags {
  * @param size   Size of the buffer in bytes.
  * @param rate   Rate of the sound data.
  * @param flags  Audio flags combination.
- * @see RawFlags
+ * @see PCMFlags
  * @param disposeAfterUse Whether to free the buffer after use (with free!).
  * @return The new SeekableAudioStream (or 0 on failure).
  */
-SeekableAudioStream *makeRawStream(const byte *buffer, uint32 size,
+SeekableAudioStream *makePCMStream(const byte *buffer, uint32 size,
                                    int rate, byte flags,
                                    DisposeAfterUse::Flag disposeAfterUse = DisposeAfterUse::YES);
 
@@ -82,24 +84,24 @@ SeekableAudioStream *makeRawStream(const byte *buffer, uint32 size,
  * @param stream Stream object to play from.
  * @param rate   Rate of the sound data.
  * @param flags  Audio flags combination.
- * @see RawFlags
+ * @see PCMFlags
  * @param disposeAfterUse Whether to delete the stream after use.
  * @return The new SeekableAudioStream (or 0 on failure).
  */
-SeekableAudioStream *makeRawStream(Common::SeekableReadStream *stream,
+SeekableAudioStream *makePCMStream(Common::SeekableReadStream *stream,
                                    int rate, byte flags,
                                    DisposeAfterUse::Flag disposeAfterUse = DisposeAfterUse::YES);
 
 /**
  * Creates a PacketizedAudioStream that will automatically queue
- * packets as individual AudioStreams like returned by makeRawStream.
+ * packets as individual AudioStreams like returned by makePCMStream.
  *
  * @param rate   Rate of the sound data.
  * @param flags	 Audio flags combination.
- * @see RawFlags
+ * @see PCMFlags
  * @return The new PacketizedAudioStream.
  */
-PacketizedAudioStream *makePacketizedRawStream(int rate, byte flags);
+PacketizedAudioStream *makePacketizedPCMStream(int rate, byte flags);
 
 } // End of namespace Audio
 

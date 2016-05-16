@@ -24,7 +24,7 @@
 
 #include "audio/audiostream.h"
 #include "audio/audiodev/opl.h"
-#include "audio/decoders/raw.h"
+#include "audio/decoders/pcm.h"
 #include "common/memstream.h"
 #include "mads/sound.h"
 #include "mads/mads.h"

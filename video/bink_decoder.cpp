@@ -26,7 +26,7 @@
 // in FFmpeg. Many thanks to Kostya Shishkov for doing the hard work.
 
 #include "audio/audiostream.h"
-#include "audio/decoders/raw.h"
+#include "audio/decoders/pcm.h"
 
 #include "common/util.h"
 #include "common/textconsole.h"

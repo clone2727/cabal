@@ -36,7 +36,7 @@
 
 #include "audio/audiostream.h"
 #include "audio/mixer.h"
-#include "audio/decoders/raw.h"
+#include "audio/decoders/pcm.h"
 
 namespace Scumm {
 

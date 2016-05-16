@@ -24,7 +24,7 @@
 
 #include "audio/audiostream.h"
 #include "audio/mixer.h"
-#include "audio/decoders/raw.h"
+#include "audio/decoders/pcm.h"
 
 #include "common/config-manager.h"
 #include "common/textconsole.h"
@@ -188,7 +188,7 @@ void DrasculaEngine::playFile(const char *fname) {
 			return;
 		}
 
-		Audio::AudioStream *sound = Audio::makeRawStream(subStream, 11025,
+		Audio::AudioStream *sound = Audio::makePCMStream(subStream, 11025,
 		                                                 Audio::FLAG_UNSIGNED);
 		_mixer->playStream(Audio::Mixer::kSpeechSoundType, &_soundHandle, sound);
 	} else

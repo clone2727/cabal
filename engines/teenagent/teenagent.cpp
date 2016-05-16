@@ -36,7 +36,7 @@
 #include "engines/util.h"
 
 #include "audio/mixer.h"
-#include "audio/decoders/raw.h"
+#include "audio/decoders/pcm.h"
 
 #include "graphics/cursorman.h"
 #include "graphics/palette.h"
@@ -1035,7 +1035,7 @@ void TeenAgentEngine::playSoundNow(byte id) {
 	res->sam_sam.read(id, data, size);
 	debug(3, "playing %u samples...", size);
 
-	Audio::AudioStream *stream = Audio::makeRawStream(data, size, 11025, 0);
+	Audio::AudioStream *stream = Audio::makePCMStream(data, size, 11025, 0);
 	_mixer->playStream(Audio::Mixer::kSFXSoundType, &_soundHandle, stream); // dispose is YES by default
 }
 

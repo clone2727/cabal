@@ -35,7 +35,7 @@
 #include "kyra/screen.h"
 
 #include "audio/audiostream.h"
-#include "audio/decoders/raw.h"
+#include "audio/decoders/pcm.h"
 
 #include "common/system.h"
 #include "common/events.h"

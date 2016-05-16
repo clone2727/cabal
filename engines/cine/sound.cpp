@@ -39,7 +39,7 @@
 #include "audio/audiostream.h"
 #include "audio/mididrv.h"
 #include "audio/audiodev/opl.h"
-#include "audio/decoders/raw.h"
+#include "audio/decoders/pcm.h"
 #include "audio/mods/soundfx.h"
 
 namespace Cine {
@@ -1168,7 +1168,7 @@ void PaulaSound::playSound(int channel, int frequency, const uint8 *data, int si
 			// Clear the first and last 16 bits like in the original.
 			sound[0] = sound[1] = sound[size - 2] = sound[size - 1] = 0;
 
-			Audio::SeekableAudioStream *stream = Audio::makeRawStream(sound, size, PAULA_FREQ / frequency, 0);
+			Audio::SeekableAudioStream *stream = Audio::makePCMStream(sound, size, PAULA_FREQ / frequency, 0);
 
 			// Initialize the volume control
 			_channelsTable[channel].initialize(volume, volumeStep, stepCount);

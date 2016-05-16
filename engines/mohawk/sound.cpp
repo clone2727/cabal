@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -20,6 +20,8 @@
  *
  */
 
+// Based on the ScummVM (GPLv2+) file of the same name
+
 #include "common/debug.h"
 #include "common/system.h"
 #include "common/util.h"
@@ -29,7 +31,7 @@
 #include "audio/musicplugin.h"
 #include "audio/audiostream.h"
 #include "audio/decoders/mp3.h"
-#include "audio/decoders/raw.h"
+#include "audio/decoders/pcm.h"
 #include "audio/decoders/wave.h"
 
 #include "mohawk/sound.h"
@@ -492,7 +494,7 @@ Audio::RewindableAudioStream *Sound::makeMohawkWaveStream(Common::SeekableReadSt
 		if (dataChunk.channels == 2)
 			flags |= Audio::FLAG_STEREO;
 
-		return Audio::makeRawStream(dataChunk.audioData, dataChunk.sampleRate, flags);
+		return Audio::makePCMStream(dataChunk.audioData, dataChunk.sampleRate, flags);
 	} else if (dataChunk.encoding == kCodecADPCM) {
 		uint32 blockAlign = dataChunk.channels * dataChunk.bitsPerSample / 8;
 		return Audio::makeADPCMStream(dataChunk.audioData, DisposeAfterUse::YES, dataSize, Audio::kADPCMDVI, dataChunk.sampleRate, dataChunk.channels, blockAlign);
@@ -529,7 +531,7 @@ Audio::RewindableAudioStream *Sound::makeLivingBooksWaveStream_v1(Common::Seekab
 	Common::SeekableReadStream *dataStream = stream->readStream(size);
 	delete stream;
 
-	return Audio::makeRawStream(dataStream, rate, Audio::FLAG_UNSIGNED);
+	return Audio::makePCMStream(dataStream, rate, Audio::FLAG_UNSIGNED);
 }
 
 SndHandle *Sound::getHandle() {

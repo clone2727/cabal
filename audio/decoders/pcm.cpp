@@ -20,7 +20,7 @@
  *
  */
 
-// Based on the ScummVM (GPLv2+) file of the same name
+// Based on the ScummVM (GPLv2+) "raw" audio code (originally at audio/decoders/raw.cpp)
 
 #include "common/endian.h"
 #include "common/memstream.h"
@@ -28,7 +28,7 @@
 #include "common/util.h"
 
 #include "audio/audiostream.h"
-#include "audio/decoders/raw.h"
+#include "audio/decoders/pcm.h"
 
 namespace Audio {
 
@@ -40,18 +40,13 @@ namespace Audio {
 #define READ_ENDIAN_SAMPLE(is16Bit, isUnsigned, ptr, isLE) \
 	((is16Bit ? (isLE ? READ_LE_UINT16(ptr) : READ_BE_UINT16(ptr)) : (*ptr << 8)) ^ (isUnsigned ? 0x8000 : 0))
 
-
-#pragma mark -
-#pragma mark --- RawStream ---
-#pragma mark -
-
 /**
- * This is a stream, which allows for playing raw PCM data from a stream.
+ * This is a stream, which allows for playing PCM data from a stream.
  */
 template<bool is16Bit, bool isUnsigned, bool isLE>
-class RawStream : public SeekableAudioStream {
+class PCMStream : public SeekableAudioStream {
 public:
-	RawStream(int rate, uint channels, DisposeAfterUse::Flag disposeStream, Common::SeekableReadStream *stream)
+	PCMStream(int rate, uint channels, DisposeAfterUse::Flag disposeStream, Common::SeekableReadStream *stream)
 		: _rate(rate), _channels(channels), _playtime(0, rate), _stream(stream, disposeStream), _endOfData(false), _buffer(0) {
 		// Setup our buffer for readBuffer
 		_buffer = new byte[kSampleBufferLength * (is16Bit ? 2 : 1)];
@@ -61,7 +56,7 @@ public:
 		_playtime = Timestamp(0, _stream->size() / channels / (is16Bit ? 2 : 1), rate);
 	}
 
-	~RawStream() {
+	~PCMStream() {
 		delete[] _buffer;
 	}
 
@@ -102,7 +97,7 @@ private:
 };
 
 template<bool is16Bit, bool isUnsigned, bool isLE>
-int RawStream<is16Bit, isUnsigned, isLE>::readBuffer(int16 *buffer, const int numSamples) {
+int PCMStream<is16Bit, isUnsigned, isLE>::readBuffer(int16 *buffer, const int numSamples) {
 	int samplesLeft = numSamples;
 
 	while (samplesLeft > 0) {
@@ -129,7 +124,7 @@ int RawStream<is16Bit, isUnsigned, isLE>::readBuffer(int16 *buffer, const int nu
 }
 
 template<bool is16Bit, bool isUnsigned, bool isLE>
-int RawStream<is16Bit, isUnsigned, isLE>::fillBuffer(int maxSamples) {
+int PCMStream<is16Bit, isUnsigned, isLE>::fillBuffer(int maxSamples) {
 	int bufferedSamples = 0;
 	byte *dst = _buffer;
 
@@ -162,7 +157,7 @@ int RawStream<is16Bit, isUnsigned, isLE>::fillBuffer(int maxSamples) {
 }
 
 template<bool is16Bit, bool isUnsigned, bool isLE>
-bool RawStream<is16Bit, isUnsigned, isLE>::seek(const Timestamp &where) {
+bool PCMStream<is16Bit, isUnsigned, isLE>::seek(const Timestamp &where) {
 	_endOfData = true;
 
 	if (where > _playtime)
@@ -178,10 +173,6 @@ bool RawStream<is16Bit, isUnsigned, isLE>::seek(const Timestamp &where) {
 	return true;
 }
 
-#pragma mark -
-#pragma mark --- Raw stream factories ---
-#pragma mark -
-
 /* In the following, we use preprocessor / macro tricks to simplify the code
  * which instantiates the input streams. We used to use template functions for
  * this, but MSVC6 / EVC 3-4 (used for WinCE builds) are extremely buggy when it
@@ -191,16 +182,16 @@ bool RawStream<is16Bit, isUnsigned, isLE>::seek(const Timestamp &where) {
  * particular case it should actually help it :-)
  */
 
-#define MAKE_RAW_STREAM(UNSIGNED) \
+#define MAKE_PCM_STREAM(UNSIGNED) \
 		if (is16Bit) { \
 			if (isLE) \
-				return new RawStream<true, UNSIGNED, true>(rate, channels, disposeAfterUse, stream); \
+				return new PCMStream<true, UNSIGNED, true>(rate, channels, disposeAfterUse, stream); \
 			else  \
-				return new RawStream<true, UNSIGNED, false>(rate, channels, disposeAfterUse, stream); \
+				return new PCMStream<true, UNSIGNED, false>(rate, channels, disposeAfterUse, stream); \
 		} else \
-			return new RawStream<false, UNSIGNED, false>(rate, channels, disposeAfterUse, stream)
+			return new PCMStream<false, UNSIGNED, false>(rate, channels, disposeAfterUse, stream)
 
-SeekableAudioStream *makeRawStream(Common::SeekableReadStream *stream,
+SeekableAudioStream *makePCMStream(Common::SeekableReadStream *stream,
                                    int rate, byte flags,
                                    DisposeAfterUse::Flag disposeAfterUse) {
 	const uint channels   = ((flags & Audio::FLAG_STEREO) != 0) ? 2 : 1;
@@ -211,21 +202,21 @@ SeekableAudioStream *makeRawStream(Common::SeekableReadStream *stream,
 	assert(stream->size() % ((is16Bit ? 2 : 1) * channels) == 0);
 
 	if (isUnsigned) {
-		MAKE_RAW_STREAM(true);
+		MAKE_PCM_STREAM(true);
 	} else {
-		MAKE_RAW_STREAM(false);
+		MAKE_PCM_STREAM(false);
 	}
 }
 
-SeekableAudioStream *makeRawStream(const byte *buffer, uint32 size,
+SeekableAudioStream *makePCMStream(const byte *buffer, uint32 size,
                                    int rate, byte flags,
                                    DisposeAfterUse::Flag disposeAfterUse) {
-	return makeRawStream(new Common::MemoryReadStream(buffer, size, disposeAfterUse), rate, flags, DisposeAfterUse::YES);
+	return makePCMStream(new Common::MemoryReadStream(buffer, size, disposeAfterUse), rate, flags, DisposeAfterUse::YES);
 }
 
-class PacketizedRawStream : public StatelessPacketizedAudioStream {
+class PacketizedPCMStream : public StatelessPacketizedAudioStream {
 public:
-	PacketizedRawStream(int rate, byte flags) :
+	PacketizedPCMStream(int rate, byte flags) :
 		StatelessPacketizedAudioStream(rate, ((flags & FLAG_STEREO) != 0) ? 2 : 1), _flags(flags) {}
 
 protected:
@@ -235,12 +226,12 @@ private:
 	byte _flags;
 };
 
-AudioStream *PacketizedRawStream::makeStream(Common::SeekableReadStream *data) {
-	return makeRawStream(data, getRate(), _flags);
+AudioStream *PacketizedPCMStream::makeStream(Common::SeekableReadStream *data) {
+	return makePCMStream(data, getRate(), _flags);
 }
 
-PacketizedAudioStream *makePacketizedRawStream(int rate, byte flags) {
-	return new PacketizedRawStream(rate, flags);
+PacketizedAudioStream *makePacketizedPCMStream(int rate, byte flags) {
+	return new PacketizedPCMStream(rate, flags);
 }
 
 } // End of namespace Audio

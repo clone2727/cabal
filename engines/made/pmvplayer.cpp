@@ -32,7 +32,7 @@
 #include "common/system.h"
 #include "common/events.h"
 
-#include "audio/decoders/raw.h"
+#include "audio/decoders/pcm.h"
 #include "audio/audiostream.h"
 
 #include "graphics/surface.h"

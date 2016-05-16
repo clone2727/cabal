@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -20,13 +20,15 @@
  *
  */
 
+// Based on the ScummVM (GPLv2+) file of the same name
+
 #ifdef ENABLE_HE
 
 #include "common/system.h"
 #include "common/memstream.h"
 #include "audio/audiostream.h"
 #include "audio/mixer.h"
-#include "audio/decoders/raw.h"
+#include "audio/decoders/pcm.h"
 #include "graphics/palette.h"
 #include "scumm/scumm.h"
 #include "scumm/util.h"
@@ -170,7 +172,7 @@ void CUP_Player::updateSfx() {
 				uint32 soundSize = READ_BE_UINT32(soundData + 4);
 				_mixer->playStream(Audio::Mixer::kSFXSoundType, &sfxChannel->handle,
 							Audio::makeLoopingAudioStream(
-								Audio::makeRawStream(soundData + 8, soundSize - 8,
+								Audio::makePCMStream(soundData + 8, soundSize - 8,
 										11025, Audio::FLAG_UNSIGNED, DisposeAfterUse::NO),
 								(sfx->flags & kSfxFlagLoop) ? 0 : 1
 							)

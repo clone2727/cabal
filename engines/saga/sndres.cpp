@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -20,6 +20,8 @@
  *
  */
 
+// Based on the ScummVM (GPLv2+) file of the same name
+
 // Sound resource management class
 
 #include "saga/saga.h"
@@ -38,7 +40,7 @@
 #include "audio/decoders/flac.h"
 #include "audio/decoders/mac_snd.h"
 #include "audio/decoders/mp3.h"
-#include "audio/decoders/raw.h"
+#include "audio/decoders/pcm.h"
 #include "audio/decoders/voc.h"
 #include "audio/decoders/vorbis.h"
 #include "audio/decoders/wave.h"
@@ -303,14 +305,14 @@ bool SndRes::load(ResourceContext *context, uint32 resourceId, SoundBuffer &buff
 	switch (resourceType) {
 	case kSoundPCM: {
 		// In ITE CD German, some voices are absent and contain just 5 zero bytes.
-		// Round down to an even number when the audio is 16-bit so makeRawStream
+		// Round down to an even number when the audio is 16-bit so makePCMStream
 		// will accept the data (needs to be an even size for 16-bit data).
 		// See bug #1256701
 
 		if ((soundResourceLength & 1) && (rawFlags & Audio::FLAG_16BITS))
 			soundResourceLength &= ~1;
 
-		Audio::SeekableAudioStream *audStream = Audio::makeRawStream(READ_STREAM(soundResourceLength), 22050, rawFlags);
+		Audio::SeekableAudioStream *audStream = Audio::makePCMStream(READ_STREAM(soundResourceLength), 22050, rawFlags);
 		buffer.stream = audStream;
 		buffer.streamLength = audStream->getLength();
 		result = true;
@@ -358,7 +360,7 @@ bool SndRes::load(ResourceContext *context, uint32 resourceId, SoundBuffer &buff
 		}
 
 		if (result) {
-			Audio::SeekableAudioStream *audStream = Audio::makeRawStream(READ_STREAM(size), rate, rawFlags);
+			Audio::SeekableAudioStream *audStream = Audio::makePCMStream(READ_STREAM(size), rate, rawFlags);
 			buffer.stream = audStream;
 			buffer.streamLength = audStream->getLength();
 		}

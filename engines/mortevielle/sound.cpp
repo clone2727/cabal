@@ -30,7 +30,7 @@
 #include "mortevielle/mortevielle.h"
 #include "mortevielle/sound.h"
 
-#include "audio/decoders/raw.h"
+#include "audio/decoders/pcm.h"
 #include "common/scummsys.h"
 
 namespace Mortevielle {
@@ -296,7 +296,7 @@ void SoundManager::litph(tablint &t, int typ, int tempo) {
 
 void SoundManager::playSong(const byte* buf, uint size, uint loops) {
 	int freq = kTempoMusic * 252; // 25.2 * 10
-	Audio::SeekableAudioStream *raw = Audio::makeRawStream(buf, size, freq, Audio::FLAG_UNSIGNED, DisposeAfterUse::NO);
+	Audio::SeekableAudioStream *raw = Audio::makePCMStream(buf, size, freq, Audio::FLAG_UNSIGNED, DisposeAfterUse::NO);
 	Audio::AudioStream *stream = Audio::makeLoopingAudioStream(raw, loops);
 	Audio::SoundHandle songHandle;
 	_mixer->playStream(Audio::Mixer::kSFXSoundType, &songHandle, stream, -1, Audio::Mixer::kMaxChannelVolume, 0, DisposeAfterUse::YES);

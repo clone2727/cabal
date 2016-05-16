@@ -31,7 +31,7 @@
 #include "common/stream.h"
 
 #include "audio/audiostream.h"
-#include "audio/decoders/raw.h"
+#include "audio/decoders/pcm.h"
 
 namespace ZVision {
 

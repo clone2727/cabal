@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -20,6 +20,8 @@
  *
  */
 
+// Based on the ScummVM (GPLv2+) file of the same name
+
 /*
  * The code in this file is based on information found at
  * http://www.borg.com/~jglatt/tech/aiff.htm
@@ -35,7 +37,7 @@
 
 #include "audio/audiostream.h"
 #include "audio/decoders/aiff.h"
-#include "audio/decoders/raw.h"
+#include "audio/decoders/pcm.h"
 #include "audio/decoders/3do.h"
 
 namespace Audio {
@@ -203,7 +205,7 @@ RewindableAudioStream *makeAIFFStream(Common::SeekableReadStream *stream, Dispos
 		if (codec == MKTAG('s', 'o', 'w', 't'))
 			rawFlags |= Audio::FLAG_LITTLE_ENDIAN;
 
-		return makeRawStream(dataStream, rate, rawFlags); 
+		return makePCMStream(dataStream, rate, rawFlags); 
 	}
 	case MKTAG('i', 'm', 'a', '4'):
 		// TODO: Use QT IMA ADPCM

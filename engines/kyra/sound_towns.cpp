@@ -31,7 +31,7 @@
 #include "backends/audiocd/audiocd.h"
 
 #include "audio/audiostream.h"
-#include "audio/decoders/raw.h"
+#include "audio/decoders/pcm.h"
 
 namespace Kyra {
 
@@ -714,7 +714,7 @@ int32 SoundTownsPC98_v2::voicePlay(const char *file, Audio::SoundHandle *handle,
 		sfx[i] = cmd;
 	}
 
-	_currentSFX = Audio::makeRawStream(sfx, outsize, sfxRate * 10, Audio::FLAG_UNSIGNED | Audio::FLAG_LITTLE_ENDIAN);
+	_currentSFX = Audio::makePCMStream(sfx, outsize, sfxRate * 10, Audio::FLAG_UNSIGNED | Audio::FLAG_LITTLE_ENDIAN);
 	_mixer->playStream(Audio::Mixer::kSFXSoundType, &_soundChannels[h].handle, _currentSFX, -1, volume);
 	_soundChannels[h].priority = priority;
 	if (handle)

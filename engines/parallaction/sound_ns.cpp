@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -20,6 +20,8 @@
  *
  */
 
+// Based on the ScummVM (GPLv2+) file of the same name
+
 #include "common/file.h"
 #include "common/stream.h"
 #include "common/textconsole.h"
@@ -28,7 +30,7 @@
 #include "audio/midiparser.h"
 #include "audio/midiplayer.h"
 #include "audio/mods/protracker.h"
-#include "audio/decoders/raw.h"
+#include "audio/decoders/pcm.h"
 
 #include "parallaction/sound.h"
 #include "parallaction/parallaction.h"
@@ -247,7 +249,7 @@ Audio::AudioStream *AmigaSoundMan_ns::loadChannelData(const char *filename, Chan
 	if (!scumm_stricmp("beep", filename)) {
 		int rate = 11934;
 		ch->volume = 160;
-		input = Audio::makeRawStream((byte *)beepSoundBuffer, beepSoundBufferSize, rate, 0, DisposeAfterUse::NO);
+		input = Audio::makePCMStream((byte *)beepSoundBuffer, beepSoundBufferSize, rate, 0, DisposeAfterUse::NO);
 	} else {
 		Common::SeekableReadStream *stream = _vm->_disk->loadSound(filename);
 		input = Audio::make8SVXStream(*stream, looping);

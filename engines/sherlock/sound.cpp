@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -20,13 +20,15 @@
  *
  */
 
+// Based on the ScummVM (GPLv2+) file of the same name
+
 #include "sherlock/sherlock.h"
 #include "sherlock/sound.h"
 #include "common/config-manager.h"
 #include "audio/audiostream.h"
 #include "common/algorithm.h"
 #include "audio/mixer.h"
-#include "audio/decoders/raw.h"
+#include "audio/decoders/pcm.h"
 #include "audio/decoders/aiff.h"
 #include "audio/decoders/wave.h"
 
@@ -292,7 +294,7 @@ bool Sound::playSoundResource(const Common::String &name, const Common::String &
 
 	Audio::AudioStream *audioStream;
 	if (IS_ROSE_TATTOO && soundType == Audio::Mixer::kSpeechSoundType) {
-		audioStream = Audio::makeRawStream(stream, 11025, Audio::FLAG_UNSIGNED);
+		audioStream = Audio::makePCMStream(stream, 11025, Audio::FLAG_UNSIGNED);
 	} else if (IS_3DO) {
 		// 3DO: AIFF file
 		audioStream = Audio::makeAIFFStream(stream, DisposeAfterUse::YES);
@@ -321,7 +323,7 @@ bool Sound::playSoundResource(const Common::String &name, const Common::String &
 
 		free(data);
 
-		audioStream = Audio::makeRawStream(decoded, (size - 2) * 2, rate, Audio::FLAG_UNSIGNED, DisposeAfterUse::YES);
+		audioStream = Audio::makePCMStream(decoded, (size - 2) * 2, rate, Audio::FLAG_UNSIGNED, DisposeAfterUse::YES);
 	} else {
 		audioStream = Audio::makeWAVStream(stream, DisposeAfterUse::YES);
 	}

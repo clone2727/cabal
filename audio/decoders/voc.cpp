@@ -30,7 +30,7 @@
 #include "common/list.h"
 
 #include "audio/audiostream.h"
-#include "audio/decoders/raw.h"
+#include "audio/decoders/pcm.h"
 #include "audio/decoders/voc.h"
 
 namespace Audio {
@@ -469,7 +469,7 @@ void VocStream::preProcess() {
 			}
 
 			int codec = _stream->readByte();
-			// We only support RAW 8bit PCM.
+			// We only support 8bit PCM.
 			if (codec != 0) {
 				warning("Unhandled codec %d in VOC file", codec);
 				return;

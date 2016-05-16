@@ -40,7 +40,7 @@
 #include "audio/decoders/flac.h"
 #include "audio/decoders/mac_snd.h"
 #include "audio/decoders/mp3.h"
-#include "audio/decoders/raw.h"
+#include "audio/decoders/pcm.h"
 #include "audio/decoders/vorbis.h"
 #include "audio/decoders/wave.h"
 
@@ -421,7 +421,7 @@ Audio::RewindableAudioStream *AudioPlayer::getAudioStream(uint32 number, uint32 
 		}
 
 		if (data)
-			audioSeekStream = Audio::makeRawStream(data, size, _audioRate, flags);
+			audioSeekStream = Audio::makePCMStream(data, size, _audioRate, flags);
 	}
 
 	if (audioSeekStream) {

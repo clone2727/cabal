@@ -27,7 +27,7 @@
 #include "graphics/palette.h"
 
 #include "audio/audiostream.h"
-#include "audio/decoders/raw.h"
+#include "audio/decoders/pcm.h"
 
 #include "composer/composer.h"
 #include "composer/graphics.h"

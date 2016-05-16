@@ -39,7 +39,7 @@
 #include "video/ogg_decoder.h"
 
 #include "audio/audiostream.h"
-#include "audio/decoders/raw.h"
+#include "audio/decoders/pcm.h"
 #include "common/stream.h"
 #include "common/system.h"
 #include "common/textconsole.h"

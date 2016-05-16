@@ -23,7 +23,7 @@
 // Based on the ScummVM (GPLv2+) file of the same name
 
 #include "audio/audiodev/opl.h"
-#include "audio/decoders/raw.h"
+#include "audio/decoders/pcm.h"
 #include "common/config-manager.h"
 #include "audio/audiostream.h"
 #include "tsage/core.h"

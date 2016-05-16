@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -20,11 +20,12 @@
  *
  */
 
+// Based on the ScummVM (GPLv2+) file of the same name
 
 #include "scumm/players/player_mod.h"
 #include "audio/mixer.h"
 #include "audio/rate.h"
-#include "audio/decoders/raw.h"
+#include "audio/decoders/pcm.h"
 
 namespace Scumm {
 
@@ -92,7 +93,7 @@ void Player_MOD::startChannel(int id, void *data, int size, int rate, uint8 vol,
 	_channels[i].freq = rate;
 	_channels[i].ctr = 0;
 
-	Audio::SeekableAudioStream *stream = Audio::makeRawStream((const byte *)data, size, rate, 0);
+	Audio::SeekableAudioStream *stream = Audio::makePCMStream((const byte *)data, size, rate, 0);
 	if (loopStart != loopEnd) {
 		_channels[i].input = new Audio::SubLoopingAudioStream(stream, 0, Audio::Timestamp(0, loopStart, rate), Audio::Timestamp(0, loopEnd, rate));
 	} else {

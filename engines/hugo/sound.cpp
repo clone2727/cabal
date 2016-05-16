@@ -36,7 +36,7 @@
 #include "common/textconsole.h"
 #include "common/config-manager.h"
 
-#include "audio/decoders/raw.h"
+#include "audio/decoders/pcm.h"
 #include "audio/audiostream.h"
 #include "audio/midiparser.h"
 
@@ -216,7 +216,7 @@ void SoundHandler::playSound(int16 sound, const byte priority) {
 	if ((soundPtr = _vm->_file->getSound(sound, &size)) == nullptr)
 		return;
 
-	Audio::AudioStream *stream = Audio::makeRawStream(soundPtr, size, 11025, Audio::FLAG_UNSIGNED);
+	Audio::AudioStream *stream = Audio::makePCMStream(soundPtr, size, 11025, Audio::FLAG_UNSIGNED);
 	_vm->_mixer->playStream(Audio::Mixer::kSFXSoundType, &_soundHandle, stream);
 }
 

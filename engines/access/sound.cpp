@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -20,10 +20,12 @@
  *
  */
 
+// Based on the ScummVM (GPLv2+) file of the same name
+
 #include "common/algorithm.h"
 #include "common/config-manager.h"
 #include "audio/mixer.h"
-#include "audio/decoders/raw.h"
+#include "audio/decoders/pcm.h"
 #include "audio/decoders/wave.h"
 // Miles Audio
 #include "audio/miles.h"
@@ -146,7 +148,7 @@ void SoundManager::playSound(Resource *res, int priority, bool loop, int soundIn
 			return;
 		}
 
-		audioStream = Audio::makeRawStream(resourceData + 32, sampleSize, sampleRate, 0, DisposeAfterUse::NO);
+		audioStream = Audio::makePCMStream(resourceData + 32, sampleSize, sampleRate, 0, DisposeAfterUse::NO);
 	} else
 		error("Unknown format");
 

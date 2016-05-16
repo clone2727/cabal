@@ -44,7 +44,7 @@
 #include "audio/mididrv.h"
 #include "audio/mixer.h"
 #include "audio/decoders/mp3.h"
-#include "audio/decoders/raw.h"
+#include "audio/decoders/pcm.h"
 #include "audio/decoders/voc.h"
 #include "audio/decoders/vorbis.h"
 #include "audio/decoders/wave.h"
@@ -232,7 +232,7 @@ void Sound::playSound(int soundID) {
 		sound = (byte *)malloc(size);
 		memcpy(sound, ptr, size);
 
-		stream = Audio::makeRawStream(sound, size, rate, Audio::FLAG_UNSIGNED);
+		stream = Audio::makePCMStream(sound, size, rate, Audio::FLAG_UNSIGNED);
 		_mixer->playStream(Audio::Mixer::kSFXSoundType, NULL, stream, soundID);
 	}
 	// WORKAROUND bug # 1311447
@@ -255,7 +255,7 @@ void Sound::playSound(int soundID) {
 		// Allocate a sound buffer, copy the data into it, and play
 		sound = (byte *)malloc(size);
 		memcpy(sound, ptr, size);
-		stream = Audio::makeRawStream(sound, size, rate, Audio::FLAG_UNSIGNED);
+		stream = Audio::makePCMStream(sound, size, rate, Audio::FLAG_UNSIGNED);
 		_mixer->playStream(Audio::Mixer::kSFXSoundType, NULL, stream, soundID);
 	}
 	// Support for sampled sound effects in Monkey Island 1 and 2
@@ -330,7 +330,7 @@ void Sound::playSound(int soundID) {
 		// Allocate a sound buffer, copy the data into it, and play
 		sound = (byte *)malloc(size);
 		memcpy(sound, ptr + 6, size);
-		stream = Audio::makeRawStream(sound, size, rate, Audio::FLAG_UNSIGNED);
+		stream = Audio::makePCMStream(sound, size, rate, Audio::FLAG_UNSIGNED);
 		_mixer->playStream(Audio::Mixer::kSFXSoundType, NULL, stream, soundID);
 	}
 	else if (_vm->_game.platform != Common::kPlatformFMTowns && READ_BE_UINT32(ptr) == MKTAG('S','O','U','N')) {
@@ -385,7 +385,7 @@ void Sound::playSound(int soundID) {
 		int loopcount = ptr[27];
 
 		memcpy(sound, ptr + READ_BE_UINT16(ptr + 8), size);
-		Audio::SeekableAudioStream *plainStream = Audio::makeRawStream(sound, size, rate, 0);
+		Audio::SeekableAudioStream *plainStream = Audio::makePCMStream(sound, size, rate, 0);
 
 		if (loopcount > 1) {
 			loopStart = READ_BE_UINT16(ptr + 10) - READ_BE_UINT16(ptr + 8);

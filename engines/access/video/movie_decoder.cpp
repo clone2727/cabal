@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -20,12 +20,14 @@
  *
  */
 
+// Based on the ScummVM (GPLv2+) file of the same name
+
 #include "common/scummsys.h"
 #include "common/stream.h"
 #include "common/textconsole.h"
 
 #include "audio/audiostream.h"
-#include "audio/decoders/raw.h"
+#include "audio/decoders/pcm.h"
 
 #include "access/access.h"
 #include "access/video/movie_decoder.h"
@@ -669,7 +671,7 @@ void AccessVIDMovieDecoder::StreamAudioTrack::queueAudio(Common::SeekableReadStr
 	rawAudioStream = stream->readStream(audioSize);
 	audioLengthMSecs = audioSize * 1000 / _sampleRate; // 1 byte == 1 8-bit sample
 
-	audioStream = Audio::makeRawStream(rawAudioStream, _sampleRate, Audio::FLAG_UNSIGNED | Audio::FLAG_LITTLE_ENDIAN, DisposeAfterUse::YES);
+	audioStream = Audio::makePCMStream(rawAudioStream, _sampleRate, Audio::FLAG_UNSIGNED | Audio::FLAG_LITTLE_ENDIAN, DisposeAfterUse::YES);
 	if (audioStream) {
 		_totalAudioQueued += audioLengthMSecs;
 		_audioStream->queueAudioStream(audioStream, DisposeAfterUse::YES);

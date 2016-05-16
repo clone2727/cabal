@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -20,12 +20,13 @@
  *
  */
 
+// Based on the ScummVM (GPLv2+) file of the same name
+
 #ifndef ACCESS_VIDEO_MOVIE_DECODER_H
 #define ACCESS_VIDEO_MOVIE_DECODER_H
 
 #include "common/rect.h"
 #include "video/video_decoder.h"
-#include "audio/decoders/raw.h"
 
 namespace Audio {
 class QueuingAudioStream;

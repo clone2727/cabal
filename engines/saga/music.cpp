@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -20,6 +20,8 @@
  *
  */
 
+// Based on the ScummVM (GPLv2+) file of the same name
+
 // MIDI and digital music class
 
 #include "saga/saga.h"
@@ -32,7 +34,7 @@
 #include "audio/midiparser.h"
 #include "audio/midiparser_qt.h"
 #include "audio/miles.h"
-#include "audio/decoders/raw.h"
+#include "audio/decoders/pcm.h"
 #include "common/config-manager.h"
 #include "common/file.h"
 #include "common/substream.h"
@@ -349,7 +351,7 @@ void Music::play(uint32 resourceId, MusicFlags flags) {
 						_digitalMusicContext->fileSize() < 8000000)
 						musicFlags &= ~Audio::FLAG_STEREO;
 
-					audioStream = Audio::makeRawStream(musicStream, 11025, musicFlags, DisposeAfterUse::YES);
+					audioStream = Audio::makePCMStream(musicStream, 11025, musicFlags, DisposeAfterUse::YES);
 				} else {
 					// Read compressed header to determine compression type
 					musicFile->seek((uint32)resData->offset, SEEK_SET);

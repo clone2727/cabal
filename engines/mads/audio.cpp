@@ -26,7 +26,7 @@
 #include "common/stream.h"
 #include "audio/audiostream.h"
 #include "audio/mixer.h"
-#include "audio/decoders/raw.h"
+#include "audio/decoders/pcm.h"
 
 namespace MADS {
 
@@ -117,7 +117,7 @@ void AudioPlayer::playSound(int soundIndex, bool loop) {
 
 	// Play sound
 	Audio::AudioStream *stream = Audio::makeLoopingAudioStream(
-				Audio::makeRawStream(buffer, uncompSize, frequency, Audio::FLAG_UNSIGNED),
+				Audio::makePCMStream(buffer, uncompSize, frequency, Audio::FLAG_UNSIGNED),
 				loop ? 0 : 1);
 	_mixer->playStream(Audio::Mixer::kSFXSoundType, &_handle, stream, -1,  Audio::Mixer::kMaxChannelVolume);
 

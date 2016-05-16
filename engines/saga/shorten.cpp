@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -20,6 +20,8 @@
  *
  */
 
+// Based on the ScummVM (GPLv2+) file of the same name
+
 #include "common/scummsys.h"
 #include "common/textconsole.h"
 
@@ -36,7 +38,7 @@
 
 #include "common/util.h"
 
-#include "audio/decoders/raw.h"
+#include "audio/decoders/pcm.h"
 
 namespace Saga {
 
@@ -556,7 +558,7 @@ Audio::AudioStream *makeShortenStream(Common::SeekableReadStream &stream) {
 		return 0;
 
 	// Since we allocated our own buffer for the data, we must specify DisposeAfterUse::YES.
-	return Audio::makeRawStream(data, size, rate, flags);
+	return Audio::makePCMStream(data, size, rate, flags);
 }
 
 } // End of namespace Audio

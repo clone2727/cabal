@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -20,7 +20,9 @@
  *
  */
 
-#include "audio/decoders/raw.h"
+// Based on the ScummVM (GPLv2+) file of the same name
+
+#include "audio/decoders/pcm.h"
 #include "common/config-manager.h"
 #include "common/debug.h"
 #include "common/file.h"
@@ -157,13 +159,13 @@ void DreamWebSound::playSound(uint8 channel, uint8 id, uint8 loops) {
 			error("out of memory: cannot allocate memory for sound(%u bytes)", sample.size);
 		memcpy(buffer, data.data.begin() + sample.offset, sample.size);
 
-		raw = Audio::makeRawStream(buffer, sample.size, 22050, Audio::FLAG_UNSIGNED);
+		raw = Audio::makePCMStream(buffer, sample.size, 22050, Audio::FLAG_UNSIGNED);
 	} else {
 		uint8 *buffer = (uint8 *)malloc(_speechData.size());
 		if (!buffer)
 			error("out of memory: cannot allocate memory for sound(%u bytes)", _speechData.size());
 		memcpy(buffer, _speechData.begin(), _speechData.size());
-		raw = Audio::makeRawStream(buffer, _speechData.size(), 22050, Audio::FLAG_UNSIGNED);
+		raw = Audio::makePCMStream(buffer, _speechData.size(), 22050, Audio::FLAG_UNSIGNED);
 	}
 
 	Audio::AudioStream *stream;

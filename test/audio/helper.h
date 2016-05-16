@@ -1,7 +1,7 @@
 #ifndef TEST_SOUND_HELPER_H
 #define TEST_SOUND_HELPER_H
 
-#include "audio/decoders/raw.h"
+#include "audio/decoders/pcm.h"
 
 #include "common/stream.h"
 #include "common/endian.h"
@@ -56,7 +56,7 @@ static Audio::SeekableAudioStream *createSineStream(const int sampleRate, const 
 
 	Audio::SeekableAudioStream *s = 0;
 	Common::SeekableReadStream *sD = new Common::MemoryReadStream((const byte *)sine, sizeof(T) * samples, DisposeAfterUse::YES);
-	s = Audio::makeRawStream(sD, sampleRate,
+	s = Audio::makePCMStream(sD, sampleRate,
 	                             (is16Bits ? Audio::FLAG_16BITS : 0)
 	                             | (isUnsigned ? Audio::FLAG_UNSIGNED : 0)
 	                             | (le ? Audio::FLAG_LITTLE_ENDIAN : 0)

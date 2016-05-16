@@ -38,7 +38,7 @@
 #include "audio/decoders/flac.h"
 #include "audio/mididrv.h"
 #include "audio/decoders/mp3.h"
-#include "audio/decoders/raw.h"
+#include "audio/decoders/pcm.h"
 #include "audio/decoders/vorbis.h"
 
 #define	SB_HEADER_SIZE_V104 110
@@ -329,7 +329,7 @@ void SBSound::playSoundData(Common::File *f, uint32 size, Audio::SoundHandle *so
 		f->read(sound, size);
 		Audio::Mixer::SoundType type = (soundHandle == &_speechHandle) ? Audio::Mixer::kSpeechSoundType : Audio::Mixer::kSFXSoundType;
 
-		Audio::AudioStream *stream = Audio::makeRawStream(sound, size, 11840, Audio::FLAG_UNSIGNED);
+		Audio::AudioStream *stream = Audio::makePCMStream(sound, size, 11840, Audio::FLAG_UNSIGNED);
 		_mixer->playStream(type, soundHandle, stream);
 	}
 }
@@ -613,7 +613,7 @@ void AmigaSound::playSound(const char *base) {
 		if (soundData) {
 			f->read(soundData, soundSize);
 
-			Audio::AudioStream *stream = Audio::makeRawStream(soundData, soundSize, 11025, 0);
+			Audio::AudioStream *stream = Audio::makePCMStream(soundData, soundSize, 11025, 0);
 			_mixer->playStream(Audio::Mixer::kSFXSoundType, &_sfxHandle, stream);
 		}
 	}

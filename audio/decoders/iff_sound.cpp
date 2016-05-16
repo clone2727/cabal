@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -20,9 +20,11 @@
  *
  */
 
+// Based on the ScummVM (GPLv2+) file of the same name
+
 #include "audio/decoders/iff_sound.h"
 #include "audio/audiostream.h"
-#include "audio/decoders/raw.h"
+#include "audio/decoders/pcm.h"
 #include "common/iff_container.h"
 #include "common/func.h"
 
@@ -104,7 +106,7 @@ AudioStream *make8SVXStream(Common::ReadStream &input, bool loop) {
 	A8SVXLoader loader;
 	loader.load(input);
 
-	SeekableAudioStream *stream = Audio::makeRawStream((byte *)loader._data, loader._dataSize, loader._header.samplesPerSec, 0);
+	SeekableAudioStream *stream = Audio::makePCMStream((byte *)loader._data, loader._dataSize, loader._header.samplesPerSec, 0);
 
 	uint32 loopStart = 0, loopEnd = 0;
 	if (loop) {

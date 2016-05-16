@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -18,8 +18,9 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
- * sound functionality
  */
+
+// Based on the ScummVM (GPLv2+) file of the same name
 
 #include "tinsel/sound.h"
 
@@ -40,7 +41,7 @@
 #include "audio/decoders/adpcm.h"
 #include "audio/decoders/flac.h"
 #include "audio/decoders/mp3.h"
-#include "audio/decoders/raw.h"
+#include "audio/decoders/pcm.h"
 #include "audio/decoders/vorbis.h"
 #include "audio/decoders/xa.h"
 
@@ -163,7 +164,7 @@ bool SoundManager::playSample(int id, Audio::Mixer::SoundType type, Audio::Sound
 #endif
 			break;
 		default:
-			sampleStream = Audio::makeRawStream(sampleBuf, sampleLen, 22050, Audio::FLAG_UNSIGNED);
+			sampleStream = Audio::makePCMStream(sampleBuf, sampleLen, 22050, Audio::FLAG_UNSIGNED);
 			break;
 		}
 		if (sampleStream) {
@@ -197,7 +198,7 @@ void SoundManager::playDW1MacMusic(Common::File &s, uint32 length) {
 	_vm->_mixer->stopHandle(*handle);
 
 	// TODO: Compression support (MP3/OGG/FLAC) for midi.dat in DW1 Mac
-	Audio::RewindableAudioStream *musicStream = Audio::makeRawStream(memStream, 22050, Audio::FLAG_UNSIGNED, DisposeAfterUse::YES);
+	Audio::RewindableAudioStream *musicStream = Audio::makePCMStream(memStream, 22050, Audio::FLAG_UNSIGNED, DisposeAfterUse::YES);
 
 	if (musicStream)
 		_vm->_mixer->playStream(Audio::Mixer::kMusicSoundType, handle, Audio::makeLoopingAudioStream(musicStream, 0));

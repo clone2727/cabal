@@ -28,7 +28,7 @@
 #include "common/endian.h"
 #include "common/memstream.h"
 #include "common/system.h"
-#include "audio/decoders/raw.h"
+#include "audio/decoders/pcm.h"
 #include "graphics/surface.h"
 
 namespace Voyeur {
@@ -452,7 +452,7 @@ void RL2Decoder::RL2AudioTrack::queueSound(Common::SeekableReadStream *stream, i
 	Common::MemoryReadStream *memoryStream = new Common::MemoryReadStream(data, size,
 		DisposeAfterUse::YES);
 
-	_audStream->queueAudioStream(Audio::makeRawStream(memoryStream, _header._rate,
+	_audStream->queueAudioStream(Audio::makePCMStream(memoryStream, _header._rate,
 		Audio::FLAG_UNSIGNED, DisposeAfterUse::YES), DisposeAfterUse::YES);
 }
 

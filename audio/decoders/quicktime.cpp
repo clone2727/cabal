@@ -36,7 +36,7 @@
 #include "audio/decoders/aac.h"
 #include "audio/decoders/adpcm.h"
 #include "audio/decoders/qdm2.h"
-#include "audio/decoders/raw.h"
+#include "audio/decoders/pcm.h"
 
 namespace Audio {
 
@@ -646,7 +646,7 @@ AudioStream *QuickTimeAudioDecoder::AudioSampleDesc::createAudioStream(Common::S
 		byte *data = (byte *)malloc(dataSize);
 		stream->read(data, dataSize);
 		delete stream;
-		return makeRawStream(data, dataSize, _sampleRate, flags);
+		return makePCMStream(data, dataSize, _sampleRate, flags);
 	} else if (_codecTag == MKTAG('i', 'm', 'a', '4')) {
 		// Riven uses this codec (as do some Myst ME videos)
 		return makeADPCMStream(stream, DisposeAfterUse::YES, stream->size(), kADPCMApple, _sampleRate, _channels, 34);

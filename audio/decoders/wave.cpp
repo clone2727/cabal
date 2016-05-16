@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -20,6 +20,8 @@
  *
  */
 
+// Based on the ScummVM (GPLv2+) file of the same name
+
 #include "common/debug.h"
 #include "common/textconsole.h"
 #include "common/stream.h"
@@ -27,7 +29,7 @@
 #include "audio/audiostream.h"
 #include "audio/decoders/wave.h"
 #include "audio/decoders/adpcm.h"
-#include "audio/decoders/raw.h"
+#include "audio/decoders/pcm.h"
 
 namespace Audio {
 
@@ -175,14 +177,14 @@ RewindableAudioStream *makeWAVStream(Common::SeekableReadStream *stream, Dispose
 	else if (type == 2) // MS ADPCM
 		return makeADPCMStream(stream, disposeAfterUse, size, Audio::kADPCMMS, rate, (flags & Audio::FLAG_STEREO) ? 2 : 1, blockAlign);
 
-	// Raw PCM, make sure the last packet is complete
+	// PCM, make sure the last packet is complete
 	uint sampleSize = (flags & Audio::FLAG_16BITS ? 2 : 1) * (flags & Audio::FLAG_STEREO ? 2 : 1);
 	if (size % sampleSize != 0) {
 		warning("makeWAVStream: Trying to play a WAVE file with an incomplete PCM packet");
 		size &= ~(sampleSize - 1);
 	}
 
-	// Raw PCM. Just read everything at once.
+	// PCM. Just read everything at once.
 	// TODO: More elegant would be to wrap the stream.
 	byte *data = (byte *)malloc(size);
 	assert(data);
@@ -191,7 +193,7 @@ RewindableAudioStream *makeWAVStream(Common::SeekableReadStream *stream, Dispose
 	if (disposeAfterUse == DisposeAfterUse::YES)
 		delete stream;
 
-	return makeRawStream(data, size, rate, flags);
+	return makePCMStream(data, size, rate, flags);
 }
 
 } // End of namespace Audio

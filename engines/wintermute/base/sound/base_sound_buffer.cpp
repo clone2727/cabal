@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -20,6 +20,8 @@
  *
  */
 
+// Based on the ScummVM (GPLv2+) file of the same name
+
 /*
  * This file is based on WME Lite.
  * http://dead-code.org/redir.php?target=wmelite
@@ -35,7 +37,7 @@
 #include "audio/mixer.h"
 #include "audio/decoders/vorbis.h"
 #include "audio/decoders/wave.h"
-#include "audio/decoders/raw.h"
+#include "audio/decoders/pcm.h"
 #include "common/system.h"
 #include "common/substream.h"
 
@@ -113,7 +115,7 @@ bool BaseSoundBuffer::loadFromFile(const Common::String &filename, bool forceRel
 			if (waveType == 1) {
 				// We need to wrap the file in a substream to make sure the size is right.
 				_file = new Common::SeekableSubReadStream(_file, _file->pos(), waveSize + _file->pos(), DisposeAfterUse::YES);
-				_stream = Audio::makeRawStream(_file, waveRate, waveFlags, DisposeAfterUse::YES);
+				_stream = Audio::makePCMStream(_file, waveRate, waveFlags, DisposeAfterUse::YES);
 			} else {
 				error("BSoundBuffer::LoadFromFile - WAVE not supported yet for %s with type %d", filename.c_str(), waveType);
 			}
