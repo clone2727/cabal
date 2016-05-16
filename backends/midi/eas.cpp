@@ -22,10 +22,6 @@
 
 // Based on the ScummVM (GPLv2+) file of the same name
 
-#include "common/scummsys.h"
-
-#if defined(__ANDROID__)
-
 #include <dlfcn.h>
 
 #include "common/debug.h"
@@ -34,6 +30,7 @@
 #include "common/error.h"
 #include "common/file.h"
 #include "common/config-manager.h"
+#include "common/scummsys.h"
 #include "common/system.h"
 #include "audio/audiostream.h"
 #include "audio/mpu401.h"
@@ -481,5 +478,3 @@ Common::Error EASMusicPlugin::createInstance(MidiDriver **mididriver, MidiDriver
 //#else
 	REGISTER_PLUGIN_STATIC(EAS, PLUGIN_TYPE_MUSIC, EASMusicPlugin);
 //#endif
-
-#endif

@@ -140,6 +140,16 @@ MODULE_OBJS += \
 	audiocd/linux/linux-audiocd.o
 endif
 
+ifdef USE_FLUIDSYNTH
+MODULE_OBJS += \
+	midi/fluidsynth.o
+endif
+
+ifeq ($(BACKEND),android)
+MODULE_OBJS += \
+	midi/eas.o
+endif
+
 ifeq ($(BACKEND),tizen)
 MODULE_OBJS += \
 	timer/tizen/timer.o

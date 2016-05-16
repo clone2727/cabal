@@ -23,9 +23,6 @@
 // Based on the ScummVM (GPLv2+) file of the same name
 
 #include "common/scummsys.h"
-
-#ifdef USE_FLUIDSYNTH
-
 #include "common/config-manager.h"
 #include "common/error.h"
 #include "common/system.h"
@@ -294,4 +291,3 @@ Common::Error FluidSynthMusicPlugin::createInstance(MidiDriver **mididriver, Mid
 	REGISTER_PLUGIN_STATIC(FLUIDSYNTH, PLUGIN_TYPE_MUSIC, FluidSynthMusicPlugin);
 //#endif
 
-#endif

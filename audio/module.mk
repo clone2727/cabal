@@ -44,9 +44,7 @@ MODULE_OBJS := \
 	mods/tfmx.o \
 	softsynth/appleiigs.o \
 	softsynth/cms.o \
-	softsynth/eas.o \
 	softsynth/emu_pcspk.o \
-	softsynth/fluidsynth.o \
 	softsynth/mt32.o \
 	softsynth/sid.o \
 	softsynth/wave6581.o \
