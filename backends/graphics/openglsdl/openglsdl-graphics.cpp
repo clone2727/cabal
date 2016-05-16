@@ -510,7 +510,7 @@ bool OpenGLSdlGraphicsManager::notifyEvent(const Common::Event &event) {
 				for (int n = 0;; n++) {
 					SDL_RWops *file;
 
-					filename = Common::String::format("scummvm%05d.bmp", n);
+					filename = Common::String::format("cabal%05d.bmp", n);
 					file = SDL_RWFromFile(filename.c_str(), "r");
 					if (!file)
 						break;

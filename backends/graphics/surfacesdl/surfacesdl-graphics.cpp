@@ -2256,7 +2256,7 @@ bool SurfaceSdlGraphicsManager::notifyEvent(const Common::Event &event) {
 			for (int n = 0;; n++) {
 				SDL_RWops *file;
 
-				sprintf(filename, "scummvm%05d.bmp", n);
+				sprintf(filename, "cabal%05d.bmp", n);
 				file = SDL_RWFromFile(filename, "r");
 				if (!file)
 					break;
