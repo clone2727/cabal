@@ -1371,13 +1371,10 @@ void BinkDecoder::BinkAudioTrack::decodePacket() {
 
 		audioBlock(out);
 
-		byte flags = Audio::FLAG_16BITS;
+		byte flags = Audio::FLAG_16BITS | Audio::FLAG_NATIVE_ENDIAN;
+
 		if (_audioInfo->outChannels == 2)
 			flags |= Audio::FLAG_STEREO;
-
-#ifdef SCUMM_LITTLE_ENDIAN
-		flags |= Audio::FLAG_LITTLE_ENDIAN;
-#endif
 
 		_audioStream->queueBuffer((byte *)out, _audioInfo->blockSize * 2, DisposeAfterUse::YES, flags);
 

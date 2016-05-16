@@ -105,14 +105,10 @@ AudioStream *AACDecoder::decodeFrame(Common::SeekableReadStream &stream) {
 		byte *buffer = (byte *)malloc(frameInfo.samples * 2);
 		memcpy(buffer, decodedSamples, frameInfo.samples * 2);
 
-		byte flags = FLAG_16BITS;
+		byte flags = FLAG_16BITS | FLAG_NATIVE_ENDIAN;
 
 		if (_channels == 2)
 			flags |= FLAG_STEREO;
-
-#ifdef SCUMM_LITTLE_ENDIAN
-		flags |= FLAG_LITTLE_ENDIAN;
-#endif
 
 		audioStream->queueBuffer(buffer, frameInfo.samples * 2, DisposeAfterUse::YES, flags);
 

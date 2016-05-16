@@ -406,14 +406,10 @@ void PSXStreamDecoder::PSXAudioTrack::queueAudioFromSector(Common::SeekableReadS
 		}
 	}
 
-	int flags = Audio::FLAG_16BITS;
+	int flags = Audio::FLAG_16BITS | Audio::FLAG_NATIVE_ENDIAN;
 
 	if (_audStream->isStereo())
 		flags |= Audio::FLAG_STEREO;
-
-#ifdef SCUMM_LITTLE_ENDIAN
-	flags |= Audio::FLAG_LITTLE_ENDIAN;
-#endif
 
 	_audStream->queueBuffer((byte *)dst, AUDIO_DATA_SAMPLE_COUNT * 2, DisposeAfterUse::YES, flags);
 	delete[] buf;

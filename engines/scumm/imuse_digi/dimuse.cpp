@@ -84,11 +84,8 @@ static int32 makeMixerFlags(Track *track) {
 		mixerFlags |= Audio::FLAG_UNSIGNED;
 	if (flags & kFlag16Bits)
 		mixerFlags |= Audio::FLAG_16BITS;
-
-#ifdef SCUMM_LITTLE_ENDIAN
 	if (track->sndDataExtComp)
-		mixerFlags |= Audio::FLAG_LITTLE_ENDIAN;
-#endif
+		mixerFlags |= Audio::FLAG_NATIVE_ENDIAN;
 	if (flags & kFlagStereo)
 		mixerFlags |= Audio::FLAG_STEREO;
 	return mixerFlags;

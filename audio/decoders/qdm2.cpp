@@ -2588,14 +2588,10 @@ bool QDM2Stream::qdm2_decodeFrame(Common::SeekableReadStream &in, QueuingAudioSt
 	}
 
 	// Queue the translated buffer to our stream
-	byte flags = FLAG_16BITS;
+	byte flags = FLAG_16BITS | FLAG_NATIVE_ENDIAN;
 
 	if (_channels == 2)
 		flags |= FLAG_STEREO;
-
-#ifdef SCUMM_LITTLE_ENDIAN
-	flags |= FLAG_LITTLE_ENDIAN;
-#endif
 
 	audioStream->queueBuffer((byte *)outputBuffer, frame_size * 2, DisposeAfterUse::YES, flags);
 

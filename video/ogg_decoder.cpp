@@ -410,14 +410,10 @@ bool OggDecoder::VorbisAudioTrack::decodeSamples() {
 		_audioBufferFill += (i * channels) << 1;
 
 		if (_audioBufferFill == AUDIOFD_FRAGSIZE) {
-			byte flags = Audio::FLAG_16BITS;
+			byte flags = Audio::FLAG_16BITS | Audio::FLAG_NATIVE_ENDIAN;
 
 			if (_audStream->isStereo())
 				flags |= Audio::FLAG_STEREO;
-
-#ifdef SCUMM_LITTLE_ENDIAN
-			flags |= Audio::FLAG_LITTLE_ENDIAN;
-#endif
 
 			_audStream->queueBuffer((byte *)_audioBuffer, AUDIOFD_FRAGSIZE, DisposeAfterUse::YES, flags);
 

@@ -517,10 +517,7 @@ bool ROQPlayer::processBlockSoundMono(ROQBlockHeader &blockHeader) {
 	}
 
 	// Queue the read buffer
-	byte flags = Audio::FLAG_16BITS;
-#ifdef SCUMM_LITTLE_ENDIAN
-	flags |= Audio::FLAG_LITTLE_ENDIAN;
-#endif
+	byte flags = Audio::FLAG_16BITS | Audio::FLAG_NATIVE_ENDIAN;
 	if (!playFirstFrame())
 		_audioStream->queueBuffer((byte *)buffer, blockHeader.size * 2, DisposeAfterUse::YES, flags);
 	else
@@ -576,10 +573,7 @@ bool ROQPlayer::processBlockSoundStereo(ROQBlockHeader &blockHeader) {
 	}
 
 	// Queue the read buffer
-	byte flags = Audio::FLAG_16BITS | Audio::FLAG_STEREO;
-#ifdef SCUMM_LITTLE_ENDIAN
-	flags |= Audio::FLAG_LITTLE_ENDIAN;
-#endif
+	byte flags = Audio::FLAG_16BITS | Audio::FLAG_STEREO | Audio::FLAG_NATIVE_ENDIAN;
 	if (!playFirstFrame())
 		_audioStream->queueBuffer((byte *)buffer, blockHeader.size * 2, DisposeAfterUse::YES, flags);
 	else

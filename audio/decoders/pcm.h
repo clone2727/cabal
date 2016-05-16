@@ -60,7 +60,14 @@ enum PCMFlags {
 	FLAG_LITTLE_ENDIAN = 1 << 2,
 
 	/** sound is in stereo (default: mono) */
-	FLAG_STEREO = 1 << 3
+	FLAG_STEREO = 1 << 3,
+
+	/** samples are in native endianness */
+#ifdef SCUMM_LITTLE_ENDIAN
+	FLAG_NATIVE_ENDIAN = FLAG_LITTLE_ENDIAN
+#else
+	FLAG_NATIVE_ENDIAN = 0
+#endif
 };
 
 /**

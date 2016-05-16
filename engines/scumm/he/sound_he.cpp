@@ -662,11 +662,9 @@ void SoundHE::playHESound(int soundID, int heOffset, int heChannel, int heFlags)
 			if (_heChannel[heChannel].timer)
 				_heChannel[heChannel].timer = size * 1000 / rate;
 
-			// makeADPCMStream returns a stream in native endianness, but PCMMemoryStream
-			// defaults to big endian. If we're on a little endian system, set the LE flag.
-#ifdef SCUMM_LITTLE_ENDIAN
-			flags |= Audio::FLAG_LITTLE_ENDIAN;
-#endif
+			// makeADPCMStream returns a stream in native endianness
+			flags |= Audio::FLAG_NATIVE_ENDIAN;
+
 			stream = Audio::makePCMStream(sound + heOffset, size - heOffset, rate, flags);
 		} else {
 			stream = Audio::makePCMStream(ptr + memStream.pos() + heOffset, size - heOffset, rate, flags, DisposeAfterUse::NO);
