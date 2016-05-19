@@ -100,7 +100,7 @@ bool AC3Stream::init(Common::SeekableReadStream &firstPacket) {
 		return false;
 	}
 
-	_audStream.reset(makeQueuingAudioStream(_sampleRate, true));
+	_audStream.reset(makeQueuingAudioStream(_sampleRate, 2));
 	_inBufPtr = _inBuf;
 	_flags = 0;
 	_frameSize = 0;
