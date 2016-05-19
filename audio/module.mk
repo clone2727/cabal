@@ -58,6 +58,11 @@ MODULE_OBJS := \
 	softsynth/fmtowns_pc98/towns_pc98_fmsynth.o \
 	softsynth/fmtowns_pc98/towns_pc98_plugins.o
 
+ifdef USE_A52
+MODULE_OBJS += \
+	decoders/ac3.o
+endif
+
 ifdef USE_ALSA
 MODULE_OBJS += \
 	alsa_opl.o
