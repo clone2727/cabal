@@ -40,21 +40,35 @@
 
 namespace Audio {
 
-class AACDecoder : public Codec {
+class AACDecoder : public Codec, public PacketizedAudioStream {
 public:
-	AACDecoder(Common::SeekableReadStream *extraData,
-	          DisposeAfterUse::Flag disposeExtraData);
+	AACDecoder(Common::SeekableReadStream &extraData);
 	~AACDecoder();
 
+	// AudioStream API
+	uint getChannels() const { return _channels; }
+	int getRate() const { return _rate; }
+	bool endOfData() const { return _audStream->endOfData(); }
+	bool endOfStream() const { return _audStream->endOfStream(); }
+	int readBuffer(int16 *buffer, const int numSamples) { return _audStream->readBuffer(buffer, numSamples); }
+
+	// PacketizedAudioStream API
+	void finish() { _audStream->finish(); }
+	void queuePacket(Common::SeekableReadStream *data);
+
+	// Codec API
 	AudioStream *decodeFrame(Common::SeekableReadStream &stream);
 
 private:
 	NeAACDecHandle _handle;
 	byte _channels;
 	unsigned long _rate;
+
+	// Backing stream for the PacketizedAudioStream
+	Common::ScopedPtr<QueuingAudioStream> _audStream;
 };
 
-AACDecoder::AACDecoder(Common::SeekableReadStream *extraData, DisposeAfterUse::Flag disposeExtraData) {
+AACDecoder::AACDecoder(Common::SeekableReadStream &extraData) {
 	// Open the library
 	_handle = NeAACDecOpen();
 
@@ -65,20 +79,17 @@ AACDecoder::AACDecoder(Common::SeekableReadStream *extraData, DisposeAfterUse::F
 	NeAACDecSetConfiguration(_handle, conf);
 
 	// Copy the extra data to a buffer
-	extraData->seek(0);
-	byte *extraDataBuf = new byte[extraData->size()];
-	extraData->read(extraDataBuf, extraData->size());
+	extraData.seek(0);
+	Common::ScopedArray<byte> extraDataBuf(new byte[extraData.size()]);
+	extraData.read(extraDataBuf.get(), extraData.size());
 
 	// Initialize with our extra data
 	// NOTE: This code assumes the extra data is coming from an MPEG-4 file!
-	int err = NeAACDecInit2(_handle, extraDataBuf, extraData->size(), &_rate, &_channels);
-	delete[] extraDataBuf;
-
+	int err = NeAACDecInit2(_handle, extraDataBuf.get(), extraData.size(), &_rate, &_channels);
 	if (err < 0)
 		error("Could not initialize AAC decoder: %s", NeAACDecGetErrorMessage(err));
 
-	if (disposeExtraData == DisposeAfterUse::YES)
-		delete extraData;
+	_audStream.reset(makeQueuingAudioStream(_rate, _channels));
 }
 
 AACDecoder::~AACDecoder() {
@@ -89,15 +100,15 @@ AudioStream *AACDecoder::decodeFrame(Common::SeekableReadStream &stream) {
 	// read everything into a buffer
 	uint32 inBufferPos = 0;
 	uint32 inBufferSize = stream.size();
-	byte *inBuffer = new byte[inBufferSize];
-	stream.read(inBuffer, inBufferSize);
+	Common::ScopedArray<byte> inBuffer(new byte[inBufferSize]);
+	stream.read(inBuffer.get(), inBufferSize);
 
 	QueuingAudioStream *audioStream = makeQueuingAudioStream(_rate, _channels);
 
 	// Decode until we have enough samples (or there's no more left)
 	while (inBufferPos < inBufferSize) {
 		NeAACDecFrameInfo frameInfo;
-		void *decodedSamples = NeAACDecDecode(_handle, &frameInfo, inBuffer + inBufferPos, inBufferSize - inBufferPos);
+		void *decodedSamples = NeAACDecDecode(_handle, &frameInfo, inBuffer.get() + inBufferPos, inBufferSize - inBufferPos);
 
 		if (frameInfo.error != 0)
 			error("Failed to decode AAC frame: %s", NeAACDecGetErrorMessage(frameInfo.error));
@@ -119,9 +130,17 @@ AudioStream *AACDecoder::decodeFrame(Common::SeekableReadStream &stream) {
 	return audioStream;
 }
 
-// Factory function
-Codec *makeAACDecoder(Common::SeekableReadStream *extraData, DisposeAfterUse::Flag disposeExtraData) {
-	return new AACDecoder(extraData, disposeExtraData);
+void AACDecoder::queuePacket(Common::SeekableReadStream *data) {
+	_audStream->queueAudioStream(decodeFrame(*data));
+	delete data;
+}
+
+Codec *makeAACDecoder(Common::SeekableReadStream &extraData) {
+	return new AACDecoder(extraData);
+}
+
+PacketizedAudioStream *makeAACStream(Common::SeekableReadStream &extraData) {
+	return new AACDecoder(extraData);
 }
 
 } // End of namespace Audio

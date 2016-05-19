@@ -668,7 +668,7 @@ void QuickTimeAudioDecoder::AudioSampleDesc::initCodec() {
 	case MKTAG('m', 'p', '4', 'a'):
 #ifdef USE_FAAD
 		if (_objectTypeMP4 == 0x40)
-			_codec = makeAACDecoder(_extraData);
+			_codec = makeAACDecoder(*_extraData);
 #endif
 		break;
 	default:

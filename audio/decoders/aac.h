@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -20,6 +20,8 @@
  *
  */
 
+// Based on the ScummVM (GPLv2+) file of the same name
+
 /**
  * @file
  * Sound decoder used in engines:
@@ -30,17 +32,17 @@
 #define AUDIO_AAC_H
 
 #include "common/scummsys.h"
-#include "common/types.h"
 
 #ifdef USE_FAAD
 
 namespace Common {
-	class SeekableReadStream;
+class SeekableReadStream;
 }
 
 namespace Audio {
 
 class Codec;
+class PacketizedAudioStream;
 
 /**
  * Create a new Codec for decoding AAC data of an MPEG-4 file in the given stream.
@@ -49,12 +51,17 @@ class Codec;
  *       on the MPEG-4 extra data. If you want to decode a file using AAC, go use
  *       makeQuickTimeStream() instead!
  * @param extraData         the SeekableReadStream from which to read the AAC extra data
- * @param disposeExtraData  whether to delete the extra data stream after use
  * @return  a new Codec, or NULL, if an error occurred
  */
-Codec *makeAACDecoder(
-	Common::SeekableReadStream *extraData,
-	DisposeAfterUse::Flag disposeExtraData = DisposeAfterUse::NO);
+Codec *makeAACDecoder(Common::SeekableReadStream &extraData);
+
+/**
+ * Create a PacketizedAudioStream that decodes AAC sound
+ *
+ * @param extraData  The stream containing the extra data needed for initialization
+ * @return             A new PacketizedAudioStream, or NULL on error
+ */
+PacketizedAudioStream *makeAACStream(Common::SeekableReadStream &extraData);
 
 } // End of namespace Audio
 
