@@ -105,11 +105,11 @@ void SdlMixerManager::init() {
 
 	debug(1, "Output sample rate: %d Hz", _obtained.freq);
 	if (_obtained.freq != desired.freq)
-		warning("SDL mixer output sample rate: %d differs from desired: %d", _obtained.freq, desired.freq);
+		debug(1, "SDL mixer output sample rate: %d differs from desired: %d", _obtained.freq, desired.freq);
 
 	debug(1, "Output buffer size: %d samples", _obtained.samples);
 	if (_obtained.samples != desired.samples)
-		warning("SDL mixer output buffer size: %d differs from desired: %d", _obtained.samples, desired.samples);
+		debug(1, "SDL mixer output buffer size: %d differs from desired: %d", _obtained.samples, desired.samples);
 
 #ifndef __SYMBIAN32__
 	// The SymbianSdlMixerManager does stereo->mono downmixing,
