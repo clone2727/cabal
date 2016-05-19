@@ -23,6 +23,7 @@
 // Based on the ScummVM (GPLv2+) file of the same name
 
 #include "audio/audiostream.h"
+#include "audio/decoders/ac3.h"
 #include "audio/decoders/mp3.h"
 #include "common/debug.h"
 #include "common/endian.h"
@@ -111,13 +112,22 @@ void MPEGPSDecoder::readNextPacket() {
 				packet->seek(0);
 
 				// TODO: Handling of these types (as needed)
-
+				bool handled = false;
 				const char *typeName;
 
 				switch (streamType) {
-				case kPrivateStreamAC3:
+				case kPrivateStreamAC3: {
 					typeName = "AC-3";
+
+#ifdef USE_A52
+					handled = true;
+					AC3AudioTrack *ac3Track = new AC3AudioTrack(*packet);
+					stream = ac3Track;
+					_streamMap[startCode] = ac3Track;
+					addTrack(ac3Track);
+#endif
 					break;
+				}
 				case kPrivateStreamDTS:
 					typeName = "DTS";
 					break;
@@ -132,10 +142,12 @@ void MPEGPSDecoder::readNextPacket() {
 					break;
 				}
 
-				warning("Unhandled DVD private stream: %s", typeName);
+				if (!handled) {
+					warning("Unhandled DVD private stream: %s", typeName);
 
-				// Make it 0 so we don't get the warning twice
-				_streamMap[startCode] = 0;
+					// Make it 0 so we don't get the warning twice
+					_streamMap[startCode] = 0;
+				}
 			} else if (startCode >= 0x1E0 && startCode <= 0x1EF) {
 				// Video stream
 				// TODO: Multiple video streams
@@ -528,6 +540,34 @@ bool MPEGPSDecoder::MPEGAudioTrack::sendPacket(Common::SeekableReadStream *packe
 }
 
 Audio::AudioStream *MPEGPSDecoder::MPEGAudioTrack::getAudioStream() const {
+	return _audStream;
+}
+
+#endif
+
+#ifdef USE_A52
+
+MPEGPSDecoder::AC3AudioTrack::AC3AudioTrack(Common::SeekableReadStream &firstPacket) {
+	_audStream = Audio::makeAC3Stream(firstPacket);
+	if (!_audStream)
+		error("Could not create AC-3 stream");
+}
+
+MPEGPSDecoder::AC3AudioTrack::~AC3AudioTrack() {
+	delete _audStream;
+}
+
+bool MPEGPSDecoder::AC3AudioTrack::sendPacket(Common::SeekableReadStream *packet, uint32 pts, uint32 dts) {
+	// Skip DVD code
+	packet->readUint32LE();
+	if (packet->eos())
+		return true;
+
+	_audStream->queuePacket(packet);
+	return true;
+}
+
+Audio::AudioStream *MPEGPSDecoder::AC3AudioTrack::getAudioStream() const {
 	return _audStream;
 }
 
