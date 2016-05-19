@@ -34,16 +34,23 @@ class SeekableReadStream;
 namespace Audio {
 
 class Codec;
+class PacketizedAudioStream;
 
 /**
  * Create a new Codec from the QDM2 data in the given stream.
  *
  * @param extraData           the QuickTime extra data stream
- * @param disposeExtraData    the QuickTime extra data stream
  * @return   a new Codec, or NULL, if an error occurred
  */
-Codec *makeQDM2Decoder(Common::SeekableReadStream *extraData,
-                       DisposeAfterUse::Flag disposeExtraData = DisposeAfterUse::NO);
+Codec *makeQDM2Decoder(Common::SeekableReadStream &extraData);
+
+/**
+ * Create a PacketizedAudioStream that decodes QDM2 sound
+ *
+ * @param extraData  The stream containing the extra data needed for initialization
+ * @return             A new PacketizedAudioStream, or NULL on error
+ */
+PacketizedAudioStream *makeQDM2Stream(Common::SeekableReadStream &extraData);
 
 } // End of namespace Audio
 

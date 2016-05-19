@@ -659,7 +659,7 @@ void QuickTimeAudioDecoder::AudioSampleDesc::initCodec() {
 
 	switch (_codecTag) {
 	case MKTAG('Q', 'D', 'M', '2'):
-		_codec = makeQDM2Decoder(_extraData);
+		_codec = makeQDM2Decoder(*_extraData);
 		break;
 	case MKTAG('m', 'p', '4', 'a'):
 #ifdef USE_FAAD

@@ -100,14 +100,29 @@ struct QDM2FFT {
 } PACKED_STRUCT;
 #include "common/pack-end.h"
 
-class QDM2Stream : public Codec {
+class QDM2Stream : public Codec, public PacketizedAudioStream {
 public:
-	QDM2Stream(Common::SeekableReadStream *extraData, DisposeAfterUse::Flag disposeExtraData);
+	QDM2Stream(Common::SeekableReadStream &extraData);
 	~QDM2Stream();
 
+	// AudioStream API
+	uint getChannels() const { return _channels; }
+	int getRate() const { return _sampleRate; }
+	bool endOfData() const { return _audStream->endOfData(); }
+	bool endOfStream() const { return _audStream->endOfStream(); }
+	int readBuffer(int16 *buffer, const int numSamples) { return _audStream->readBuffer(buffer, numSamples); }
+
+	// PacketizedAudioStream API
+	void finish() { _audStream->finish(); }
+	void queuePacket(Common::SeekableReadStream *data);
+
+	// Codec API
 	AudioStream *decodeFrame(Common::SeekableReadStream &stream);
 
 private:
+	// Backing stream for the PacketizedAudioStream
+	Common::ScopedPtr<QueuingAudioStream> _audStream;
+
 	// Parameters from codec header, do not change during playback
 	uint8 _channels;
 	uint16 _sampleRate;
@@ -1070,7 +1085,7 @@ void QDM2Stream::initVlc(void) {
 	}
 }
 
-QDM2Stream::QDM2Stream(Common::SeekableReadStream *extraData, DisposeAfterUse::Flag disposeExtraData) {
+QDM2Stream::QDM2Stream(Common::SeekableReadStream &extraData) {
 	uint32 tmp;
 	int tmp_val;
 	int i;
@@ -1116,38 +1131,38 @@ QDM2Stream::QDM2Stream(Common::SeekableReadStream *extraData, DisposeAfterUse::F
 	// atoms needed to correctly set up the decoder.
 
 	// Rewind extraData stream from any previous calls
-	extraData->seek(0, SEEK_SET);
+	extraData.seek(0);
 
 	// First, the frma atom
-	uint32 frmaSize = extraData->readUint32BE();
+	uint32 frmaSize = extraData.readUint32BE();
 	if (frmaSize != 12)
 		error("Invalid QDM2 frma atom");
 
-	if (extraData->readUint32BE() != MKTAG('f', 'r', 'm', 'a'))
+	if (extraData.readUint32BE() != MKTAG('f', 'r', 'm', 'a'))
 		error("Failed to find frma atom for QDM2");
 
-	uint32 version = extraData->readUint32BE();
+	uint32 version = extraData.readUint32BE();
 	if (version == MKTAG('Q', 'D', 'M', 'C'))
 		error("Unhandled QDMC sound");
 	else if (version != MKTAG('Q', 'D', 'M', '2'))
 		error("Failed to find QDM2 tag in frma atom");
 
 	// Second, the QDCA atom
-	uint32 qdcaSize = extraData->readUint32BE();
-	if (qdcaSize > (uint32)(extraData->size() - extraData->pos()))
+	uint32 qdcaSize = extraData.readUint32BE();
+	if (qdcaSize > (uint32)(extraData.size() - extraData.pos()))
 		error("Invalid QDM2 QDCA atom");
 
-	if (extraData->readUint32BE() != MKTAG('Q', 'D', 'C', 'A'))
+	if (extraData.readUint32BE() != MKTAG('Q', 'D', 'C', 'A'))
 		error("Failed to find QDCA atom for QDM2");
 
-	extraData->readUint32BE(); // unknown
+	extraData.readUint32BE(); // unknown
 
-	_channels = extraData->readUint32BE();
-	_sampleRate = extraData->readUint32BE();
-	_bitRate = extraData->readUint32BE();
-	_blockSize = extraData->readUint32BE();
-	_frameSize = extraData->readUint32BE();
-	_packetSize = extraData->readUint32BE();
+	_channels = extraData.readUint32BE();
+	_sampleRate = extraData.readUint32BE();
+	_bitRate = extraData.readUint32BE();
+	_blockSize = extraData.readUint32BE();
+	_frameSize = extraData.readUint32BE();
+	_packetSize = extraData.readUint32BE();
 
 	// Third, we don't care about the QDCP atom
 
@@ -1162,27 +1177,27 @@ QDM2Stream::QDM2Stream(Common::SeekableReadStream *extraData, DisposeAfterUse::F
 	_frequencyRange = 255 / (1 << (2 - _subSampling));
 
 	switch (_subSampling * 2 + _channels - 1) {
-		case 0:
-			tmp = 40;
-			break;
-		case 1:
-			tmp = 48;
-			break;
-		case 2:
-			tmp = 56;
-			break;
-		case 3:
-			tmp = 72;
-			break;
-		case 4:
-			tmp = 80;
-			break;
-		case 5:
-			tmp = 100;
-			break;
-		default:
-			tmp = _subSampling;
-			break;
+	case 0:
+		tmp = 40;
+		break;
+	case 1:
+		tmp = 48;
+		break;
+	case 2:
+		tmp = 56;
+		break;
+	case 3:
+		tmp = 72;
+		break;
+	case 4:
+		tmp = 80;
+		break;
+	case 5:
+		tmp = 100;
+		break;
+	default:
+		tmp = _subSampling;
+		break;
 	}
 
 	tmp_val = 0;
@@ -1217,8 +1232,7 @@ QDM2Stream::QDM2Stream(Common::SeekableReadStream *extraData, DisposeAfterUse::F
 
 	_compressedData = new uint8[_packetSize];
 
-	if (disposeExtraData == DisposeAfterUse::YES)
-		delete extraData;
+	_audStream.reset(makeQueuingAudioStream(_sampleRate, _channels));
 }
 
 QDM2Stream::~QDM2Stream() {
@@ -2606,8 +2620,17 @@ AudioStream *QDM2Stream::decodeFrame(Common::SeekableReadStream &stream) {
 	return audioStream;
 }
 
-Codec *makeQDM2Decoder(Common::SeekableReadStream *extraData, DisposeAfterUse::Flag disposeExtraData) {
-	return new QDM2Stream(extraData, disposeExtraData);
+void QDM2Stream::queuePacket(Common::SeekableReadStream *data) {
+	_audStream->queueAudioStream(decodeFrame(*data));
+	delete data;
+}
+
+Codec *makeQDM2Decoder(Common::SeekableReadStream &extraData) {
+	return new QDM2Stream(extraData);
+}
+
+PacketizedAudioStream *makeQDM2Stream(Common::SeekableReadStream &extraData) {
+	return new QDM2Stream(extraData);
 }
 
 } // End of namespace Audio
