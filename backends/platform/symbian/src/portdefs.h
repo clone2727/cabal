@@ -44,21 +44,21 @@
 
 
 // Enable Symbians own datatypes
-// This is done for two reasons
-// a) uint is already defined by Symbians libc component
-// b) Symbian is using its "own" datatyping, and the Scummvm port
-//    should follow this to ensure the best compability possible.
-typedef unsigned char byte;
-typedef unsigned char uint8;
-typedef signed char int8;
-typedef unsigned short int uint16;
-typedef signed short int int16;
-typedef unsigned long int uint32;
-typedef signed long int int32;
+// Symbian is using its "own" datatyping, and the Cabal port
+// should follow this to ensure the highest compatibility.
+typedef unsigned char uint8_t;
+typedef signed char int8_t;
+typedef unsigned short int uint16_t;
+typedef signed short int int16_t;
+typedef unsigned long int uint32_t;
+typedef signed long int int32_t;
 
-// Define SCUMMVM_DONT_DEFINE_TYPES to prevent scummsys.h from trying to
+// Define CABAL_DONT_DEFINE_STDTYPES to prevent scummsys.h from trying to
 // re-define those data types.
-#define SCUMMVM_DONT_DEFINE_TYPES
+#define CABAL_DONT_DEFINE_STDTYPES
+
+// Define CABAL_DONT_DEFINE_UINT, as uint is already defined by Symbian
+#define CABAL_DONT_DEFINE_UINT
 
 // Hide the macro "remove" defined in unistd.h from anywere except where
 // we explicitly require it. This lets us use the name "remove" in engines.

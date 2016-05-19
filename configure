@@ -193,6 +193,8 @@ _posix=no
 _endian=unknown
 _need_memalign=yes
 _have_x86=no
+_have_stdint_h=no
+_have_int64=no
 
 # Add (virtual) features
 add_feature faad "libfaad" "_faad"
@@ -1918,6 +1920,18 @@ case $_endian in
 esac
 
 #
+# Check for stdint.h
+#
+echocheck "stdint.h"
+cat > $TMPC << EOF
+#include <stdint.h>
+int main() { return uint32_t(0); }
+EOF
+cc_check && _have_stdint_h=yes
+define_in_config_if_yes "$_have_stdint_h" 'CABAL_HAVE_STDINT_H'
+echo "$_have_stdint_h"
+
+#
 # Determine a data type with the given length
 #
 find_type_with_size() {
@@ -1974,36 +1988,50 @@ else
 fi
 
 #
-# Determine data type sizes
+# Determine data type sizes, if we don't have stdint.h
 #
-echo_n "Type with 1 byte... "
-type_1_byte=`find_type_with_size 1`
-TMPR="$?"
-echo "$type_1_byte"
-test $TMPR -eq 0 || exit 1	# check exit code of subshell
+if test "$_have_stdint_h" = yes; then
+	echocheck "uint64_t/int64_t"
+	cat > $TMPC << EOF
+#include <stdint.h>
+int main() { uint64_t x = 5; int64_t y = 6; return int(x + y); }
+EOF
+	cc_check && _have_int64=yes
+	define_in_config_if_yes "$_have_int64" 'HAVE_INT64'
+	echo "$_have_int64"
+else
+	echo_n "Type with 1 byte... "
+	type_1_byte=`find_type_with_size 1`
+	TMPR="$?"
+	echo "$type_1_byte"
+	test $TMPR -eq 0 || exit 1	# check exit code of subshell
 
-echo_n "Type with 2 bytes... "
-type_2_byte=`find_type_with_size 2`
-TMPR="$?"
-echo "$type_2_byte"
-test $TMPR -eq 0 || exit 1	# check exit code of subshell
+	echo_n "Type with 2 bytes... "
+	type_2_byte=`find_type_with_size 2`
+	TMPR="$?"
+	echo "$type_2_byte"
+	test $TMPR -eq 0 || exit 1	# check exit code of subshell
 
-echo_n "Type with 4 bytes... "
-type_4_byte=`find_type_with_size 4`
-TMPR="$?"
-echo "$type_4_byte"
-test $TMPR -eq 0 || exit 1	# check exit code of subshell
+	echo_n "Type with 4 bytes... "
+	type_4_byte=`find_type_with_size 4`
+	TMPR="$?"
+	echo "$type_4_byte"
+	test $TMPR -eq 0 || exit 1	# check exit code of subshell
 
-echo_n "Type with 8 bytes... "
-type_8_byte=`find_type_with_size 8`
-TMPR="$?"
-echo "$type_8_byte"
-if test $TMPR -eq 0; then
-	_def_64bit_type_signed="typedef signed $type_8_byte int64;"
-	_def_64bit_type_unsigned="typedef unsigned $type_8_byte uint64;"
+	echo_n "Type with 8 bytes... "
+	type_8_byte=`find_type_with_size 8`
+	TMPR="$?"
+	echo "$type_8_byte"
+	if test $TMPR -eq 0; then
+		_def_64bit_type_signed="typedef signed $type_8_byte int64_t;"
+		_def_64bit_type_unsigned="typedef unsigned $type_8_byte uint64_t;"
+		add_line_to_config_h '#define HAVE_INT64'
+	else
+		add_line_to_config_h '#undef HAVE_INT64'
+	fi
+	# force cleanup after check for 8 bytes type
+	cc_check_clean tmp_find_type_with_size.cpp
 fi
-# force cleanup after check for 8 bytes type
-cc_check_clean tmp_find_type_with_size.cpp
 
 #
 # Check whether memory alignment is required
@@ -3739,7 +3767,13 @@ echo "$_zlib"
 echocheck "libmpeg2 >= 0.4.0"
 if test "$_mpeg2" = auto ; then
 	_mpeg2=no
-	cat > $TMPC << EOF
+
+	if test "$_have_stdint_h" = yes; then
+		cat > $TMPC << EOF
+#include <stdint.h>
+EOF
+	else
+		cat > $TMPC << EOF
 typedef signed $type_1_byte int8_t;
 typedef signed $type_2_byte int16_t;
 typedef signed $type_4_byte int32_t;
@@ -3747,6 +3781,10 @@ typedef signed $type_4_byte int32_t;
 typedef unsigned $type_1_byte uint8_t;
 typedef unsigned $type_2_byte uint16_t;
 typedef unsigned $type_4_byte uint32_t;
+EOF
+	fi
+
+	cat >> $TMPC << EOF
 
 extern "C" {
 #include <mpeg2dec/mpeg2.h>
@@ -4548,38 +4586,32 @@ cat > config.h << EOF
 #define CONFIG_H
 
 $_config_h_data
-
-/* Data types */
-typedef unsigned $type_1_byte byte;
-typedef unsigned int uint;
-typedef unsigned $type_1_byte uint8;
-typedef unsigned $type_2_byte uint16;
-typedef unsigned $type_4_byte uint32;
-typedef signed $type_1_byte int8;
-typedef signed $type_2_byte int16;
-typedef signed $type_4_byte int32;
 EOF
+
+if test "$_have_stdint_h" = no; then
+	cat >> config.h << EOF
+// Data types
+typedef unsigned $type_1_byte uint8_t;
+typedef unsigned $type_2_byte uint16_t;
+typedef unsigned $type_4_byte uint32_t;
+typedef signed $type_1_byte int8_t;
+typedef signed $type_2_byte int16_t;
+typedef signed $type_4_byte int32_t;
+EOF
+fi
 
 if test -n "$_def_64bit_type_unsigned"  ; then
 cat >> config.h << EOF
 
-/* 64-bit stuff */
+// 64-bit stuff
+$_def_64bit_type_unsigned
 $_def_64bit_type_signed
-#if defined(__APPLE__) && !defined(__ppc__)
-#ifndef _UINT64
-#define _UINT64
-$_def_64bit_type_unsigned
-#endif
-#else
-$_def_64bit_type_unsigned
-#endif
-#define HAVE_INT64
 EOF
 fi
 
 cat >> config.h << EOF
 
-#endif /* CONFIG_H */
+#endif // CONFIG_H
 EOF
 
 echo "Creating config.mk"

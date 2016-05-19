@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -20,35 +20,17 @@
  *
  */
 
-#ifdef USE_MPEG2
+// Based on the ScummVM (GPLv2+) file of the same name
 
 #ifndef IMAGE_CODECS_MPEG_H
 #define IMAGE_CODECS_MPEG_H
 
+#include "common/scummsys.h"
+
+#ifdef USE_MPEG2
+
 #include "image/codecs/codec.h"
 #include "graphics/pixelformat.h"
-
-#if defined(__PLAYSTATION2__)
-	typedef uint8 uint8_t;
-	typedef uint16 uint16_t;
-	typedef uint32 uint32_t;
-#elif defined(_WIN32_WCE)
-	typedef signed char int8_t;
-	typedef signed short int16_t;
-	typedef unsigned char uint8_t;
-	typedef unsigned short uint16_t;
-#elif defined(_MSC_VER) || defined (__SYMBIAN32__)
-	typedef signed char int8_t;
-	typedef signed short int16_t;
-	typedef unsigned char uint8_t;
-	typedef unsigned short uint16_t;
-	#if !defined(SDL_COMPILEDVERSION) || (SDL_COMPILEDVERSION < 1210)
-	typedef signed long int32_t;
-	typedef unsigned long uint32_t;
-	#endif
-#else
-#	include <inttypes.h>
-#endif
 
 extern "C" {
 	#include <mpeg2dec/mpeg2.h>

@@ -394,27 +394,61 @@
 #endif
 
 
-
-//
-// Typedef our system types unless they have already been defined by config.h,
-// or SCUMMVM_DONT_DEFINE_TYPES is set.
-//
-#if !defined(HAVE_CONFIG_H) && !defined(SCUMMVM_DONT_DEFINE_TYPES)
-	typedef unsigned char byte;
-	typedef unsigned char uint8;
-	typedef signed char int8;
-	typedef unsigned short uint16;
-	typedef signed short int16;
-	typedef unsigned int uint32;
-	typedef signed int int32;
-	typedef unsigned int uint;
+#if defined(CABAL_HAVE_STDINT_H)
+	// If CABAL_HAVE_STDINT_H is set, then just include those integers
+	#include <stdint.h>
+#elif !defined(HAVE_CONFIG_H) && !defined(CABAL_DONT_DEFINE_STDTYPES)
+	// Typedef our stdint types unless they have already been defined by config.h,
+	// or CABAL_DONT_DEFINE_STDTYPES is set.
+	typedef unsigned char uint8_t;
+	typedef signed char int8_t;
+	typedef unsigned short uint16_t;
+	typedef signed short int16_t;
+	typedef unsigned int uint32_t;
+	typedef signed int int32_t;
 	#ifdef __PLAYSTATION2__
-	typedef signed long int64;
-	typedef unsigned long uint64;
+		typedef signed long int64_t;
+		typedef unsigned long uint64_t;
 	#else
-	typedef signed long long int64;
-	typedef unsigned long long uint64;
+		typedef signed long long int64_t;
+		typedef unsigned long long uint64_t;
 	#endif
+
+	#define HAVE_INT64
+#endif
+
+#ifndef CABAL_DONT_DEFINE_COMPAT_TYPES
+	// Define all the types without the _t suffix for compatibility
+	typedef uint8_t uint8;
+	typedef int8_t int8;
+	typedef uint16_t uint16;
+	typedef int16_t int16;
+	typedef uint32_t uint32;
+	typedef int32_t int32;
+
+	#ifdef HAVE_INT64
+		// Hack for Mac OS X headers typedef'ing uint64
+		#if defined(__APPLE__) && !defined(__ppc__)
+			#ifndef _UINT64
+				#define _UINT64
+				typedef uint64_t uint64;
+			#endif
+		#else
+			typedef uint64_t uint64;
+		#endif
+
+		typedef int64_t int64;
+	#endif
+#endif
+
+// Don't define byte if a platform already has it defined
+#ifndef CABAL_DONT_DEFINE_BYTE
+typedef uint8_t byte;
+#endif
+
+// Don't define uint if a platform already has it defined
+#ifndef CABAL_DONT_DEFINE_UINT
+typedef unsigned int uint;
 #endif
 
 #endif

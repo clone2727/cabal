@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -20,6 +20,8 @@
  *
  */
 
+// Based on the ScummVM (GPLv2+) file of the same name
+
 #ifndef __N64_PORTDEFS__
 #define __N64_PORTDEFS__
 
@@ -37,16 +39,16 @@
 #define assert(x)  ((x) ? 0 : (print_error("ASSERT TRIGGERED:\n\n("#x")\n%s\nline: %d", __FILE__, __LINE__)))
 
 // Typedef basic data types in a way that is compatible with the N64 SDK.
-typedef unsigned char byte;
-typedef unsigned char uint8;
-typedef signed char int8;
-typedef unsigned short int uint16;
-typedef signed short int int16;
-typedef unsigned int uint32;
-typedef signed int int32;
+typedef unsigned char uint8_t;
+typedef signed char int8_t;
+typedef unsigned short int uint16_t;
+typedef signed short int int16_t;
+typedef unsigned int uint32_t;
+typedef signed int int32_t;
 
-// Define SCUMMVM_DONT_DEFINE_TYPES to prevent scummsys.h from trying to
+// Define CABAL_DONT_DEFINE_STDTYPES to prevent scummsys.h from trying to
 // re-define those data types.
-#define SCUMMVM_DONT_DEFINE_TYPES
+#define CABAL_DONT_DEFINE_STDTYPES
+#define CABAL_DONT_DEFINE_UINT
 
 #endif

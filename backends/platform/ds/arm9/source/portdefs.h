@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -20,15 +20,19 @@
  *
  */
 
+// Based on the ScummVM (GPLv2+) file of the same name
+
 #ifndef _PORTDEFS_H_
 #define _PORTDEFS_H_
 
 // Include ndstypes.h for uint16 etc. typedefs
 #include "nds/ndstypes.h"
 
-// Define SCUMMVM_DONT_DEFINE_TYPES to prevent scummsys.h from trying to
+// Define several macros to prevent scummsys.h from trying to
 // re-define those data types.
-#define SCUMMVM_DONT_DEFINE_TYPES
+#define CABAL_DONT_DEFINE_STDTYPES
+#define CABAL_DONT_DEFINE_COMPAT_TYPES
+#define CABAL_DONT_DEFINE_BYTE
 
 // Include required headers
 #include <stdio.h>
