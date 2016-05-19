@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -20,8 +20,7 @@
  *
  */
 
-// Only compile if Mohawk is enabled or if we're building dynamic modules
-#if defined(ENABLE_MOHAWK) || defined(DYNAMIC_MODULES)
+// Based on the ScummVM (GPLv2+) file of the same name
 
 #ifndef AUDIO_QDM2_H
 #define AUDIO_QDM2_H
@@ -48,5 +47,4 @@ Codec *makeQDM2Decoder(Common::SeekableReadStream *extraData,
 
 } // End of namespace Audio
 
-#endif // AUDIO_QDM2_H
-#endif // Mohawk/Plugins guard
+#endif

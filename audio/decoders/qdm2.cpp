@@ -23,10 +23,7 @@
 // Based on the ScummVM (GPLv2+) file of the same name, which is in turn
 // based off ffmpeg's QDM2 decoder.
 
-#include "common/scummsys.h"
 #include "audio/decoders/qdm2.h"
-
-#ifdef AUDIO_QDM2_H
 
 #include "audio/audiostream.h"
 #include "audio/decoders/codec.h"
@@ -40,6 +37,7 @@
 #include "common/stream.h"
 #include "common/memstream.h"
 #include "common/bitstream.h"
+#include "common/scummsys.h"
 #include "common/textconsole.h"
 
 namespace Audio {
@@ -2614,4 +2612,3 @@ Codec *makeQDM2Decoder(Common::SeekableReadStream *extraData, DisposeAfterUse::F
 
 } // End of namespace Audio
 
-#endif
