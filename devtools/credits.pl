@@ -493,22 +493,7 @@ begin_credits("Credits");
 
 	begin_section("Former ScummVM Team");
 		add_paragraph(
-			"For other people that have contributed to the project, see COPYRIGHT.");
-
-		add_paragraph(
-			"Of note, the Cabal team would like to thank Torbjorn Andersson, ".
-			"Ori Avtalion, Fabio Battaglia, James Brown, Bastien Bouclet, ".
-			"Sylvain Dupont, Oystein Eftevaag, Vincent Hamm, Sven Hesse, ".
-			"Max Horn, Travis Howell, Keith Kaisershot, Florian Kagerer, ".
-			"Pawel Kolodziejski, Vicent Marti, Alyssa Milburn, Gregory Montoir, ".
-			"Willem Jan Palenstijn, peres, Joost Peters, Jordi Vilalta Prat, ".
-			"Quietust, Johannes Schickel, Lars Skovlund, Einar Johan T. Somaaen, ".
-			"Ludvig Strigeus, Julien Templier, Tobia Tesan, David Turner, and ".
-			"Walter van Niftrik.");
-
-		add_paragraph(
-			"Without these people, ScummVM would have been much worse off and Cabal ".
-			"wouldn't exist today.");
+			"For people that have contributed to the ScummVM project, see COPYRIGHT.");
 	end_section();
 
 
@@ -516,6 +501,21 @@ begin_credits("Credits");
 	$max_name_width = 17;
 
 	begin_section("Special thanks to");
+		add_paragraph(
+			"Without all of these people, ScummVM would have been much worse off and Cabal ".
+			"wouldn't exist today.");
+
+		add_paragraph(
+			"The Cabal team would like to thank Torbjorn Andersson, ".
+			"Ori Avtalion, Fabio Battaglia, James Brown, Bastien Bouclet, ".
+			"Sylvain Dupont, Oystein Eftevaag, Vincent Hamm, Sven Hesse, ".
+			"Max Horn, Travis Howell, Keith Kaisershot, Florian Kagerer, ".
+			"Pawel Kolodziejski, Vicent Marti, Alyssa Milburn, Gregory Montoir, ".
+			"Willem Jan Palenstijn, peres, Joost Peters, Jordi Vilalta Prat, ".
+			"Quietust, Johannes Schickel, Lars Skovlund, Einar Johan T. Somaaen, ".
+			"Ludvig Strigeus, Julien Templier, Tobia Tesan, Scott Thomas, ".
+			"David Turner, and Walter van Niftrik.");
+
 		begin_persons();
 			add_person("Daniel Balsom", "DanielFox", "For the original Reinherit (SAGA) code");
 			add_person("Sander Buskens", "", "For his work on the initial reversing of Monkey2");

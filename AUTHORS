@@ -6,22 +6,22 @@ Cabal Team
 
 Former ScummVM Team
 *******************
-   For other people that have contributed to the project, see COPYRIGHT.
-
-   Of note, the Cabal team would like to thank Torbjorn Andersson, Ori
-   Avtalion, Fabio Battaglia, James Brown, Bastien Bouclet, Sylvain Dupont,
-   Oystein Eftevaag, Vincent Hamm, Sven Hesse, Max Horn, Travis Howell, Keith
-   Kaisershot, Florian Kagerer, Pawel Kolodziejski, Vicent Marti, Alyssa
-   Milburn, Gregory Montoir, Willem Jan Palenstijn, peres, Joost Peters,
-   Jordi Vilalta Prat, Quietust, Johannes Schickel, Lars Skovlund, Einar
-   Johan T. Somaaen, Ludvig Strigeus, Julien Templier, Tobia Tesan, David
-   Turner, and Walter van Niftrik.
-
-   Without these people, ScummVM would have been much worse off and Cabal
-   wouldn't exist today.
+   For people that have contributed to the ScummVM project, see COPYRIGHT.
 
 Special thanks to
 *****************
+   Without all of these people, ScummVM would have been much worse off and
+   Cabal wouldn't exist today.
+
+   The Cabal team would like to thank Torbjorn Andersson, Ori Avtalion, Fabio
+   Battaglia, James Brown, Bastien Bouclet, Sylvain Dupont, Oystein Eftevaag,
+   Vincent Hamm, Sven Hesse, Max Horn, Travis Howell, Keith Kaisershot,
+   Florian Kagerer, Pawel Kolodziejski, Vicent Marti, Alyssa Milburn, Gregory
+   Montoir, Willem Jan Palenstijn, peres, Joost Peters, Jordi Vilalta Prat,
+   Quietust, Johannes Schickel, Lars Skovlund, Einar Johan T. Somaaen, Ludvig
+   Strigeus, Julien Templier, Tobia Tesan, Scott Thomas, David Turner, and
+   Walter van Niftrik.
+
    Daniel Balsom     - For the original Reinherit (SAGA) code
    Sander Buskens    - For his work on the initial reversing of Monkey2
    Canadacow         - For the original MT-32 emulator
