@@ -220,7 +220,7 @@ private:
 		s = createSineStream<int8>(sampleRate, time, &sine, false, channels);
 
 		// Seek to 500ms
-		const Audio::Timestamp a(0, 1, 2);
+		const Common::Timestamp a(0, 1, 2);
 		offset = Audio::convertTimeToStreamPos(a, sampleRate, channels).totalNumberOfFrames();
 		readData = totalFrames - offset;
 
@@ -231,7 +231,7 @@ private:
 		TS_ASSERT_EQUALS(s->endOfData(), true);
 
 		// Seek to 3/4 of a second
-		const Audio::Timestamp b(0, 3, 4);
+		const Common::Timestamp b(0, 3, 4);
 		offset = Audio::convertTimeToStreamPos(b, sampleRate, channels).totalNumberOfFrames();
 		readData = totalFrames - offset;
 
@@ -246,7 +246,7 @@ private:
 		TS_ASSERT_EQUALS(s->endOfData(), false);
 
 		// Seek to the mid of the stream
-		const Audio::Timestamp c(time * 1000 / 2, 1000);
+		const Common::Timestamp c(time * 1000 / 2, 1000);
 		offset = Audio::convertTimeToStreamPos(c, sampleRate, channels).totalNumberOfFrames();
 		readData = totalFrames - offset;
 
@@ -257,7 +257,7 @@ private:
 		TS_ASSERT_EQUALS(s->endOfData(), true);
 
 		// Seek to the 1/4th of the last second of the stream
-		const Audio::Timestamp d(time - 1, 1, 4);
+		const Common::Timestamp d(time - 1, 1, 4);
 		offset = Audio::convertTimeToStreamPos(d, sampleRate, channels).totalNumberOfFrames();
 		readData = totalFrames - offset;
 
@@ -268,11 +268,11 @@ private:
 		TS_ASSERT_EQUALS(s->endOfData(), true);
 
 		// Try to seek after the end of the stream
-		TS_ASSERT_EQUALS(s->seek(Audio::Timestamp(time, 1, 100000)), false);
+		TS_ASSERT_EQUALS(s->seek(Common::Timestamp(time, 1, 100000)), false);
 		TS_ASSERT_EQUALS(s->endOfData(), true);
 
 		// Try to seek exactly at the end of the stream
-		TS_ASSERT_EQUALS(s->seek(Audio::Timestamp(time * 1000, 1000)), true);
+		TS_ASSERT_EQUALS(s->seek(Common::Timestamp(time * 1000, 1000)), true);
 		TS_ASSERT_EQUALS(s->endOfData(), true);
 
 		delete[] sine;

@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -20,6 +20,7 @@
  *
  */
 
+// Based on the ScummVM (GPLv2+) file of the same name
 
 #include "common/debug.h"
 #include "common/endian.h"
@@ -1118,8 +1119,8 @@ void Sound::playSound(uint16 sound, uint16 volume, uint8 channel) {
 		uint32 loopSta = dataSize - dataLoop;
 		uint32 loopEnd = dataSize;
 
-		output = Audio::makeLoopingAudioStream(stream, Audio::Timestamp(0, loopSta, sampleRate),
-		                                       Audio::Timestamp(0, loopEnd, sampleRate), 0);
+		output = Audio::makeLoopingAudioStream(stream, Common::Timestamp(0, loopSta, sampleRate),
+		                                       Common::Timestamp(0, loopEnd, sampleRate), 0);
 	} else {
 		output = stream;
 	}

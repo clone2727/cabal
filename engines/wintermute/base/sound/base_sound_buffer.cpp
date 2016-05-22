@@ -146,7 +146,7 @@ bool BaseSoundBuffer::play(bool looping, uint32 startSample) {
 		_handle = new Audio::SoundHandle;
 		if (_looping) {
 			if (_loopStart != 0) {
-				Audio::AudioStream *loopStream = new Audio::SubLoopingAudioStream(_stream, 0, Audio::Timestamp(_loopStart, _stream->getRate()), _stream->getLength(), DisposeAfterUse::NO);
+				Audio::AudioStream *loopStream = new Audio::SubLoopingAudioStream(_stream, 0, Common::Timestamp(_loopStart, _stream->getRate()), _stream->getLength(), DisposeAfterUse::NO);
 				g_system->getMixer()->playStream(_type, _handle, loopStream, -1, _volume, _pan, DisposeAfterUse::YES);
 			} else {
 				Audio::AudioStream *loopStream = new Audio::LoopingAudioStream(_stream, 0, DisposeAfterUse::NO);

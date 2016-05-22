@@ -1,6 +1,6 @@
 #include <cxxtest/TestSuite.h>
 
-#include "audio/timestamp.h"
+#include "common/timestamp.h"
 
 #include <limits.h>
 
@@ -8,9 +8,9 @@ class TimestampTestSuite : public CxxTest::TestSuite
 {
 	public:
 	void test_diff_add_frames() {
-		const Audio::Timestamp a(10000, 1000);
-		const Audio::Timestamp b(10001, 1000);
-		const Audio::Timestamp c(10002, 1000);
+		const Common::Timestamp a(10000, 1000);
+		const Common::Timestamp b(10001, 1000);
+		const Common::Timestamp c(10002, 1000);
 
 		TS_ASSERT_EQUALS(a.frameDiff(b), -1);
 		TS_ASSERT_EQUALS(b.frameDiff(a), 1);
@@ -26,9 +26,9 @@ class TimestampTestSuite : public CxxTest::TestSuite
 	}
 
 	void test_diff_add_msecs() {
-		Audio::Timestamp ts0(3, 22050);
-		Audio::Timestamp ts1(0, 22050);
-		Audio::Timestamp ts2(0, 22050);
+		Common::Timestamp ts0(3, 22050);
+		Common::Timestamp ts1(0, 22050);
+		Common::Timestamp ts2(0, 22050);
 
 		TS_ASSERT_EQUALS(ts0.msecs(), 3);
 		TS_ASSERT_EQUALS(ts0.totalNumberOfFrames(), 3 * 22050 / 1000);
@@ -58,8 +58,8 @@ class TimestampTestSuite : public CxxTest::TestSuite
 	}
 
 	void test_ticks() {
-		const Audio::Timestamp a(1234, 60);
-		const Audio::Timestamp b(5678, 60);
+		const Common::Timestamp a(1234, 60);
+		const Common::Timestamp b(5678, 60);
 
 		TS_ASSERT_EQUALS(a.msecs(), 1234);
 		TS_ASSERT_EQUALS(b.msecs(), 5678);
@@ -85,7 +85,7 @@ class TimestampTestSuite : public CxxTest::TestSuite
 	}
 
 	void test_more_add_diff() {
-		const Audio::Timestamp c(10002, 1000);
+		const Common::Timestamp c(10002, 1000);
 
 		for (int i = -10000; i < 10000; i++) {
 			int v = c.addFrames(i).frameDiff(c);
@@ -94,8 +94,8 @@ class TimestampTestSuite : public CxxTest::TestSuite
 	}
 
 	void test_negate() {
-		const Audio::Timestamp a = Audio::Timestamp(0, 60).addFrames(13);
-		const Audio::Timestamp b = -a;
+		const Common::Timestamp a = Common::Timestamp(0, 60).addFrames(13);
+		const Common::Timestamp b = -a;
 
 		TS_ASSERT_EQUALS(a.msecs() + 1, -b.msecs());
 		TS_ASSERT_EQUALS(a.totalNumberOfFrames(), -b.totalNumberOfFrames());
@@ -103,9 +103,9 @@ class TimestampTestSuite : public CxxTest::TestSuite
 	}
 
 	void test_add_sub() {
-		const Audio::Timestamp a = Audio::Timestamp(0, 60).addFrames(13);
-		const Audio::Timestamp b = -a;
-		const Audio::Timestamp c = Audio::Timestamp(0, 60).addFrames(20);
+		const Common::Timestamp a = Common::Timestamp(0, 60).addFrames(13);
+		const Common::Timestamp b = -a;
+		const Common::Timestamp c = Common::Timestamp(0, 60).addFrames(20);
 
 		TS_ASSERT_EQUALS((a+a).secs(), 0);
 		TS_ASSERT_EQUALS((a+a).numberOfFrames(), 2*13);
@@ -127,9 +127,9 @@ class TimestampTestSuite : public CxxTest::TestSuite
 	}
 
 	void test_diff_with_conversion() {
-		const Audio::Timestamp a = Audio::Timestamp(10, 1000).addFrames(20);
-		const Audio::Timestamp b = Audio::Timestamp(10, 1000/5).addFrames(20/5);
-		const Audio::Timestamp c = Audio::Timestamp(10, 1000*2).addFrames(20*2);
+		const Common::Timestamp a = Common::Timestamp(10, 1000).addFrames(20);
+		const Common::Timestamp b = Common::Timestamp(10, 1000/5).addFrames(20/5);
+		const Common::Timestamp c = Common::Timestamp(10, 1000*2).addFrames(20*2);
 
 		TS_ASSERT_EQUALS(a.frameDiff(a), 0);
 		TS_ASSERT_EQUALS(a.frameDiff(b), 0);
@@ -146,20 +146,20 @@ class TimestampTestSuite : public CxxTest::TestSuite
 
 
 	void test_convert() {
-		const Audio::Timestamp a = Audio::Timestamp(10, 1000).addFrames(20);
-		const Audio::Timestamp b = Audio::Timestamp(10, 1000/5).addFrames(20/5);
-		const Audio::Timestamp c = Audio::Timestamp(10, 1000*2).addFrames(20*2);
+		const Common::Timestamp a = Common::Timestamp(10, 1000).addFrames(20);
+		const Common::Timestamp b = Common::Timestamp(10, 1000/5).addFrames(20/5);
+		const Common::Timestamp c = Common::Timestamp(10, 1000*2).addFrames(20*2);
 
 		TS_ASSERT_EQUALS(a.convertToFramerate(1000/5), b);
 		TS_ASSERT_EQUALS(a.convertToFramerate(1000*2), c);
 	}
 
 	void test_equals() {
-		const Audio::Timestamp a = Audio::Timestamp(500, 1000);
-		Audio::Timestamp b = Audio::Timestamp(0, 1000);
-		Audio::Timestamp c = Audio::Timestamp(0, 100);
+		const Common::Timestamp a = Common::Timestamp(500, 1000);
+		Common::Timestamp b = Common::Timestamp(0, 1000);
+		Common::Timestamp c = Common::Timestamp(0, 100);
 
-		TS_ASSERT_EQUALS(a, Audio::Timestamp(0, 500, 1000));
+		TS_ASSERT_EQUALS(a, Common::Timestamp(0, 500, 1000));
 
 		TS_ASSERT(a != b);
 		TS_ASSERT(a != c);
@@ -175,9 +175,9 @@ class TimestampTestSuite : public CxxTest::TestSuite
 
 
 	void test_compare() {
-		const Audio::Timestamp a = Audio::Timestamp(60, 1000);
-		Audio::Timestamp b = Audio::Timestamp(60, 60);
-		Audio::Timestamp c = Audio::Timestamp(60, 44100);
+		const Common::Timestamp a = Common::Timestamp(60, 1000);
+		Common::Timestamp b = Common::Timestamp(60, 60);
+		Common::Timestamp c = Common::Timestamp(60, 44100);
 
 		TS_ASSERT(a <= b);
 		TS_ASSERT(b <= c);
@@ -209,10 +209,10 @@ class TimestampTestSuite : public CxxTest::TestSuite
 
 
 	void test_framerate() {
-		const Audio::Timestamp a = Audio::Timestamp(500, 1000);
-		const Audio::Timestamp b = Audio::Timestamp(500, 67);
-		const Audio::Timestamp c = Audio::Timestamp(500, 100);
-		const Audio::Timestamp d = Audio::Timestamp(500, 44100);
+		const Common::Timestamp a = Common::Timestamp(500, 1000);
+		const Common::Timestamp b = Common::Timestamp(500, 67);
+		const Common::Timestamp c = Common::Timestamp(500, 100);
+		const Common::Timestamp d = Common::Timestamp(500, 44100);
 
 		TS_ASSERT_EQUALS(a.framerate(), (uint)1000);
 		TS_ASSERT_EQUALS(b.framerate(), (uint)67);
@@ -221,9 +221,9 @@ class TimestampTestSuite : public CxxTest::TestSuite
 	}
 
 	void test_direct_query() {
-		const Audio::Timestamp a = Audio::Timestamp(0, 22050);
-		const Audio::Timestamp b = a.addFrames(11025);
-		const Audio::Timestamp c = Audio::Timestamp(1500, 22050);
+		const Common::Timestamp a = Common::Timestamp(0, 22050);
+		const Common::Timestamp b = a.addFrames(11025);
+		const Common::Timestamp c = Common::Timestamp(1500, 22050);
 
 		TS_ASSERT_EQUALS(a.secs(), 0);
 		TS_ASSERT_EQUALS(a.msecs(), 0);
@@ -243,7 +243,7 @@ class TimestampTestSuite : public CxxTest::TestSuite
 
 	void test_no_overflow() {
 		// The constructor should not overflow and give incoherent values
-		const Audio::Timestamp a = Audio::Timestamp(0, UINT_MAX, 1000);
+		const Common::Timestamp a = Common::Timestamp(0, UINT_MAX, 1000);
 
 		int secs = UINT_MAX / 1000;
 		int frames = UINT_MAX % 1000;

@@ -25,11 +25,11 @@
 #include "common/util.h"
 #include "common/system.h"
 #include "common/textconsole.h"
+#include "common/timestamp.h"
 
 #include "audio/mixer_intern.h"
 #include "audio/rate.h"
 #include "audio/audiostream.h"
-#include "audio/timestamp.h"
 
 
 namespace Audio {
@@ -125,7 +125,7 @@ public:
 	/**
 	 * Queries how long the channel has been playing.
 	 */
-	Timestamp getElapsedTime();
+	Common::Timestamp getElapsedTime();
 
 	/**
 	 * Queries the channel's sound type.
@@ -387,12 +387,12 @@ uint32 MixerImpl::getSoundElapsedTime(SoundHandle handle) {
 	return getElapsedTime(handle).msecs();
 }
 
-Timestamp MixerImpl::getElapsedTime(SoundHandle handle) {
+Common::Timestamp MixerImpl::getElapsedTime(SoundHandle handle) {
 	Common::StackLock lock(_mutex);
 
 	const int index = handle._val % NUM_CHANNELS;
 	if (!_channels[index] || _channels[index]->getHandle()._val != handle._val)
-		return Timestamp(0, _sampleRate);
+		return Common::Timestamp(0, _sampleRate);
 
 	return _channels[index]->getElapsedTime();
 }
@@ -571,11 +571,11 @@ void Channel::pause(bool paused) {
 	}
 }
 
-Timestamp Channel::getElapsedTime() {
+Common::Timestamp Channel::getElapsedTime() {
 	const uint32 rate = _mixer->getOutputRate();
 	uint32 delta = 0;
 
-	Audio::Timestamp ts(0, rate);
+	Common::Timestamp ts(0, rate);
 
 	if (_mixerTimeStamp == 0)
 		return ts;

@@ -43,7 +43,7 @@ private:
 	byte _shiftLeft;
 	byte _shiftRight;
 	uint32 _pos;
-	Audio::Timestamp _length;
+	Common::Timestamp _length;
 
 public:
 	CDDAStream(Common::SeekableReadStream *stream, DisposeAfterUse::Flag disposeAfterUse);
@@ -53,8 +53,8 @@ public:
 	uint getChannels() const { return 2; }
 	int getRate() const { return 44100; }
 	bool endOfData() const { return _stream->eos(); }
-	bool seek(const Audio::Timestamp &where);
-	Audio::Timestamp getLength() const { return _length; }
+	bool seek(const Common::Timestamp &where);
+	Common::Timestamp getLength() const { return _length; }
 };
 
 CDDAStream::CDDAStream(Common::SeekableReadStream *stream, DisposeAfterUse::Flag disposeAfterUse) :
@@ -63,7 +63,7 @@ CDDAStream::CDDAStream(Common::SeekableReadStream *stream, DisposeAfterUse::Flag
 	// The total size of CDDA.SOU is 289,808,802 bytes or (289808802 - 800) / 1177 = 246226 blocks
 	// We also deduct the shift values to return the correct length
 	uint32 blocks = (_stream->size() - START_OF_CDDA_DATA) / BLOCK_SIZE;
-	_length = Audio::Timestamp(0, (_stream->size() - START_OF_CDDA_DATA - blocks) / getChannels(), getRate());
+	_length = Common::Timestamp(0, (_stream->size() - START_OF_CDDA_DATA - blocks) / getChannels(), getRate());
 }
 
 CDDAStream::~CDDAStream() {
@@ -71,8 +71,8 @@ CDDAStream::~CDDAStream() {
 		delete _stream;
 }
 
-bool CDDAStream::seek(const Audio::Timestamp &where) {
-	const uint32 seekSample = convertTimeToStreamPos(where, getRate(), getChannels()).totalNumberOfFrames();
+bool CDDAStream::seek(const Common::Timestamp &where) {
+	const uint32 seekSample = Audio::convertTimeToStreamPos(where, getRate(), getChannels()).totalNumberOfFrames();
 	uint32 blocks = seekSample / 1176;
 
 	// Before seeking, read the shift values from the beginning of that block

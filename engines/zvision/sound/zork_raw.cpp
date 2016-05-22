@@ -210,9 +210,9 @@ RawZorkStream::RawZorkStream(uint32 rate, bool stereo, DisposeAfterUse::Flag dis
 
 	// Calculate the total playtime of the stream
 	if (stereo)
-		_playtime = Audio::Timestamp(0, _stream->size() / 2, rate);
+		_playtime = Common::Timestamp(0, _stream->size() / 2, rate);
 	else
-		_playtime = Audio::Timestamp(0, _stream->size(), rate);
+		_playtime = Common::Timestamp(0, _stream->size(), rate);
 }
 
 int RawZorkStream::readBuffer(int16 *buffer, const int numSamples) {

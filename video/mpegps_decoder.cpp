@@ -95,7 +95,7 @@ void MPEGPSDecoder::readNextPacket() {
 
 	// Get the next frame time
 	// TODO: Use the MPEG-PS PTS timestamp
-	Audio::Timestamp nextFrameTime(videoStream->getNextFrameStartTimestamp());
+	Common::Timestamp nextFrameTime(videoStream->getNextFrameStartTimestamp());
 
 	// Add half a second to the time in case there's a delay
 	nextFrameTime = nextFrameTime.addMsecs(500);
@@ -104,7 +104,7 @@ void MPEGPSDecoder::readNextPacket() {
 		MPEGAudioStream *audioStream = _audioStreams[i];
 
 		// Check the pts of the audio stream. pts is always in 90KHz scale.
-		while (!audioStream->isEndOfStream() && Audio::Timestamp(0, audioStream->getLastPTS(), 90000) < nextFrameTime)
+		while (!audioStream->isEndOfStream() && Common::Timestamp(0, audioStream->getLastPTS(), 90000) < nextFrameTime)
 			handleNextPacket(*audioStream);
 	}
 }
@@ -485,7 +485,7 @@ bool MPEGPSDecoder::MPEGStream::sendPacket(Common::SeekableReadStream *packet, u
 MPEGPSDecoder::MPEGVideoTrack::MPEGVideoTrack(int startCode, Common::SeekableReadStream *firstPacket, const Graphics::PixelFormat &format) : MPEGVideoStream(startCode) {
 	_surface = 0;
 	_curFrame = -1;
-	_nextFrameStartTime = Audio::Timestamp(0, 27000000); // 27 MHz timer
+	_nextFrameStartTime = Common::Timestamp(0, 27000000); // 27 MHz timer
 
 	findDimensions(firstPacket, format);
 

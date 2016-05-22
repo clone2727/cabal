@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -19,6 +19,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
  */
+
+// Based on the ScummVM (GPLv2+) file of the same name
 
 #include "mohawk/cursors.h"
 #include "mohawk/myst.h"
@@ -323,9 +325,9 @@ void Mechanical::o_fortressStaircaseMovie(uint16 op, uint16 var, uint16 argc, ui
 	staircase->moveTo(174, 222);
 
 	if (_state.staircaseState) {
-		staircase->setBounds(Audio::Timestamp(0, 840, 600), Audio::Timestamp(0, 1680, 600));
+		staircase->setBounds(Common::Timestamp(0, 840, 600), Common::Timestamp(0, 1680, 600));
 	} else {
-		staircase->setBounds(Audio::Timestamp(0, 0, 600), Audio::Timestamp(0, 840, 600));
+		staircase->setBounds(Common::Timestamp(0, 0, 600), Common::Timestamp(0, 840, 600));
 	}
 
 	_vm->_video->waitUntilMovieEnds(staircase);
@@ -580,7 +582,7 @@ void Mechanical::o_elevatorWindowMovie(uint16 op, uint16 var, uint16 argc, uint1
 		error("Failed to open ewindow movie");
 
 	window->moveTo(253, 0);
-	window->setBounds(Audio::Timestamp(0, startTime, 600), Audio::Timestamp(0, endTime, 600));
+	window->setBounds(Common::Timestamp(0, startTime, 600), Common::Timestamp(0, endTime, 600));
 	_vm->_video->waitUntilMovieEnds(window);
 }
 
@@ -657,7 +659,7 @@ void Mechanical::o_elevatorTopMovie(uint16 op, uint16 var, uint16 argc, uint16 *
 		error("Failed to open hcelev movie");
 
 	window->moveTo(206, 38);
-	window->setBounds(Audio::Timestamp(0, startTime, 600), Audio::Timestamp(0, endTime, 600));
+	window->setBounds(Common::Timestamp(0, startTime, 600), Common::Timestamp(0, endTime, 600));
 	_vm->_video->waitUntilMovieEnds(window);
 }
 
@@ -665,7 +667,7 @@ void Mechanical::o_fortressRotationSetPosition(uint16 op, uint16 var, uint16 arg
 	debugC(kDebugScript, "Opcode %d: Set fortress position", op);
 
 	VideoHandle gears = _fortressRotationGears->playMovie();
-	uint32 moviePosition = Audio::Timestamp(gears->getTime(), 600).totalNumberOfFrames();
+	uint32 moviePosition = Common::Timestamp(gears->getTime(), 600).totalNumberOfFrames();
 
 	// Myst ME short movie workaround, explained in o_fortressRotation_init
 	if (_fortressRotationShortMovieWorkaround) {
@@ -801,7 +803,7 @@ void Mechanical::fortressRotation_run() {
 	VideoHandle gears = _fortressRotationGears->playMovie();
 
 	double oldRate = gears->getRate().toDouble();
-	uint32 moviePosition = Audio::Timestamp(gears->getTime(), 600).totalNumberOfFrames();
+	uint32 moviePosition = Common::Timestamp(gears->getTime(), 600).totalNumberOfFrames();
 
 	// Myst ME short movie workaround, explained in o_fortressRotation_init
 	if (_fortressRotationShortMovieWorkaround) {
@@ -858,9 +860,9 @@ void Mechanical::fortressRotation_run() {
 		gears->setRate(0);
 
 		if (!_fortressRotationShortMovieWorkaround) {
-			gears->seek(Audio::Timestamp(0, 1800 * _fortressPosition, 600));
+			gears->seek(Common::Timestamp(0, 1800 * _fortressPosition, 600));
 		} else {
-			gears->seek(Audio::Timestamp(0, 1800 * (_fortressPosition % 2), 600));
+			gears->seek(Common::Timestamp(0, 1800 * (_fortressPosition % 2), 600));
 		}
 
 		_vm->_sound->playSoundBlocking(_fortressRotationSounds[_fortressPosition]);
@@ -876,7 +878,7 @@ void Mechanical::o_fortressRotation_init(uint16 op, uint16 var, uint16 argc, uin
 
 	VideoHandle gears = _fortressRotationGears->playMovie();
 	gears->setLooping(true);
-	gears->seek(Audio::Timestamp(0, 1800 * _fortressPosition, 600));
+	gears->seek(Common::Timestamp(0, 1800 * _fortressPosition, 600));
 	gears->setRate(0);
 
 	_fortressRotationSounds[0] = argv[0];
@@ -945,7 +947,7 @@ void Mechanical::fortressSimulation_run() {
 		VideoHandle holo = _fortressSimulationHolo->playMovie();
 
 		double oldRate = holo->getRate().toDouble();
-		uint32 moviePosition = Audio::Timestamp(holo->getTime(), 600).totalNumberOfFrames();
+		uint32 moviePosition = Common::Timestamp(holo->getTime(), 600).totalNumberOfFrames();
 
 		int32 positionInQuarter = 900 - (moviePosition + 900) % 1800;
 
@@ -986,7 +988,7 @@ void Mechanical::fortressSimulation_run() {
 			uint16 simulationPosition = (moviePosition + 900) / 1800 % 4;
 
 			holo->setRate(0);
-			holo->seek(Audio::Timestamp(0, 1800 * simulationPosition, 600));
+			holo->seek(Common::Timestamp(0, 1800 * simulationPosition, 600));
 			_vm->_sound->playSoundBlocking(	_fortressRotationSounds[simulationPosition]);
 
 			_gearsWereRunning = false;

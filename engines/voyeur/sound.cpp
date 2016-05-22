@@ -68,7 +68,7 @@ void SoundManager::startVOCPlay(const Common::String &filename) {
 		Audio::FLAG_UNSIGNED, DisposeAfterUse::YES);
 
 	_mixer->playStream(Audio::Mixer::kSFXSoundType, &_soundHandle, audioStream);
-	audioStream->seek(Audio::Timestamp(_vocOffset * 1000, 11025));
+	audioStream->seek(Common::Timestamp(_vocOffset * 1000, 11025));
 }
 
 void SoundManager::startVOCPlay(int soundId) {
@@ -80,7 +80,7 @@ int SoundManager::getVOCStatus() {
 }
 
 uint32 SoundManager::getVOCFrame() {
-	Audio::Timestamp timestamp = _mixer->getElapsedTime(_soundHandle);
+	Common::Timestamp timestamp = _mixer->getElapsedTime(_soundHandle);
 	return timestamp.secs();
 }
 

@@ -15,7 +15,6 @@ MODULE_OBJS := \
 	mpu401.o \
 	musicplugin.o \
 	null.o \
-	timestamp.o \
 	audiodev/audiodev.o \
 	audiodev/opl.o \
 	audiodev/pcspk.o \

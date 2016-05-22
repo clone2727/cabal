@@ -393,7 +393,7 @@ void Sound::playSound(int soundID) {
 
 			// TODO: Currently we will only ever play till "loopEnd", even when we only have
 			// a finite repetition count.
-			stream = new Audio::SubLoopingAudioStream(plainStream, loopcount == 255 ? 0 : loopcount, Audio::Timestamp(0, loopStart, rate), Audio::Timestamp(0, loopEnd, rate));
+			stream = new Audio::SubLoopingAudioStream(plainStream, loopcount == 255 ? 0 : loopcount, Common::Timestamp(0, loopStart, rate), Common::Timestamp(0, loopEnd, rate));
 		} else {
 			stream = plainStream;
 		}
@@ -1067,8 +1067,8 @@ void Sound::playCDTrackInternal(int track, int numLoops, int startFrame, int dur
 
 		Common::File *cddaFile = new Common::File();
 		if (cddaFile->open("CDDA.SOU")) {
-			Audio::Timestamp start = Audio::Timestamp(0, startFrame, 75);
-			Audio::Timestamp end = Audio::Timestamp(0, startFrame + duration, 75);
+			Common::Timestamp start = Common::Timestamp(0, startFrame, 75);
+			Common::Timestamp end = Common::Timestamp(0, startFrame + duration, 75);
 			Audio::SeekableAudioStream *stream = makeCDDAStream(cddaFile, DisposeAfterUse::YES);
 
 			_mixer->playStream(Audio::Mixer::kMusicSoundType, &_loomSteamCDAudioHandle,

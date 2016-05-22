@@ -95,7 +95,7 @@ protected:
 	FLAC__uint64 _lastSample;
 
 	/** total play time */
-	Timestamp _length;
+	Common::Timestamp _length;
 
 	/** true if the last sample was decoded from the FLAC-API - there might still be data in the buffer */
 	bool _lastSampleWritten;
@@ -136,8 +136,8 @@ public:
 		return _streaminfo.channels == 0 || (_lastSampleWritten && _sampleCache.bufFill == 0);
 	}
 
-	bool seek(const Timestamp &where);
-	Timestamp getLength() const { return _length; }
+	bool seek(const Common::Timestamp &where);
+	Common::Timestamp getLength() const { return _length; }
 
 	bool isStreamDecoderReady() const { return getStreamDecoderState() == FLAC__STREAM_DECODER_SEARCH_FOR_FRAME_SYNC; }
 protected:
@@ -226,7 +226,7 @@ FLACStream::FLACStream(Common::SeekableReadStream *inStream, bool dispose)
 	if (success) {
 		if (processUntilEndOfMetadata() && _streaminfo.channels > 0) {
 			_lastSample = _streaminfo.total_samples + 1;
-			_length = Timestamp(0, _lastSample - 1, getRate());
+			_length = Common::Timestamp(0, _lastSample - 1, getRate());
 			return; // no error occurred
 		}
 	}
@@ -288,7 +288,7 @@ bool FLACStream::seekAbsolute(FLAC__uint64 sample) {
 	return result;
 }
 
-bool FLACStream::seek(const Timestamp &where) {
+bool FLACStream::seek(const Common::Timestamp &where) {
 	_sampleCache.bufFill = 0;
 	_sampleCache.bufReadPos = NULL;
 	// FLAC uses the sample pair number, thus we always use 1 for the channels parameter

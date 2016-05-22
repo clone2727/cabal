@@ -110,7 +110,7 @@ public:
 	virtual int8 getChannelBalance(SoundHandle handle);
 
 	virtual uint32 getSoundElapsedTime(SoundHandle handle);
-	virtual Timestamp getElapsedTime(SoundHandle handle);
+	virtual Common::Timestamp getElapsedTime(SoundHandle handle);
 
 	virtual bool hasActiveChannelOfType(SoundType type);
 

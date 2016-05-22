@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -19,6 +19,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
  */
+
+// Based on the ScummVM (GPLv2+) file of the same name
 
 //
 // Partially based on ffmpeg code.
@@ -69,7 +71,7 @@ public:
 	uint16 getWidth() const { return _width; }
 	uint16 getHeight() const { return _height; }
 	const Graphics::Surface *decodeNextFrame();
-	Audio::Timestamp getDuration() const { return Audio::Timestamp(0, _duration, _timeScale); }
+	Common::Timestamp getDuration() const { return Common::Timestamp(0, _duration, _timeScale); }
 
 protected:
 	Common::QuickTimeParser::SampleDesc *readSampleDesc(Common::QuickTimeParser::Track *track, uint32 format, uint32 descSize);
@@ -126,8 +128,8 @@ private:
 
 		bool endOfTrack() const;
 		bool isSeekable() const { return true; }
-		bool seek(const Audio::Timestamp &time);
-		Audio::Timestamp getDuration() const;
+		bool seek(const Common::Timestamp &time);
+		Common::Timestamp getDuration() const;
 
 		uint16 getWidth() const;
 		uint16 getHeight() const;

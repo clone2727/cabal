@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -20,14 +20,16 @@
  *
  */
 
+// Based on the ScummVM (GPLv2+) file of the same name
+
 // Sound class
 
 #ifndef SAGA_SOUND_H
 #define SAGA_SOUND_H
 
 #include "common/file.h"
+#include "common/timestamp.h"
 #include "audio/mixer.h"
-#include "audio/timestamp.h"
 
 namespace Audio {
 class RewindableAudioStream;
@@ -43,7 +45,7 @@ enum SOUND_FLAGS {
 
 struct SoundBuffer {
 	Audio::RewindableAudioStream *stream;
-	Audio::Timestamp streamLength;
+	Common::Timestamp streamLength;
 };
 
 enum sndHandleType {

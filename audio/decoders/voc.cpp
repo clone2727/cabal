@@ -89,9 +89,9 @@ public:
 
 	virtual bool endOfData() const { return (_curBlock == _blocks.end()) && (_blockLeft == 0); }
 
-	virtual bool seek(const Timestamp &where);
+	virtual bool seek(const Common::Timestamp &where);
 
-	virtual Timestamp getLength() const { return _length; }
+	virtual Common::Timestamp getLength() const { return _length; }
 private:
 	void preProcess();
 
@@ -101,7 +101,7 @@ private:
 	const bool _isUnsigned;
 
 	int _rate;
-	Timestamp _length;
+	Common::Timestamp _length;
 
 	struct Block {
 		uint8 code;
@@ -264,7 +264,7 @@ int VocStream::fillBuffer(int maxSamples) {
 	return bufferedSamples;
 }
 
-bool VocStream::seek(const Timestamp &where) {
+bool VocStream::seek(const Common::Timestamp &where) {
 	// Invalidate stream
 	_blockLeft = 0;
 	_curBlock = _blocks.end();
@@ -508,7 +508,7 @@ void VocStream::preProcess() {
 
 	// Since we determined the sample rate we need for playback now, we will
 	// initialize the play length.
-	_length = Timestamp(0, _rate);
+	_length = Common::Timestamp(0, _rate);
 
 	// Calculate the total play time and do some more sanity checks
 	for (BlockList::const_iterator i = _blocks.begin(), end = _blocks.end(); i != end; ++i) {

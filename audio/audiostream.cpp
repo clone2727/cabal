@@ -151,7 +151,7 @@ AudioStream *makeLoopingAudioStream(RewindableAudioStream *stream, uint loops) {
 		return stream;
 }
 
-AudioStream *makeLoopingAudioStream(SeekableAudioStream *stream, Timestamp start, Timestamp end, uint loops) {
+AudioStream *makeLoopingAudioStream(SeekableAudioStream *stream, Common::Timestamp start, Common::Timestamp end, uint loops) {
 	if (!start.totalNumberOfFrames() && (!end.totalNumberOfFrames() || end == stream->getLength())) {
 		return makeLoopingAudioStream(stream, loops);
 	} else {
@@ -174,8 +174,8 @@ AudioStream *makeLoopingAudioStream(SeekableAudioStream *stream, Timestamp start
 
 SubLoopingAudioStream::SubLoopingAudioStream(SeekableAudioStream *stream,
                                              uint loops,
-                                             const Timestamp loopStart,
-                                             const Timestamp loopEnd,
+                                             const Common::Timestamp loopStart,
+                                             const Common::Timestamp loopEnd,
                                              DisposeAfterUse::Flag disposeAfterUse)
     : _parent(stream, disposeAfterUse), _loops(loops),
       _pos(0, getRate() * getChannels()),
@@ -239,7 +239,7 @@ bool SubLoopingAudioStream::endOfStream() const {
 #pragma mark --- SubSeekableAudioStream ---
 #pragma mark -
 
-SubSeekableAudioStream::SubSeekableAudioStream(SeekableAudioStream *parent, const Timestamp start, const Timestamp end, DisposeAfterUse::Flag disposeAfterUse)
+SubSeekableAudioStream::SubSeekableAudioStream(SeekableAudioStream *parent, const Common::Timestamp start, const Common::Timestamp end, DisposeAfterUse::Flag disposeAfterUse)
     : _parent(parent, disposeAfterUse),
       _start(convertTimeToStreamPos(start, getRate(), getChannels())),
       _pos(0, getRate() * getChannels()),
@@ -256,7 +256,7 @@ int SubSeekableAudioStream::readBuffer(int16 *buffer, const int numSamples) {
 	return framesRead;
 }
 
-bool SubSeekableAudioStream::seek(const Timestamp &where) {
+bool SubSeekableAudioStream::seek(const Common::Timestamp &where) {
 	_pos = convertTimeToStreamPos(where, getRate(), getChannels());
 	if (_pos > _length) {
 		_pos = _length;
@@ -404,8 +404,8 @@ QueuingAudioStream *makeQueuingAudioStream(int rate, uint channels) {
 	return new QueuingAudioStreamImpl(rate, channels);
 }
 
-Timestamp convertTimeToStreamPos(const Timestamp &where, int rate, uint channels) {
-	Timestamp result(where.convertToFramerate(rate * channels));
+Common::Timestamp convertTimeToStreamPos(const Common::Timestamp &where, int rate, uint channels) {
+	Common::Timestamp result(where.convertToFramerate(rate * channels));
 
 	// When the Stream is a multichannel stream, we have to assure
 	// that the sample position is a channel-divisible number.
@@ -429,7 +429,7 @@ Timestamp convertTimeToStreamPos(const Timestamp &where, int rate, uint channels
 	// By creating a new Timestamp with the given parameters, we create a
 	// Timestamp with frame-precision, which just drops a sub-frame-precision
 	// information (i.e. rounds down).
-	return Timestamp(result.secs(), result.numberOfFrames(), result.framerate());
+	return Common::Timestamp(result.secs(), result.numberOfFrames(), result.framerate());
 }
 
 /**
@@ -438,7 +438,7 @@ Timestamp convertTimeToStreamPos(const Timestamp &where, int rate, uint channels
  */
 class LimitingAudioStream : public AudioStream {
 public:
-	LimitingAudioStream(AudioStream *parentStream, const Audio::Timestamp &length, DisposeAfterUse::Flag disposeAfterUse) :
+	LimitingAudioStream(AudioStream *parentStream, const Common::Timestamp &length, DisposeAfterUse::Flag disposeAfterUse) :
 			_parentStream(parentStream), _samplesRead(0), _disposeAfterUse(disposeAfterUse),
 			_totalSamples(length.convertToFramerate(getRate()).totalNumberOfFrames() * getChannels()) {}
 
@@ -467,7 +467,7 @@ private:
 	uint32 _totalSamples, _samplesRead;
 };
 
-AudioStream *makeLimitingAudioStream(AudioStream *parentStream, const Timestamp &length, DisposeAfterUse::Flag disposeAfterUse) {
+AudioStream *makeLimitingAudioStream(AudioStream *parentStream, const Common::Timestamp &length, DisposeAfterUse::Flag disposeAfterUse) {
 	return new LimitingAudioStream(parentStream, length, disposeAfterUse);
 }
 

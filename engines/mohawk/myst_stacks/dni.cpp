@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -19,6 +19,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
  */
+
+// Based on the ScummVM (GPLv2+) file of the same name
 
 #include "mohawk/myst.h"
 #include "mohawk/cursors.h"
@@ -103,13 +105,13 @@ void Dni::o_handPage(uint16 op, uint16 var, uint16 argc, uint16 *argv) {
 	VideoHandle atrus = _vm->_video->findVideoHandle(_video);
 
 	// Good ending and Atrus asked to give page
-	if (_globals.ending == 1 && atrus && atrus->getTime() > (uint)Audio::Timestamp(0, 6801, 600).msecs()) {
+	if (_globals.ending == 1 && atrus && atrus->getTime() > (uint)Common::Timestamp(0, 6801, 600).msecs()) {
 		_globals.ending = 2;
 		_globals.heldPage = 0;
 		_vm->setMainCursor(kDefaultMystCursor);
 
 		// Play movie end (atrus leaving)
-		atrus->setBounds(Audio::Timestamp(0, 14813, 600), atrus->getDuration());
+		atrus->setBounds(Common::Timestamp(0, 14813, 600), atrus->getDuration());
 		atrus->setLooping(false);
 
 		_atrusLeft = true;
@@ -126,7 +128,7 @@ void Dni::atrusLeft_run() {
 			error("Failed to open '%s'", _video.c_str());
 
 		atrus->moveTo(215, 77);
-		atrus->setBounds(Audio::Timestamp(0, 0, 600), Audio::Timestamp(0, 98000, 600));
+		atrus->setBounds(Common::Timestamp(0, 0, 600), Common::Timestamp(0, 98000, 600));
 
 		_waitForLoop = true;
 		_loopStart = 73095;
@@ -148,7 +150,7 @@ void Dni::loopVideo_run() {
 			error("Failed to open '%s'", _video.c_str());
 
 		atrus->moveTo(215, 77);
-		atrus->setBounds(Audio::Timestamp(0, _loopStart, 600), Audio::Timestamp(0, _loopEnd, 600));
+		atrus->setBounds(Common::Timestamp(0, _loopStart, 600), Common::Timestamp(0, _loopEnd, 600));
 		atrus->setLooping(true);
 
 		_waitForLoop = false;
@@ -169,7 +171,7 @@ void Dni::atrus_run() {
 
 			atrus->moveTo(215, 77);
 			atrus->setLooping(true);
-			atrus->setBounds(Audio::Timestamp(0, 7388, 600), Audio::Timestamp(0, 14700, 600));
+			atrus->setBounds(Common::Timestamp(0, 7388, 600), Common::Timestamp(0, 14700, 600));
 		}
 	} else if (_globals.ending != 3 && _globals.ending != 4) {
 		if (_globals.heldPage == 13) {
@@ -179,7 +181,7 @@ void Dni::atrus_run() {
 				error("Failed to open '%s'", _video.c_str());
 
 			atrus->moveTo(215, 77);
-			atrus->setBounds(Audio::Timestamp(0, 0, 600), Audio::Timestamp(0, 14700, 600));
+			atrus->setBounds(Common::Timestamp(0, 0, 600), Common::Timestamp(0, 14700, 600));
 
 			_waitForLoop = true;
 			_loopStart = 7388;
@@ -195,7 +197,7 @@ void Dni::atrus_run() {
 				error("Failed to open '%s'", _video.c_str());
 
 			atrus->moveTo(215, 77);
-			atrus->setBounds(Audio::Timestamp(0, 0, 600), Audio::Timestamp(0, 46175, 600));
+			atrus->setBounds(Common::Timestamp(0, 0, 600), Common::Timestamp(0, 46175, 600));
 
 			_waitForLoop = true;
 			_loopStart = 30656;

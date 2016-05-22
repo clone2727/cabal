@@ -201,11 +201,11 @@ QuickTimeAudioDecoder::QuickTimeAudioTrack::QuickTimeAudioTrack(QuickTimeAudioDe
 
 	// Initialize our edit parser too
 	_curEdit = 0;
-	enterNewEdit(Timestamp());
+	enterNewEdit(Common::Timestamp());
 
 	// If the edit doesn't start on a nice boundary, set us up to skip some samples
-	Timestamp editStartTime(0, _parentTrack->editList[_curEdit].mediaTime, _parentTrack->timeScale);
-	Timestamp trackPosition = getCurrentTrackTime();
+	Common::Timestamp editStartTime(0, _parentTrack->editList[_curEdit].mediaTime, _parentTrack->timeScale);
+	Common::Timestamp trackPosition = getCurrentTrackTime();
 	if (_parentTrack->editList[_curEdit].mediaTime != -1 && trackPosition != editStartTime)
 		_skipSamples = editStartTime.convertToFramerate(getRate()) - trackPosition;
 }
@@ -214,21 +214,21 @@ QuickTimeAudioDecoder::QuickTimeAudioTrack::~QuickTimeAudioTrack() {
 	delete _queue;
 }
 
-void QuickTimeAudioDecoder::QuickTimeAudioTrack::queueAudio(const Timestamp &length) {
-	if (allDataRead() || (length.totalNumberOfFrames() != 0 && Timestamp(0, _samplesQueued, getRate()) >= length))
+void QuickTimeAudioDecoder::QuickTimeAudioTrack::queueAudio(const Common::Timestamp &length) {
+	if (allDataRead() || (length.totalNumberOfFrames() != 0 && Common::Timestamp(0, _samplesQueued, getRate()) >= length))
 		return;
 
 	do {
-		Timestamp nextEditTime(0, _parentTrack->editList[_curEdit].timeOffset + _parentTrack->editList[_curEdit].trackDuration, _decoder->_timeScale);
+		Common::Timestamp nextEditTime(0, _parentTrack->editList[_curEdit].timeOffset + _parentTrack->editList[_curEdit].trackDuration, _decoder->_timeScale);
 
 		if (_parentTrack->editList[_curEdit].mediaTime == -1) {
 			// We've got an empty edit, so fill it with silence
-			Timestamp editLength(0, _parentTrack->editList[_curEdit].trackDuration, _decoder->_timeScale);
+			Common::Timestamp editLength(0, _parentTrack->editList[_curEdit].trackDuration, _decoder->_timeScale);
 
 			// If we seek into the middle of an empty edit, we need to adjust
-			if (_skipSamples != Timestamp()) {
+			if (_skipSamples != Common::Timestamp()) {
 				editLength = editLength - _skipSamples;
-				_skipSamples = Timestamp();
+				_skipSamples = Common::Timestamp();
 			}
 
 			queueStream(makeLimitingAudioStream(new SilentAudioStream(getRate(), getChannels()), editLength), editLength);
@@ -237,13 +237,13 @@ void QuickTimeAudioDecoder::QuickTimeAudioTrack::queueAudio(const Timestamp &len
 		} else {
 			// Normal audio
 			AudioStream *stream = readAudioChunk(_curChunk);
-			Timestamp chunkLength = getChunkLength(_curChunk, _skipAACPrimer);
+			Common::Timestamp chunkLength = getChunkLength(_curChunk, _skipAACPrimer);
 			_skipAACPrimer = false;
 			_curChunk++;
 
 			// If we have any samples that we need to skip (ie. we seeked into
 			// the middle of a chunk), skip them here.
-			if (_skipSamples != Timestamp()) {
+			if (_skipSamples != Common::Timestamp()) {
 				if (_skipSamples > chunkLength) {
 					// If the amount we need to skip is greater than the size
 					// of the chunk, just skip it altogether.
@@ -256,11 +256,11 @@ void QuickTimeAudioDecoder::QuickTimeAudioTrack::queueAudio(const Timestamp &len
 				skipSamples(_skipSamples, stream);
 				_curMediaPos = _curMediaPos + _skipSamples;
 				chunkLength = chunkLength - _skipSamples;
-				_skipSamples = Timestamp();
+				_skipSamples = Common::Timestamp();
 			}
 
 			// Calculate our overall position within the media
-			Timestamp trackPosition = getCurrentTrackTime() + chunkLength;
+			Common::Timestamp trackPosition = getCurrentTrackTime() + chunkLength;
 
 			// If we have reached the end of this edit (or have no more media to read),
 			// we move on to the next edit
@@ -280,15 +280,15 @@ void QuickTimeAudioDecoder::QuickTimeAudioTrack::queueAudio(const Timestamp &len
 
 			queueStream(stream, chunkLength);
 		}
-	} while (!allDataRead() && Timestamp(0, _samplesQueued, getRate()) < length);
+	} while (!allDataRead() && Common::Timestamp(0, _samplesQueued, getRate()) < length);
 }
 
-Timestamp QuickTimeAudioDecoder::QuickTimeAudioTrack::getCurrentTrackTime() const {
+Common::Timestamp QuickTimeAudioDecoder::QuickTimeAudioTrack::getCurrentTrackTime() const {
 	if (allDataRead())
 		return getLength().convertToFramerate(getRate());
 
-	return Timestamp(0, _parentTrack->editList[_curEdit].timeOffset, _decoder->_timeScale).convertToFramerate(getRate())
-			+ _curMediaPos - Timestamp(0, _parentTrack->editList[_curEdit].mediaTime, _parentTrack->timeScale).convertToFramerate(getRate());
+	return Common::Timestamp(0, _parentTrack->editList[_curEdit].timeOffset, _decoder->_timeScale).convertToFramerate(getRate())
+			+ _curMediaPos - Common::Timestamp(0, _parentTrack->editList[_curEdit].mediaTime, _parentTrack->timeScale).convertToFramerate(getRate());
 }
 
 void QuickTimeAudioDecoder::QuickTimeAudioTrack::queueRemainingAudio() {
@@ -309,7 +309,7 @@ bool QuickTimeAudioDecoder::QuickTimeAudioTrack::endOfData() const {
 	return allDataRead() && _queue->endOfData();
 }
 
-bool QuickTimeAudioDecoder::QuickTimeAudioTrack::seek(const Timestamp &where) {
+bool QuickTimeAudioDecoder::QuickTimeAudioTrack::seek(const Common::Timestamp &where) {
 	// Recreate the queue
 	delete _queue;
 	_queue = createStream();
@@ -325,7 +325,7 @@ bool QuickTimeAudioDecoder::QuickTimeAudioTrack::seek(const Timestamp &where) {
 	findEdit(where);
 
 	// Now queue up some audio and skip whatever we need to skip
-	Timestamp samplesToSkip = where.convertToFramerate(getRate()) - getCurrentTrackTime();
+	Common::Timestamp samplesToSkip = where.convertToFramerate(getRate()) - getCurrentTrackTime();
 	queueAudio();
 	if (_parentTrack->editList[_curEdit].mediaTime != -1)
 		skipSamples(samplesToSkip, _queue);
@@ -333,8 +333,8 @@ bool QuickTimeAudioDecoder::QuickTimeAudioTrack::seek(const Timestamp &where) {
 	return true;
 }
 
-Timestamp QuickTimeAudioDecoder::QuickTimeAudioTrack::getLength() const {
-	return Timestamp(0, _parentTrack->duration, _decoder->_timeScale);
+Common::Timestamp QuickTimeAudioDecoder::QuickTimeAudioTrack::getLength() const {
+	return Common::Timestamp(0, _parentTrack->duration, _decoder->_timeScale);
 }
 
 QueuingAudioStream *QuickTimeAudioDecoder::QuickTimeAudioTrack::createStream() const {
@@ -406,7 +406,7 @@ AudioStream *QuickTimeAudioDecoder::QuickTimeAudioTrack::readAudioChunk(uint chu
 	return audioStream;
 }
 
-void QuickTimeAudioDecoder::QuickTimeAudioTrack::skipSamples(const Timestamp &length, AudioStream *stream) {
+void QuickTimeAudioDecoder::QuickTimeAudioTrack::skipSamples(const Common::Timestamp &length, AudioStream *stream) {
 	int32 sampleCount = length.convertToFramerate(getRate()).totalNumberOfFrames();
 
 	if (sampleCount <= 0)
@@ -425,13 +425,13 @@ void QuickTimeAudioDecoder::QuickTimeAudioTrack::skipSamples(const Timestamp &le
 		_samplesQueued -= result / getChannels();
 }
 
-void QuickTimeAudioDecoder::QuickTimeAudioTrack::findEdit(const Timestamp &position) {
+void QuickTimeAudioDecoder::QuickTimeAudioTrack::findEdit(const Common::Timestamp &position) {
 	// Go through the edits look for where we find out we need to be. As long
 	// as the position is >= to the edit's start time, it is considered to be in that
 	// edit. seek() already figured out if we reached the last edit, so we don't need
 	// to handle that case here.
 	for (_curEdit = 0; _curEdit < _parentTrack->editCount - 1; _curEdit++) {
-		Timestamp nextEditTime(0, _parentTrack->editList[_curEdit + 1].timeOffset, _decoder->_timeScale);
+		Common::Timestamp nextEditTime(0, _parentTrack->editList[_curEdit + 1].timeOffset, _decoder->_timeScale);
 		if (position < nextEditTime)
 			break;
 	}
@@ -439,8 +439,8 @@ void QuickTimeAudioDecoder::QuickTimeAudioTrack::findEdit(const Timestamp &posit
 	enterNewEdit(position);
 }
 
-void QuickTimeAudioDecoder::QuickTimeAudioTrack::enterNewEdit(const Timestamp &position) {
-	_skipSamples = Timestamp(); // make sure our skip variable doesn't remain around
+void QuickTimeAudioDecoder::QuickTimeAudioTrack::enterNewEdit(const Common::Timestamp &position) {
+	_skipSamples = Common::Timestamp(); // make sure our skip variable doesn't remain around
 
 	// If we're at the end of the edit list, there's nothing else for us to do here
 	if (allDataRead())
@@ -450,11 +450,11 @@ void QuickTimeAudioDecoder::QuickTimeAudioTrack::enterNewEdit(const Timestamp &p
 	if (_parentTrack->editList[_curEdit].mediaTime == -1) {
 		// Just invalidate the current media position (and make sure the scale
 		// is in terms of our rate so it simplifies things later)
-		_curMediaPos = Timestamp(0, 0, getRate());
+		_curMediaPos = Common::Timestamp(0, 0, getRate());
 
 		// Also handle shortening of the empty edit if needed
-		if (position != Timestamp())
-			_skipSamples = position.convertToFramerate(_decoder->_timeScale) - Timestamp(0, _parentTrack->editList[_curEdit].timeOffset, _decoder->_timeScale);
+		if (position != Common::Timestamp())
+			_skipSamples = position.convertToFramerate(_decoder->_timeScale) - Common::Timestamp(0, _parentTrack->editList[_curEdit].timeOffset, _decoder->_timeScale);
 		return;
 	}
 
@@ -470,9 +470,9 @@ void QuickTimeAudioDecoder::QuickTimeAudioTrack::enterNewEdit(const Timestamp &p
 	// First, we need to track down what audio sample we need
 	// Convert our variables from the media time (position) and the edit time (based on position)
 	// and the media time
-	Timestamp curAudioTime = Timestamp(0, _parentTrack->editList[_curEdit].mediaTime, _parentTrack->timeScale)
+	Common::Timestamp curAudioTime = Common::Timestamp(0, _parentTrack->editList[_curEdit].mediaTime, _parentTrack->timeScale)
 		+ position.convertToFramerate(_parentTrack->timeScale)
-		- Timestamp(0, _parentTrack->editList[_curEdit].timeOffset, _decoder->_timeScale).convertToFramerate(_parentTrack->timeScale);
+		- Common::Timestamp(0, _parentTrack->editList[_curEdit].timeOffset, _decoder->_timeScale).convertToFramerate(_parentTrack->timeScale);
 
 	uint32 sample = curAudioTime.totalNumberOfFrames();
 	uint32 seekSample = sample;
@@ -514,10 +514,10 @@ void QuickTimeAudioDecoder::QuickTimeAudioTrack::enterNewEdit(const Timestamp &p
 	if (!isOldDemuxing())
 		totalSamples = getAACSampleTime(totalSamples);
 
-	_curMediaPos = Timestamp(0, totalSamples, getRate());
+	_curMediaPos = Common::Timestamp(0, totalSamples, getRate());
 }
 
-void QuickTimeAudioDecoder::QuickTimeAudioTrack::queueStream(AudioStream *stream, const Timestamp &length) {
+void QuickTimeAudioDecoder::QuickTimeAudioTrack::queueStream(AudioStream *stream, const Common::Timestamp &length) {
 	// If the samples are stereo and the container is mono, force the samples
 	// to be mono.
 	if (stream->isStereo() && !isStereo())
@@ -538,14 +538,14 @@ uint32 QuickTimeAudioDecoder::QuickTimeAudioTrack::getAudioChunkSampleCount(uint
 	return sampleCount;
 }
 
-Timestamp QuickTimeAudioDecoder::QuickTimeAudioTrack::getChunkLength(uint chunk, bool skipAACPrimer) const {
+Common::Timestamp QuickTimeAudioDecoder::QuickTimeAudioTrack::getChunkLength(uint chunk, bool skipAACPrimer) const {
 	uint32 chunkSampleCount = getAudioChunkSampleCount(chunk);
 
 	if (isOldDemuxing())
-		return Timestamp(0, chunkSampleCount, getRate());
+		return Common::Timestamp(0, chunkSampleCount, getRate());
 
 	// AAC needs some extra handling, of course
-	return Timestamp(0, getAACSampleTime(chunkSampleCount, skipAACPrimer), getRate());
+	return Common::Timestamp(0, getAACSampleTime(chunkSampleCount, skipAACPrimer), getRate());
 }
 
 uint32 QuickTimeAudioDecoder::QuickTimeAudioTrack::getAACSampleTime(uint32 totalSampleCount, bool skipAACPrimer) const{
@@ -706,8 +706,8 @@ public:
 	bool endOfData() const { return _audioTracks[0]->endOfData(); }
 
 	// SeekableAudioStream API
-	bool seek(const Timestamp &where) { return _audioTracks[0]->seek(where); }
-	Timestamp getLength() const { return _audioTracks[0]->getLength(); }
+	bool seek(const Common::Timestamp &where) { return _audioTracks[0]->seek(where); }
+	Common::Timestamp getLength() const { return _audioTracks[0]->getLength(); }
 };
 
 SeekableAudioStream *makeQuickTimeStream(const Common::String &filename) {

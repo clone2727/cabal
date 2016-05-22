@@ -384,7 +384,7 @@ void Music::play(uint32 resourceId, MusicFlags flags) {
 			_mixer->playStream(Audio::Mixer::kMusicSoundType, &_musicHandle,
 			                        new Audio::SubLoopingAudioStream(audioStream,
 			                        (flags == MUSIC_LOOP ? 0 : 1),
-			                        Audio::Timestamp(0, loopStart, audioStream->getRate()),
+			                        Common::Timestamp(0, loopStart, audioStream->getRate()),
 			                        audioStream->getLength()));
 		} else {
 			_mixer->playStream(Audio::Mixer::kMusicSoundType, &_musicHandle,

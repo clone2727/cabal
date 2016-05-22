@@ -97,7 +97,7 @@ public:
 
 private:
 	const int _rate;                                           // Sample rate of stream
-	Audio::Timestamp _playtime;                                // Calculated total play time
+	Common::Timestamp _playtime;                                // Calculated total play time
 	Common::DisposablePtr<Common::SeekableReadStream> _stream; // Stream to read data from
 	bool _endOfData;                                           // Whether the stream end has been reached
 	uint _stereo;
@@ -116,7 +116,7 @@ public:
 	int getRate() const {
 		return _rate;
 	}
-	Audio::Timestamp getLength() const {
+	Common::Timestamp getLength() const {
 		return _playtime;
 	}
 

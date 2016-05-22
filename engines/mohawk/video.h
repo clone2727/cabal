@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -20,15 +20,17 @@
  *
  */
 
+// Based on the ScummVM (GPLv2+) file of the same name
+
 #ifndef MOHAWK_VIDEO_H
 #define MOHAWK_VIDEO_H
 
-#include "audio/timestamp.h"
 #include "common/array.h"
 #include "common/list.h"
 #include "common/noncopyable.h"
 #include "common/ptr.h"
 #include "common/rational.h"
+#include "common/timestamp.h"
 #include "graphics/pixelformat.h"
 
 namespace Video {
@@ -111,7 +113,7 @@ public:
 	/**
 	 * Get the start time of the video bounds
 	 */
-	const Audio::Timestamp &getStart() const { return _start; }
+	const Common::Timestamp &getStart() const { return _start; }
 
 	/**
 	 * Get the file name of the video, or empty if by ID
@@ -141,7 +143,7 @@ public:
 	/**
 	 * Get the duration of the video
 	 */
-	Audio::Timestamp getDuration() const;
+	Common::Timestamp getDuration() const;
 
 	/**
 	 * Get the current playback rate of the videos
@@ -171,7 +173,7 @@ public:
 	/**
 	 * Set the start time when using video bounds
 	 */
-	void setStart(const Audio::Timestamp &time) { _start = time; }
+	void setStart(const Common::Timestamp &time) { _start = time; }
 
 	/**
 	 * Set the video to loop (true) or not (false)
@@ -188,12 +190,12 @@ public:
 	 *
 	 * This automatically seeks to the start time
 	 */
-	void setBounds(const Audio::Timestamp &startTime, const Audio::Timestamp &endTime);
+	void setBounds(const Common::Timestamp &startTime, const Common::Timestamp &endTime);
 
 	/**
 	 * Seek to the given time
 	 */
-	void seek(const Audio::Timestamp &time);
+	void seek(const Common::Timestamp &time);
 
 	/**
 	 * Set the playback rate
@@ -241,7 +243,7 @@ private:
 	uint16 _y;
 	bool _loop;
 	bool _enabled;
-	Audio::Timestamp _start;
+	Common::Timestamp _start;
 };
 
 typedef Common::SharedPtr<VideoEntry> VideoEntryPtr;
@@ -331,7 +333,7 @@ public:
 	VideoHandle findVideoHandle(const Common::String &fileName);
 	void waitUntilMovieEnds(VideoHandle handle);
 	void delayUntilMovieEnds(VideoHandle handle);
-	void drawVideoFrame(VideoHandle handle, const Audio::Timestamp &time);
+	void drawVideoFrame(VideoHandle handle, const Common::Timestamp &time);
 
 private:
 	MohawkEngine *_vm;

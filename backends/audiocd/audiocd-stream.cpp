@@ -82,7 +82,7 @@ bool AudioCDStream::endOfData() const {
 	return !shouldForceStop() && getStartFrame() + _frame >= getEndFrame() && _bufferPos == kSamplesPerFrame;
 }
 
-bool AudioCDStream::seek(const Audio::Timestamp &where) {
+bool AudioCDStream::seek(const Common::Timestamp &where) {
 	// Stop the timer
 	stopTimer();
 
@@ -100,8 +100,8 @@ bool AudioCDStream::seek(const Audio::Timestamp &where) {
 	return true;
 }
 
-Audio::Timestamp AudioCDStream::getLength() const {
-	return Audio::Timestamp(0, getEndFrame() - getStartFrame(), kFramesPerSecond);
+Common::Timestamp AudioCDStream::getLength() const {
+	return Common::Timestamp(0, getEndFrame() - getStartFrame(), kFramesPerSecond);
 }
 
 void AudioCDStream::timerProc(void *refCon) {

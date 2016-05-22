@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -19,6 +19,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
  */
+
+// Based on the ScummVM (GPLv2+) file of the same name
 
 #include "mohawk/cursors.h"
 #include "mohawk/myst.h"
@@ -1138,7 +1140,7 @@ void Myst::o_clockWheelsExecute(uint16 op, uint16 var, uint16 argc, uint16 *argv
 			error("Failed to open gears movie");
 
 		gears->moveTo(305, 33);
-		gears->setBounds(Audio::Timestamp(0, 0, 600), Audio::Timestamp(0, 650, 600));
+		gears->setBounds(Common::Timestamp(0, 0, 600), Common::Timestamp(0, 650, 600));
 		_vm->_video->waitUntilMovieEnds(gears);
 
 		_state.clockTowerBridgeOpen = 1;
@@ -1153,7 +1155,7 @@ void Myst::o_clockWheelsExecute(uint16 op, uint16 var, uint16 argc, uint16 *argv
 			error("Failed to open gears movie");
 
 		gears->moveTo(305, 33);
-		gears->setBounds(Audio::Timestamp(0, 700, 600), Audio::Timestamp(0, 1300, 600));
+		gears->setBounds(Common::Timestamp(0, 700, 600), Common::Timestamp(0, 1300, 600));
 		_vm->_video->waitUntilMovieEnds(gears);
 
 		_state.clockTowerBridgeOpen = 0;
@@ -1201,7 +1203,7 @@ void Myst::o_imagerPlayButton(uint16 op, uint16 var, uint16 argc, uint16 *argv) 
 				error("Failed to open '%s'", file.c_str());
 
 			mountain->moveTo(159, 96);
-			mountain->setBounds(Audio::Timestamp(0, 11180, 600), Audio::Timestamp(0, 16800, 600));
+			mountain->setBounds(Common::Timestamp(0, 11180, 600), Common::Timestamp(0, 16800, 600));
 
 			_state.imagerActive = 0;
 		} else {
@@ -1212,7 +1214,7 @@ void Myst::o_imagerPlayButton(uint16 op, uint16 var, uint16 argc, uint16 *argv) 
 				error("Failed to open '%s'", file.c_str());
 
 			mountain->moveTo(159, 96);
-			mountain->setBounds(Audio::Timestamp(0, 0, 600), Audio::Timestamp(0, 11180, 600));
+			mountain->setBounds(Common::Timestamp(0, 0, 600), Common::Timestamp(0, 11180, 600));
 
 			_state.imagerActive = 1;
 		}
@@ -1225,19 +1227,19 @@ void Myst::o_imagerPlayButton(uint16 op, uint16 var, uint16 argc, uint16 *argv) 
 
 			// Water disappearing
 			VideoHandle water = _imagerMovie->playMovie();
-			water->setBounds(Audio::Timestamp(0, 4204, 600), Audio::Timestamp(0, 6040, 600));
+			water->setBounds(Common::Timestamp(0, 4204, 600), Common::Timestamp(0, 6040, 600));
 			water->setLooping(false);
 
 			_state.imagerActive = 0;
 		} else {
 			// Water appearing
 			VideoHandle water = _imagerMovie->playMovie();
-			water->setBounds(Audio::Timestamp(0, 0, 600), Audio::Timestamp(0, 1814, 600));
+			water->setBounds(Common::Timestamp(0, 0, 600), Common::Timestamp(0, 1814, 600));
 			_vm->_video->waitUntilMovieEnds(water);
 
 			// Water looping
 			water = _imagerMovie->playMovie();
-			water->setBounds(Audio::Timestamp(0, 1814, 600), Audio::Timestamp(0, 4204, 600));
+			water->setBounds(Common::Timestamp(0, 1814, 600), Common::Timestamp(0, 4204, 600));
 			water->setLooping(true);
 
 			_state.imagerActive = 1;
@@ -1931,9 +1933,9 @@ void Myst::boilerResetGauge(const Common::Rational &rate) {
 		}
 	}
 
-	Audio::Timestamp goTo;
+	Common::Timestamp goTo;
 	if (rate > 0)
-		goTo = Audio::Timestamp(0, 0, 600);
+		goTo = Common::Timestamp(0, 0, 600);
 	else
 		goTo = _cabinGaugeMovie->getDuration();
 
@@ -2272,7 +2274,7 @@ void Myst::rocketCheckSolution() {
 			error("Failed to open '%s'", movieFile.c_str());
 
 		_rocketLinkBook->moveTo(224, 41);
-		_rocketLinkBook->setBounds(Audio::Timestamp(0, 0, 600), Audio::Timestamp(0, 660, 600));
+		_rocketLinkBook->setBounds(Common::Timestamp(0, 0, 600), Common::Timestamp(0, 660, 600));
 		_vm->_video->waitUntilMovieEnds(_rocketLinkBook);
 
 		// Book looping closed
@@ -2282,7 +2284,7 @@ void Myst::rocketCheckSolution() {
 
 		_rocketLinkBook->moveTo(224, 41);
 		_rocketLinkBook->setLooping(true);
-		_rocketLinkBook->setBounds(Audio::Timestamp(0, 660, 600), Audio::Timestamp(0, 3500, 600));
+		_rocketLinkBook->setBounds(Common::Timestamp(0, 660, 600), Common::Timestamp(0, 3500, 600));
 
 		_tempVar = 1;
 	}
@@ -2397,7 +2399,7 @@ void Myst::o_rocketOpenBook(uint16 op, uint16 var, uint16 argc, uint16 *argv) {
 	debugC(kDebugScript, "Opcode %d: Rocket open link book", op);
 
 	// Flyby movie
-	_rocketLinkBook->setBounds(Audio::Timestamp(0, 3500, 600), Audio::Timestamp(0, 13100, 600));
+	_rocketLinkBook->setBounds(Common::Timestamp(0, 3500, 600), Common::Timestamp(0, 13100, 600));
 
 	// Set linkable
 	_tempVar = 2;
@@ -2925,8 +2927,8 @@ void Myst::clockGearForwardOneStep(uint16 gear) {
 
 	_clockGearsVideos[gear]->moveTo(x[gear], y[gear]);
 	_clockGearsVideos[gear]->setBounds(
-			Audio::Timestamp(0, startTime[gearPosition], 600),
-			Audio::Timestamp(0, endTime[gearPosition], 600));
+			Common::Timestamp(0, startTime[gearPosition], 600),
+			Common::Timestamp(0, endTime[gearPosition], 600));
 }
 
 void Myst::clockWeightDownOneStep() {
@@ -2942,8 +2944,8 @@ void Myst::clockWeightDownOneStep() {
 
 		_clockWeightVideo->moveTo(124, 0);
 		_clockWeightVideo->setBounds(
-				Audio::Timestamp(0, _clockWeightPosition, 600),
-				Audio::Timestamp(0, _clockWeightPosition + 246, 600));
+				Common::Timestamp(0, _clockWeightPosition, 600),
+				Common::Timestamp(0, _clockWeightPosition + 246, 600));
 	}
 
 	// Increment value by one step
@@ -3000,8 +3002,8 @@ void Myst::clockGearsCheckSolution() {
 
 		_clockWeightVideo->moveTo(124, 0);
 		_clockWeightVideo->setBounds(
-				Audio::Timestamp(0, _clockWeightPosition, 600),
-				Audio::Timestamp(0, 2214, 600));
+				Common::Timestamp(0, _clockWeightPosition, 600),
+				Common::Timestamp(0, 2214, 600));
 		_vm->_video->waitUntilMovieEnds(_clockWeightVideo);
 		_clockWeightPosition = 2214;
 
@@ -3091,7 +3093,7 @@ void Myst::clockResetWeight() {
 	_clockWeightVideo->moveTo(124, 0);
 
 	// Play the movie backwards, weight going up
-	_clockWeightVideo->seek(Audio::Timestamp(0, _clockWeightPosition, 600));
+	_clockWeightVideo->seek(Common::Timestamp(0, _clockWeightPosition, 600));
 	_clockWeightVideo->setRate(-1);
 
 	// Reset position
@@ -3113,8 +3115,8 @@ void Myst::clockResetGear(uint16 gear) {
 
 		_clockGearsVideos[gear]->moveTo(x[gear], y[gear]);
 		_clockGearsVideos[gear]->setBounds(
-				Audio::Timestamp(0, time[gearPosition], 600),
-				Audio::Timestamp(0, time[2], 600));
+				Common::Timestamp(0, time[gearPosition], 600),
+				Common::Timestamp(0, time[2], 600));
 	}
 
 	// Reset gear position
@@ -3343,7 +3345,7 @@ void Myst::imager_run() {
 
 	if (_state.imagerActive && _state.imagerSelection == 67) {
 		VideoHandle water = _imagerMovie->playMovie();
-		water->setBounds(Audio::Timestamp(0, 1814, 600), Audio::Timestamp(0, 4204, 600));
+		water->setBounds(Common::Timestamp(0, 1814, 600), Common::Timestamp(0, 4204, 600));
 		water->setLooping(true);
 	}
 }
@@ -3667,13 +3669,13 @@ void Myst::boilerFireUpdate(bool init) {
 
 	if (_state.cabinPilotLightLit == 1) {
 		if (_state.cabinValvePosition == 0) {
-			if (position > (uint)Audio::Timestamp(0, 200, 600).msecs() || init) {
-				_cabinFireMovie->setBounds(Audio::Timestamp(0, 0, 600), Audio::Timestamp(0, 100, 600));
+			if (position > (uint)Common::Timestamp(0, 200, 600).msecs() || init) {
+				_cabinFireMovie->setBounds(Common::Timestamp(0, 0, 600), Common::Timestamp(0, 100, 600));
 				_cabinFireMovie->pause(false);
 			}
 		} else {
-			if (position < (uint)Audio::Timestamp(0, 200, 600).msecs() || init) {
-				_cabinFireMovie->setBounds(Audio::Timestamp(0, 201, 600), Audio::Timestamp(0, 1900, 600));
+			if (position < (uint)Common::Timestamp(0, 200, 600).msecs() || init) {
+				_cabinFireMovie->setBounds(Common::Timestamp(0, 201, 600), Common::Timestamp(0, 1900, 600));
 				_cabinFireMovie->pause(false);
 			}
 		}
@@ -3695,12 +3697,12 @@ void Myst::boilerGaugeInit() {
 		_cabinGaugeMovie->moveTo(254, 136);
 	}
 
-	Audio::Timestamp frame;
+	Common::Timestamp frame;
 
 	if (_state.cabinPilotLightLit == 1 && _state.cabinValvePosition > 12)
 		frame = _cabinGaugeMovie->getDuration();
 	else
-		frame = Audio::Timestamp(0, 0, 600);
+		frame = Common::Timestamp(0, 0, 600);
 
 	_vm->_video->drawVideoFrame(_cabinGaugeMovie, frame);
 }
@@ -3767,7 +3769,7 @@ void Myst::greenBook_run() {
 		if (_globals.ending != 4) {
 			_tempVar = 2;
 		} else {
-			book->setBounds(Audio::Timestamp(0, loopStart, 600), Audio::Timestamp(0, loopEnd, 600));
+			book->setBounds(Common::Timestamp(0, loopStart, 600), Common::Timestamp(0, loopEnd, 600));
 			book->setLooping(true);
 			_tempVar = 0;
 		}
@@ -3777,7 +3779,7 @@ void Myst::greenBook_run() {
 			error("Failed to open '%s'", file.c_str());
 
 		book->moveTo(314, 76);
-		book->setBounds(Audio::Timestamp(0, loopStart, 600), Audio::Timestamp(0, loopEnd, 600));
+		book->setBounds(Common::Timestamp(0, loopStart, 600), Common::Timestamp(0, loopEnd, 600));
 		book->setLooping(true);
 		_tempVar = 0;
 	}

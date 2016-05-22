@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -19,6 +19,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
  */
+
+// Based on the ScummVM (GPLv2+) file of the same name
 
 #include "mohawk/cursors.h"
 #include "mohawk/myst.h"
@@ -307,9 +309,9 @@ void Channelwood::o_bridgeToggle(uint16 op, uint16 var, uint16 argc, uint16 *arg
 
 	// Toggle bridge state
 	if (_state.waterPumpBridgeState)
-		bridge->setBounds(Audio::Timestamp(0, 3050, 600), Audio::Timestamp(0, 6100, 600));
+		bridge->setBounds(Common::Timestamp(0, 3050, 600), Common::Timestamp(0, 6100, 600));
 	else
-		bridge->setBounds(Audio::Timestamp(0, 0, 600), Audio::Timestamp(0, 3050, 600));
+		bridge->setBounds(Common::Timestamp(0, 0, 600), Common::Timestamp(0, 3050, 600));
 
 	_vm->_video->waitUntilMovieEnds(bridge);
 }
@@ -329,9 +331,9 @@ void Channelwood::o_pipeExtend(uint16 op, uint16 var, uint16 argc, uint16 *argv)
 
 	// Toggle pipe state
 	if (_state.pipeState)
-		pipe->setBounds(Audio::Timestamp(0, 3040, 600), Audio::Timestamp(0, 6080, 600));
+		pipe->setBounds(Common::Timestamp(0, 3040, 600), Common::Timestamp(0, 6080, 600));
 	else
-		pipe->setBounds(Audio::Timestamp(0, 0, 600), Audio::Timestamp(0, 3040, 600));
+		pipe->setBounds(Common::Timestamp(0, 0, 600), Common::Timestamp(0, 3040, 600));
 
 	_vm->_video->waitUntilMovieEnds(pipe);
 	_vm->_sound->resumeBackgroundMyst();

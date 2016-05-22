@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -19,6 +19,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
  */
+
+// Based on the ScummVM (GPLv2+) file of the same name
 
 #include "mohawk/cursors.h"
 #include "mohawk/myst.h"
@@ -430,7 +432,7 @@ void Stoneship::o_cabinBookMovie(uint16 op, uint16 var, uint16 argc, uint16 *arg
 		error("Failed to open bkroom movie");
 
 	book->moveTo(159, 99);
-	book->setBounds(Audio::Timestamp(0, startTime, 600), Audio::Timestamp(0, endTime, 600));
+	book->setBounds(Common::Timestamp(0, startTime, 600), Common::Timestamp(0, endTime, 600));
 	_vm->_video->waitUntilMovieEnds(book);
 }
 
@@ -601,9 +603,9 @@ void Stoneship::o_hologramPlayback(uint16 op, uint16 var, uint16 argc, uint16 *a
 	if (_hologramTurnedOn) {
 		if (_hologramDisplayPos)
 			endPoint = _hologramDisplayPos;
-		displayMovie->setBounds(Audio::Timestamp(0, startPoint, 600), Audio::Timestamp(0, endPoint, 600));
+		displayMovie->setBounds(Common::Timestamp(0, startPoint, 600), Common::Timestamp(0, endPoint, 600));
 	} else {
-		displayMovie->setBounds(Audio::Timestamp(0, startPoint, 600), Audio::Timestamp(0, endPoint, 600));
+		displayMovie->setBounds(Common::Timestamp(0, startPoint, 600), Common::Timestamp(0, endPoint, 600));
 	}
 
 	_vm->_video->delayUntilMovieEnds(displayMovie);
@@ -628,7 +630,7 @@ void Stoneship::o_hologramSelectionMove(uint16 op, uint16 var, uint16 argc, uint
 		uint16 selectionPos = position * 1500 / 243;
 
 		VideoHandle handleMovie = _hologramSelection->playMovie();
-		_vm->_video->drawVideoFrame(handleMovie, Audio::Timestamp(0, selectionPos, 600));
+		_vm->_video->drawVideoFrame(handleMovie, Common::Timestamp(0, selectionPos, 600));
 
 		_hologramDisplayPos = position * 1450 / 243 + 350;
 
@@ -636,7 +638,7 @@ void Stoneship::o_hologramSelectionMove(uint16 op, uint16 var, uint16 argc, uint
 		if (_hologramTurnedOn) {
 			_hologramDisplay->setBlocking(false);
 			VideoHandle displayMovie = _hologramDisplay->playMovie();
-			_vm->_video->drawVideoFrame(displayMovie, Audio::Timestamp(0, _hologramDisplayPos, 600));
+			_vm->_video->drawVideoFrame(displayMovie, Common::Timestamp(0, _hologramDisplayPos, 600));
 		}
 	}
 }
@@ -682,7 +684,7 @@ void Stoneship::o_chestValveVideos(uint16 op, uint16 var, uint16 argc, uint16 *a
 			error("Failed to open '%s'", movie.c_str());
 
 		valve->moveTo(97, 267);
-		valve->setBounds(Audio::Timestamp(0, 0, 600), Audio::Timestamp(0, 350, 600));
+		valve->setBounds(Common::Timestamp(0, 0, 600), Common::Timestamp(0, 350, 600));
 		_vm->_video->waitUntilMovieEnds(valve);
 	} else if (_state.chestWaterState) {
 		// Valve opening, spilling water
@@ -691,7 +693,7 @@ void Stoneship::o_chestValveVideos(uint16 op, uint16 var, uint16 argc, uint16 *a
 			error("Failed to open '%s'", movie.c_str());
 
 		valve->moveTo(97, 267);
-		valve->setBounds(Audio::Timestamp(0, 350, 600), Audio::Timestamp(0, 650, 600));
+		valve->setBounds(Common::Timestamp(0, 350, 600), Common::Timestamp(0, 650, 600));
 		_vm->_video->waitUntilMovieEnds(valve);
 
 		_vm->_sound->playSound(3132);
@@ -702,7 +704,7 @@ void Stoneship::o_chestValveVideos(uint16 op, uint16 var, uint16 argc, uint16 *a
 				error("Failed to open '%s'", movie.c_str());
 
 			valve->moveTo(97, 267);
-			valve->setBounds(Audio::Timestamp(0, 650, 600), Audio::Timestamp(0, 750, 600));
+			valve->setBounds(Common::Timestamp(0, 650, 600), Common::Timestamp(0, 750, 600));
 			_vm->_video->waitUntilMovieEnds(valve);
 		}
 
@@ -714,7 +716,7 @@ void Stoneship::o_chestValveVideos(uint16 op, uint16 var, uint16 argc, uint16 *a
 			error("Failed to open '%s'", movie.c_str());
 
 		valve->moveTo(97, 267);
-		valve->seek(Audio::Timestamp(0, 350, 600));
+		valve->seek(Common::Timestamp(0, 350, 600));
 		valve->setRate(-1);
 		_vm->_video->waitUntilMovieEnds(valve);
 	}
@@ -741,7 +743,7 @@ void Stoneship::o_trapLockOpen(uint16 op, uint16 var, uint16 argc, uint16 *argv)
 		error("Failed to open '%s'", movie.c_str());
 
 	lock->moveTo(187, 71);
-	lock->setBounds(Audio::Timestamp(0, 0, 600), Audio::Timestamp(0, 750, 600));
+	lock->setBounds(Common::Timestamp(0, 0, 600), Common::Timestamp(0, 750, 600));
 	_vm->_video->waitUntilMovieEnds(lock);
 
 	_vm->_sound->playSound(2143);
@@ -751,7 +753,7 @@ void Stoneship::o_trapLockOpen(uint16 op, uint16 var, uint16 argc, uint16 *argv)
 		error("Failed to open '%s'", movie.c_str());
 
 	lock->moveTo(187, 71);
-	lock->setBounds(Audio::Timestamp(0, 750, 600), Audio::Timestamp(0, 10000, 600));
+	lock->setBounds(Common::Timestamp(0, 750, 600), Common::Timestamp(0, 10000, 600));
 	_vm->_video->waitUntilMovieEnds(lock);
 
 	if (_state.pumpState != 4)

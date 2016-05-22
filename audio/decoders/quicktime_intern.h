@@ -77,13 +77,13 @@ protected:
 		bool endOfData() const;
 
 		// SeekableAudioStream API
-		bool seek(const Timestamp &where);
-		Timestamp getLength() const;
+		bool seek(const Common::Timestamp &where);
+		Common::Timestamp getLength() const;
 
 		// Queue *at least* "length" audio
 		// If length is zero, it queues the next logical block of audio whether
 		// that be a whole edit or just one chunk within an edit
-		void queueAudio(const Timestamp &length = Timestamp());
+		void queueAudio(const Common::Timestamp &length = Common::Timestamp());
 		Track *getParent() const { return _parentTrack; }
 		void queueRemainingAudio();
 		bool hasDataInQueue() const { return _samplesQueued != 0; }
@@ -93,22 +93,22 @@ protected:
 		Track *_parentTrack;
 		QueuingAudioStream *_queue;
 		uint _curChunk;
-		Timestamp _curMediaPos, _skipSamples;
+		Common::Timestamp _curMediaPos, _skipSamples;
 		uint32 _curEdit, _samplesQueued;
 		bool _skipAACPrimer;
 
 		QueuingAudioStream *createStream() const;
 		AudioStream *readAudioChunk(uint chunk);
 		bool isOldDemuxing() const;
-		void skipSamples(const Timestamp &length, AudioStream *stream);
-		void findEdit(const Timestamp &position);
+		void skipSamples(const Common::Timestamp &length, AudioStream *stream);
+		void findEdit(const Common::Timestamp &position);
 		bool allDataRead() const;
-		void enterNewEdit(const Timestamp &position);
-		void queueStream(AudioStream *stream, const Timestamp &length);
+		void enterNewEdit(const Common::Timestamp &position);
+		void queueStream(AudioStream *stream, const Common::Timestamp &length);
 		uint32 getAudioChunkSampleCount(uint chunk) const;
-		Timestamp getChunkLength(uint chunk, bool skipAACPrimer = false) const;
+		Common::Timestamp getChunkLength(uint chunk, bool skipAACPrimer = false) const;
 		uint32 getAACSampleTime(uint32 totalSampleCount, bool skipAACPrimer = false) const;
-		Timestamp getCurrentTrackTime() const;
+		Common::Timestamp getCurrentTrackTime() const;
 	};
 
 	class AudioSampleDesc : public Common::QuickTimeParser::SampleDesc {

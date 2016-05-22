@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -19,6 +19,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
  */
+
+// Based on the ScummVM (GPLv2+) file of the same name
 
 #include "mohawk/cursors.h"
 #include "mohawk/riven.h"
@@ -1154,7 +1156,7 @@ void RivenExternal::lowerPins() {
 	// Play the video of the pins going down
 	VideoHandle handle = _vm->_video->playMovieRiven(upMovie);
 	assert(handle);
-	handle->setBounds(Audio::Timestamp(0, startTime, 600), Audio::Timestamp(0, startTime + 550, 600));
+	handle->setBounds(Common::Timestamp(0, startTime, 600), Common::Timestamp(0, startTime + 550, 600));
 	_vm->_video->waitUntilMovieEnds(handle);
 
 	upMovie = 0;
@@ -1186,7 +1188,7 @@ void RivenExternal::xgrotatepins(uint16 argc, uint16 *argv) {
 	// Play the video of the pins rotating
 	VideoHandle handle = _vm->_video->playMovieRiven(_vm->_vars["gupmoov"]);
 	assert(handle);
-	handle->setBounds(Audio::Timestamp(0, startTime, 600), Audio::Timestamp(0, startTime + 1215, 600));
+	handle->setBounds(Common::Timestamp(0, startTime, 600), Common::Timestamp(0, startTime + 1215, 600));
 	_vm->_video->waitUntilMovieEnds(handle);
 }
 
@@ -1271,7 +1273,7 @@ void RivenExternal::xgpincontrols(uint16 argc, uint16 *argv) {
 	VideoHandle handle = _vm->_video->playMovieRiven(pinMovieCodes[imagePos - 1]);
 	assert(handle);
 	uint32 startTime = 9630 - pinPos * 600;
-	handle->setBounds(Audio::Timestamp(0, startTime, 600), Audio::Timestamp(0, startTime + 550, 600));
+	handle->setBounds(Common::Timestamp(0, startTime, 600), Common::Timestamp(0, startTime + 550, 600));
 	_vm->_video->waitUntilMovieEnds(handle);
 
 	// Update the relevant variables
@@ -1348,7 +1350,7 @@ void RivenExternal::xgrviewer(uint16 argc, uint16 *argv) {
 	// Now play the movie
 	VideoHandle handle = _vm->_video->playMovieRiven(1);
 	assert(handle);
-	handle->setBounds(Audio::Timestamp(0, s_viewerTimeIntervals[curPos], 600), Audio::Timestamp(0, s_viewerTimeIntervals[newPos], 600));
+	handle->setBounds(Common::Timestamp(0, s_viewerTimeIntervals[curPos], 600), Common::Timestamp(0, s_viewerTimeIntervals[newPos], 600));
 	_vm->_video->waitUntilMovieEnds(handle);
 
 	// Set the new position and let the card's scripts take over again
@@ -1417,7 +1419,7 @@ void RivenExternal::xglviewer(uint16 argc, uint16 *argv) {
 	// Now play the movie
 	VideoHandle handle = _vm->_video->playMovieRiven(1);
 	assert(handle);
-	handle->setBounds(Audio::Timestamp(0, s_viewerTimeIntervals[curPos], 600), Audio::Timestamp(0, s_viewerTimeIntervals[newPos], 600));
+	handle->setBounds(Common::Timestamp(0, s_viewerTimeIntervals[curPos], 600), Common::Timestamp(0, s_viewerTimeIntervals[newPos], 600));
 	_vm->_video->waitUntilMovieEnds(handle);
 
 	// Set the new position to the variable
@@ -1987,9 +1989,9 @@ void RivenExternal::xschool280_playwhark(uint16 argc, uint16 *argv) {
 	// (11560/600)s is the length of each of the two movies. We divide it into 19 parts
 	// (one for each of the possible positions the villager can have).
 	VideoHandle handle = _vm->_video->playMovieRiven(doomMLST);
-	Audio::Timestamp startTime = Audio::Timestamp(0, (11560 / 19) * (*posVar), 600);
+	Common::Timestamp startTime = Common::Timestamp(0, (11560 / 19) * (*posVar), 600);
 	*posVar += number; // Adjust to the end
-	Audio::Timestamp endTime = Audio::Timestamp(0, (11560 / 19) * (*posVar), 600);
+	Common::Timestamp endTime = Common::Timestamp(0, (11560 / 19) * (*posVar), 600);
 	handle->setBounds(startTime, endTime);
 	_vm->_video->waitUntilMovieEnds(handle);
 
@@ -2438,7 +2440,7 @@ void RivenExternal::xtexterior300_telescopedown(uint16 argc, uint16 *argv) {
 		static const uint32 timeIntervals[] = { 4320, 3440, 2560, 1760, 880, 0 };
 		uint16 movieCode = telescopeCover ? 1 : 2;
 		VideoHandle handle = _vm->_video->playMovieRiven(movieCode);
-		handle->setBounds(Audio::Timestamp(0, timeIntervals[telescopePos], 600), Audio::Timestamp(0, timeIntervals[telescopePos - 1], 600));
+		handle->setBounds(Common::Timestamp(0, timeIntervals[telescopePos], 600), Common::Timestamp(0, timeIntervals[telescopePos - 1], 600));
 		_vm->_sound->playSound(14); // Play the moving sound
 		_vm->_video->waitUntilMovieEnds(handle);
 
@@ -2471,7 +2473,7 @@ void RivenExternal::xtexterior300_telescopeup(uint16 argc, uint16 *argv) {
 	static const uint32 timeIntervals[] = { 0, 800, 1680, 2560, 3440, 4320 };
 	uint16 movieCode = _vm->_vars["ttelecover"] ? 4 : 5;
 	VideoHandle handle = _vm->_video->playMovieRiven(movieCode);
-	handle->setBounds(Audio::Timestamp(0, timeIntervals[telescopePos - 1], 600), Audio::Timestamp(0, timeIntervals[telescopePos], 600));
+	handle->setBounds(Common::Timestamp(0, timeIntervals[telescopePos - 1], 600), Common::Timestamp(0, timeIntervals[telescopePos], 600));
 	_vm->_sound->playSound(14); // Play the moving sound
 	_vm->_video->waitUntilMovieEnds(handle);
 

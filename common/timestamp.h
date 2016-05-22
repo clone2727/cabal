@@ -22,16 +22,14 @@
 
 // Based on the ScummVM (GPLv2+) file of the same name
 
-#ifndef AUDIO_TIMESTAMP_H
-#define AUDIO_TIMESTAMP_H
+#ifndef COMMON_TIMESTAMP_H
+#define COMMON_TIMESTAMP_H
 
 #include "common/scummsys.h"
 
 namespace Common {
-class Rational;
-}
 
-namespace Audio {
+class Rational;
 
 /**
  * Timestamps allow specifying points in time and measuring time intervals
@@ -105,7 +103,7 @@ public:
 	 * @param frames    starting frames
 	 * @param framerate number of frames per second (must be > 0)
 	 */
-	Timestamp(uint secs, uint frames, const Common::Rational &framerate);
+	Timestamp(uint secs, uint frames, const Rational &framerate);
 
 	/**
 	 * Return a timestamp which represents as closely as possible
@@ -257,6 +255,6 @@ protected:
 };
 
 
-} // End of namespace Audio
+} // End of namespace Common
 
 #endif

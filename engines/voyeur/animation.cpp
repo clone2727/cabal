@@ -131,7 +131,7 @@ void RL2Decoder::readNextPacket() {
 	}
 }
 
-bool RL2Decoder::seekIntern(const Audio::Timestamp &where) {
+bool RL2Decoder::seekIntern(const Common::Timestamp &where) {
 	_soundFrameNumber = -1;
 	return VideoDecoder::seekIntern(where);
 }
@@ -261,7 +261,7 @@ void RL2Decoder::RL2VideoTrack::initBackSurface() {
 	_backSurface->create(320, 200, Graphics::PixelFormat::createFormatCLUT8());
 }
 
-bool RL2Decoder::RL2VideoTrack::seek(const Audio::Timestamp &time) {
+bool RL2Decoder::RL2VideoTrack::seek(const Common::Timestamp &time) {
 	int frame = getFrameAtTime(time);
 
 	if (frame < 0 || frame >= _header._numFrames)

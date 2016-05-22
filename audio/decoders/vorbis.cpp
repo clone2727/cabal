@@ -90,7 +90,7 @@ protected:
 	uint _channels;
 	int _rate;
 
-	Timestamp _length;
+	Common::Timestamp _length;
 
 	OggVorbis_File _ovFile;
 
@@ -109,8 +109,8 @@ public:
 	uint getChannels() const { return _channels; }
 	int getRate() const			{ return _rate; }
 
-	bool seek(const Timestamp &where);
-	Timestamp getLength() const { return _length; }
+	bool seek(const Common::Timestamp &where);
+	Common::Timestamp getLength() const { return _length; }
 protected:
 	bool refill();
 };
@@ -136,9 +136,9 @@ VorbisStream::VorbisStream(Common::SeekableReadStream *inStream, DisposeAfterUse
 	_rate = ov_info(&_ovFile, -1)->rate;
 
 #ifdef USE_TREMOR
-	_length = Timestamp(ov_time_total(&_ovFile, -1), getRate());
+	_length = Common::Timestamp(ov_time_total(&_ovFile, -1), getRate());
 #else
-	_length = Timestamp(uint32(ov_time_total(&_ovFile, -1) * 1000.0), getRate());
+	_length = Common::Timestamp(uint32(ov_time_total(&_ovFile, -1) * 1000.0), getRate());
 #endif
 }
 
@@ -162,7 +162,7 @@ int VorbisStream::readBuffer(int16 *buffer, const int numSamples) {
 	return samples;
 }
 
-bool VorbisStream::seek(const Timestamp &where) {
+bool VorbisStream::seek(const Common::Timestamp &where) {
 	// Vorbisfile uses the sample pair number, thus we always use 1 for the channels parameter
 	// of the convertTimeToStreamPos helper.
 	int res = ov_pcm_seek(&_ovFile, convertTimeToStreamPos(where, getRate(), 1).totalNumberOfFrames());

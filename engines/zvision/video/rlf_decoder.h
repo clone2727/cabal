@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -19,6 +19,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
  */
+
+// Based on the ScummVM (GPLv2+) file of the same name
 
 #ifndef ZVISION_RLF_DECODER_H
 #define ZVISION_RLF_DECODER_H
@@ -50,7 +52,7 @@ private:
 		int getFrameCount() const { return _frameCount; }
 		const Graphics::Surface *decodeNextFrame();
 		bool isSeekable() const { return true; }
-		bool seek(const Audio::Timestamp &time);
+		bool seek(const Common::Timestamp &time);
 
 	protected:
 		Common::Rational getFrameRate() const { return Common::Rational(1000, _frameTime); }

@@ -37,8 +37,8 @@ public:
 	uint getChannels() const { return 2; }
 	int getRate() const { return 44100; }
 	bool endOfData() const;
-	bool seek(const Audio::Timestamp &where);
-	Audio::Timestamp getLength() const;
+	bool seek(const Common::Timestamp &where);
+	Common::Timestamp getLength() const;
 
 protected:
 	virtual uint getStartFrame() const = 0;

@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -19,6 +19,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
  */
+
+// Based on the ScummVM (GPLv2+) file of the same name
 
 #include "video/video_decoder.h"
 
@@ -335,7 +337,7 @@ bool VideoDecoder::isSeekable() const {
 	return true;
 }
 
-bool VideoDecoder::seek(const Audio::Timestamp &time) {
+bool VideoDecoder::seek(const Common::Timestamp &time) {
 	if (!isSeekable())
 		return false;
 
@@ -388,7 +390,7 @@ bool VideoDecoder::seekToFrame(uint frame) {
 	if (!track)
 		return false;
 
-	Audio::Timestamp time = track->getFrameTime(frame);
+	Common::Timestamp time = track->getFrameTime(frame);
 
 	if (time < 0)
 		return false;
@@ -470,11 +472,11 @@ bool VideoDecoder::isPlaying() const {
 	return _playbackRate != 0;
 }
 
-Audio::Timestamp VideoDecoder::getDuration() const {
-	Audio::Timestamp maxDuration(0, 1000);
+Common::Timestamp VideoDecoder::getDuration() const {
+	Common::Timestamp maxDuration(0, 1000);
 
 	for (TrackList::const_iterator it = _tracks.begin(); it != _tracks.end(); it++) {
-		Audio::Timestamp duration = (*it)->getDuration();
+		Common::Timestamp duration = (*it)->getDuration();
 
 		if (duration > maxDuration)
 			maxDuration = duration;
@@ -483,7 +485,7 @@ Audio::Timestamp VideoDecoder::getDuration() const {
 	return maxDuration;
 }
 
-bool VideoDecoder::seekIntern(const Audio::Timestamp &time) {
+bool VideoDecoder::seekIntern(const Common::Timestamp &time) {
 	for (TrackList::iterator it = _internalTracks.begin(); it != _internalTracks.end(); it++)
 		if (!(*it)->seek(time))
 			return false;
@@ -517,7 +519,7 @@ bool VideoDecoder::Track::isRewindable() const {
 }
 
 bool VideoDecoder::Track::rewind() {
-	return seek(Audio::Timestamp(0, 1000));
+	return seek(Common::Timestamp(0, 1000));
 }
 
 void VideoDecoder::Track::pause(bool shouldPause) {
@@ -525,17 +527,17 @@ void VideoDecoder::Track::pause(bool shouldPause) {
 	pauseIntern(shouldPause);
 }
 
-Audio::Timestamp VideoDecoder::Track::getDuration() const {
-	return Audio::Timestamp(0, 1000);
+Common::Timestamp VideoDecoder::Track::getDuration() const {
+	return Common::Timestamp(0, 1000);
 }
 
 bool VideoDecoder::VideoTrack::endOfTrack() const {
 	return getCurFrame() >= (getFrameCount() - 1);
 }
 
-Audio::Timestamp VideoDecoder::VideoTrack::getFrameTime(uint frame) const {
+Common::Timestamp VideoDecoder::VideoTrack::getFrameTime(uint frame) const {
 	// Default implementation: Return an invalid (negative) number
-	return Audio::Timestamp().addFrames(-1);
+	return Common::Timestamp().addFrames(-1);
 }
 
 uint32 VideoDecoder::FixedRateVideoTrack::getNextFrameStartTime() const {
@@ -545,11 +547,11 @@ uint32 VideoDecoder::FixedRateVideoTrack::getNextFrameStartTime() const {
 	return getFrameTime(getCurFrame() + 1).msecs();
 }
 
-Audio::Timestamp VideoDecoder::FixedRateVideoTrack::getFrameTime(uint frame) const {
-	return Audio::Timestamp(0, frame, getFrameRate());
+Common::Timestamp VideoDecoder::FixedRateVideoTrack::getFrameTime(uint frame) const {
+	return Common::Timestamp(0, frame, getFrameRate());
 }
 
-uint VideoDecoder::FixedRateVideoTrack::getFrameAtTime(const Audio::Timestamp &time) const {
+uint VideoDecoder::FixedRateVideoTrack::getFrameAtTime(const Common::Timestamp &time) const {
 	Common::Rational frameRate = getFrameRate();
 
 	// Easy conversion
@@ -562,7 +564,7 @@ uint VideoDecoder::FixedRateVideoTrack::getFrameAtTime(const Audio::Timestamp &t
 	return (Common::Rational(time.totalNumberOfFrames(), time.framerate()) * frameRate).toInt();
 }
 
-Audio::Timestamp VideoDecoder::FixedRateVideoTrack::getDuration() const {
+Common::Timestamp VideoDecoder::FixedRateVideoTrack::getDuration() const {
 	return getFrameTime(getFrameCount());
 }
 
@@ -605,7 +607,7 @@ void VideoDecoder::AudioTrack::stop() {
 	g_system->getMixer()->stopHandle(_handle);
 }
 
-void VideoDecoder::AudioTrack::start(const Audio::Timestamp &limit) {
+void VideoDecoder::AudioTrack::start(const Common::Timestamp &limit) {
 	stop();
 
 	Audio::AudioStream *stream = getAudioStream();
@@ -652,7 +654,7 @@ bool VideoDecoder::RewindableAudioTrack::rewind() {
 	return stream->rewind();
 }
 
-Audio::Timestamp VideoDecoder::SeekableAudioTrack::getDuration() const {
+Common::Timestamp VideoDecoder::SeekableAudioTrack::getDuration() const {
 	Audio::SeekableAudioStream *stream = getSeekableAudioStream();
 	assert(stream);
 	return stream->getLength();
@@ -662,7 +664,7 @@ Audio::AudioStream *VideoDecoder::SeekableAudioTrack::getAudioStream() const {
 	return getSeekableAudioStream();
 }
 
-bool VideoDecoder::SeekableAudioTrack::seek(const Audio::Timestamp &time) {
+bool VideoDecoder::SeekableAudioTrack::seek(const Common::Timestamp &time) {
 	Audio::SeekableAudioStream *stream = getSeekableAudioStream();
 	assert(stream);
 	return stream->seek(time);
@@ -766,8 +768,8 @@ uint VideoDecoder::getAudioTrackCount() const {
 	return count;
 }
 
-void VideoDecoder::setEndTime(const Audio::Timestamp &endTime) {
-	Audio::Timestamp startTime = 0;
+void VideoDecoder::setEndTime(const Common::Timestamp &endTime) {
+	Common::Timestamp startTime = 0;
 
 	if (isPlaying()) {
 		startTime = getTime();
@@ -806,7 +808,7 @@ void VideoDecoder::setEndFrame(uint frame) {
 	if (!track)
 		return;
 
-	Audio::Timestamp time = track->getFrameTime(frame + 1);
+	Common::Timestamp time = track->getFrameTime(frame + 1);
 
 	if (time < 0)
 		return;
@@ -874,7 +876,7 @@ void VideoDecoder::stopAudio() {
 			((AudioTrack *)*it)->stop();
 }
 
-void VideoDecoder::startAudioLimit(const Audio::Timestamp &limit) {
+void VideoDecoder::startAudioLimit(const Common::Timestamp &limit) {
 	for (TrackList::iterator it = _tracks.begin(); it != _tracks.end(); it++)
 		if ((*it)->getTrackType() == Track::kTrackTypeAudio)
 			((AudioTrack *)*it)->start(limit);

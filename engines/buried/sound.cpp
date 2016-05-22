@@ -315,7 +315,7 @@ uint32 SoundManager::getSecondaryAmbientPosition() {
 
 	// We need to return the position in *bytes* in the buffer here
 	// So, let's work some magic with this
-	Audio::Timestamp time = g_system->getMixer()->getElapsedTime(*_soundData[kAmbientIndexBase + ambientTrack]->_handle);
+	Common::Timestamp time = g_system->getMixer()->getElapsedTime(*_soundData[kAmbientIndexBase + ambientTrack]->_handle);
 
 	// Convert to the sound rate before getting to the magic.
 	time = time.convertToFramerate(_soundData[kAmbientIndexBase + ambientTrack]->_soundData->getRate());

@@ -31,6 +31,7 @@ MODULE_OBJS := \
 	stream.o \
 	system.o \
 	textconsole.o \
+	timestamp.o \
 	tokenizer.o \
 	translation.o \
 	unarj.o \

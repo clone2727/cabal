@@ -254,8 +254,8 @@ bool Win32AudioCDManager::play(int track, int numLoops, int startFrame, int dura
 
 	Audio::SeekableAudioStream *audioStream = new Win32AudioCDStream(_driveHandle, _tocEntries[track], _tocEntries[track + 1]);
 
-	Audio::Timestamp start = Audio::Timestamp(0, startFrame, 75);
-	Audio::Timestamp end = (duration == 0) ? audioStream->getLength() : Audio::Timestamp(0, startFrame + duration, 75);
+	Common::Timestamp start = Common::Timestamp(0, startFrame, 75);
+	Common::Timestamp end = (duration == 0) ? audioStream->getLength() : Common::Timestamp(0, startFrame + duration, 75);
 
 	// Fake emulation since we're really playing an AudioStream
 	_emulating = true;

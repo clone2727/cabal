@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -20,17 +20,19 @@
  *
  */
 
+// Based on the ScummVM (GPLv2+) file of the same name
+
 #ifndef VOYEUR_ANIMATION_H
 #define VOYEUR_ANIMATION_H
 
 #include "video/video_decoder.h"
 #include "audio/audiostream.h"
 #include "audio/mixer.h"
-#include "audio/timestamp.h"
 #include "common/array.h"
 #include "common/list.h"
 #include "common/rect.h"
 #include "common/stream.h"
+#include "common/timestamp.h"
 #include "voyeur/files.h"
 
 namespace Voyeur {
@@ -98,7 +100,7 @@ private:
 		Audio::Mixer::SoundType getSoundType() const { return _soundType; }
 		int numQueuedStreams() const { return _audStream->numQueuedStreams(); }
 		virtual bool isSeekable() const { return true; }
-		virtual bool seek(const Audio::Timestamp &time) { return true; }
+		virtual bool seek(const Common::Timestamp &time) { return true; }
 
 		void queueSound(Common::SeekableReadStream *stream, int size);
 	};
@@ -126,7 +128,7 @@ private:
 
 		virtual Common::Rational getFrameRate() const { return _header.getFrameRate(); }
 		virtual bool isSeekable() const { return true; }
-		virtual bool seek(const Audio::Timestamp &time);
+		virtual bool seek(const Common::Timestamp &time);
 	private:
 		Common::SeekableReadStream *_fileStream;
 		const RL2FileHeader &_header;
@@ -165,7 +167,7 @@ private:
 	int getPaletteStart() const { return _paletteStart; }
 	const RL2FileHeader &getHeader() { return _header; }
 	virtual void readNextPacket();
-	virtual bool seekIntern(const Audio::Timestamp &time);
+	virtual bool seekIntern(const Common::Timestamp &time);
 
 public:
 	RL2Decoder(Audio::Mixer::SoundType soundType = Audio::Mixer::kPlainSoundType);

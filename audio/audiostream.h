@@ -28,9 +28,8 @@
 #include "common/ptr.h"
 #include "common/scummsys.h"
 #include "common/str.h"
+#include "common/timestamp.h"
 #include "common/types.h"
-
-#include "audio/timestamp.h"
 
 namespace Common {
 class SeekableReadStream;
@@ -196,7 +195,7 @@ public:
 	 * @return true on success, false on failure.
 	 */
 	bool seek(uint32 where) {
-		return seek(Timestamp(where, getRate()));
+		return seek(Common::Timestamp(where, getRate()));
 	}
 
 	/**
@@ -205,14 +204,14 @@ public:
 	 * @param where offset as timestamp
 	 * @return true on success, false on failure.
 	 */
-	virtual bool seek(const Timestamp &where) = 0;
+	virtual bool seek(const Common::Timestamp &where) = 0;
 
 	/**
 	 * Returns the length of the stream.
 	 *
 	 * @return length as Timestamp.
 	 */
-	virtual Timestamp getLength() const = 0;
+	virtual Common::Timestamp getLength() const = 0;
 
 	virtual bool rewind() { return seek(0); }
 };
@@ -234,7 +233,7 @@ public:
  * @param loops  How often to loop (0 = infinite)
  * @return A new AudioStream, which offers the desired functionality.
  */
-AudioStream *makeLoopingAudioStream(SeekableAudioStream *stream, Timestamp start, Timestamp end, uint loops);
+AudioStream *makeLoopingAudioStream(SeekableAudioStream *stream, Common::Timestamp start, Common::Timestamp end, uint loops);
 
 /**
  * A looping audio stream, which features looping of a nested part of the
@@ -264,8 +263,8 @@ public:
 	 *                        SubLoopingAudioStream is destroyed.
 	 */
 	SubLoopingAudioStream(SeekableAudioStream *stream, uint loops,
-	                      const Timestamp loopStart,
-	                      const Timestamp loopEnd,
+	                      const Common::Timestamp loopStart,
+	                      const Common::Timestamp loopEnd,
 	                      DisposeAfterUse::Flag disposeAfterUse = DisposeAfterUse::YES);
 
 	int readBuffer(int16 *buffer, const int numSamples);
@@ -278,8 +277,8 @@ private:
 	Common::DisposablePtr<SeekableAudioStream> _parent;
 
 	uint _loops;
-	Timestamp _pos;
-	Timestamp _loopStart, _loopEnd;
+	Common::Timestamp _pos;
+	Common::Timestamp _loopStart, _loopEnd;
 
 	bool _done;
 };
@@ -302,7 +301,7 @@ public:
 	 * @param end             End time.
 	 * @param disposeAfterUse Whether the parent stream object should be destroyed on destruction of the SubSeekableAudioStream.
 	 */
-	SubSeekableAudioStream(SeekableAudioStream *parent, const Timestamp start, const Timestamp end, DisposeAfterUse::Flag disposeAfterUse = DisposeAfterUse::YES);
+	SubSeekableAudioStream(SeekableAudioStream *parent, const Common::Timestamp start, const Common::Timestamp end, DisposeAfterUse::Flag disposeAfterUse = DisposeAfterUse::YES);
 
 	int readBuffer(int16 *buffer, const int numSamples);
 
@@ -313,15 +312,15 @@ public:
 	bool endOfData() const { return (_pos >= _length) || _parent->endOfData(); }
 	bool endOfStream() const { return (_pos >= _length) || _parent->endOfStream(); }
 
-	bool seek(const Timestamp &where);
+	bool seek(const Common::Timestamp &where);
 
-	Timestamp getLength() const { return _length; }
+	Common::Timestamp getLength() const { return _length; }
 private:
 	Common::DisposablePtr<SeekableAudioStream> _parent;
 
-	const Timestamp _start;
-	const Timestamp _length;
-	Timestamp _pos;
+	const Common::Timestamp _start;
+	const Common::Timestamp _length;
+	Common::Timestamp _pos;
 };
 
 class QueuingAudioStream : public Audio::AudioStream {
@@ -378,7 +377,7 @@ QueuingAudioStream *makeQueuingAudioStream(int rate, uint channels);
  * @param rate     Rate of the stream.
  * @param channels The number of channels in the stream
  */
-Timestamp convertTimeToStreamPos(const Timestamp &where, int rate, uint channels);
+Common::Timestamp convertTimeToStreamPos(const Common::Timestamp &where, int rate, uint channels);
 
 /**
  * Factory function for an AudioStream wrapper that cuts off the amount of samples read after a
@@ -388,7 +387,7 @@ Timestamp convertTimeToStreamPos(const Timestamp &where, int rate, uint channels
  * @param length          The time length to limit the stream to
  * @param disposeAfterUse Whether the parent stream object should be destroyed on destruction of the returned stream
  */
-AudioStream *makeLimitingAudioStream(AudioStream *parentStream, const Timestamp &length, DisposeAfterUse::Flag disposeAfterUse = DisposeAfterUse::YES);
+AudioStream *makeLimitingAudioStream(AudioStream *parentStream, const Common::Timestamp &length, DisposeAfterUse::Flag disposeAfterUse = DisposeAfterUse::YES);
 
 /**
  * An AudioStream designed to work in terms of packets.

@@ -8,7 +8,7 @@ class AudioStreamTestSuite : public CxxTest::TestSuite
 {
 public:
 	void test_convertTimeToStreamPos() {
-		const Audio::Timestamp a = Audio::convertTimeToStreamPos(Audio::Timestamp(500, 1000), 11025, 2);
+		const Common::Timestamp a = Audio::convertTimeToStreamPos(Common::Timestamp(500, 1000), 11025, 2);
 		// The last bit has to be 0 in any case for a stereo stream.
 		TS_ASSERT_EQUALS(a.totalNumberOfFrames() & 1, 0);
 
@@ -16,21 +16,21 @@ public:
 		// instead of 11024 and it would still be a valid sample position for ~500ms.
 		TS_ASSERT_EQUALS(a.totalNumberOfFrames(), 11024);
 
-		const Audio::Timestamp b = Audio::convertTimeToStreamPos(Audio::Timestamp(500, 1000), 11025, 1);
+		const Common::Timestamp b = Audio::convertTimeToStreamPos(Common::Timestamp(500, 1000), 11025, 1);
 		TS_ASSERT_EQUALS(b.totalNumberOfFrames(), 500 * 11025 / 1000);
 
 		// Test Audio CD positioning
 
 		// for 44kHz and stereo
-		const Audio::Timestamp c = Audio::convertTimeToStreamPos(Audio::Timestamp(0, 50, 75), 44100, 2);
+		const Common::Timestamp c = Audio::convertTimeToStreamPos(Common::Timestamp(0, 50, 75), 44100, 2);
 		TS_ASSERT_EQUALS(c.totalNumberOfFrames(), 50 * 44100 * 2 / 75);
 
 		// for 11kHz and mono
-		const Audio::Timestamp d = Audio::convertTimeToStreamPos(Audio::Timestamp(0, 50, 75), 11025, 1);
+		const Common::Timestamp d = Audio::convertTimeToStreamPos(Common::Timestamp(0, 50, 75), 11025, 1);
 		TS_ASSERT_EQUALS(d.totalNumberOfFrames(), 50 * 11025 / 75);
 
 		// Some misc test
-		const Audio::Timestamp e = Audio::convertTimeToStreamPos(Audio::Timestamp(1, 1, 4), 11025, 1);
+		const Common::Timestamp e = Audio::convertTimeToStreamPos(Common::Timestamp(1, 1, 4), 11025, 1);
 		TS_ASSERT_EQUALS(e.totalNumberOfFrames(), 5 * 11025 / 4);
 	}
 
@@ -121,7 +121,7 @@ private:
 	void testSubLoopingAudioStreamFixedIter(const int sampleRate, const uint channels, const int time, const int loopEndTime) {
 		const int secondLength = sampleRate * channels;
 
-		const Audio::Timestamp loopStart(500, 1000), loopEnd(loopEndTime * 1000, 1000);
+		const Common::Timestamp loopStart(500, 1000), loopEnd(loopEndTime * 1000, 1000);
 
 		const int32 loopStartPos = Audio::convertTimeToStreamPos(loopStart, sampleRate, channels).totalNumberOfFrames();
 		const int32 loopEndPos = Audio::convertTimeToStreamPos(loopEnd, sampleRate, channels).totalNumberOfFrames();

@@ -217,8 +217,8 @@ bool MacOSXAudioCDManager::play(int track, int numLoops, int startFrame, int dur
 		return false;
 	}
 
-	Audio::Timestamp start = Audio::Timestamp(0, startFrame, 75);
-	Audio::Timestamp end = duration ? Audio::Timestamp(0, startFrame + duration, 75) : seekStream->getLength();
+	Common::Timestamp start = Common::Timestamp(0, startFrame, 75);
+	Common::Timestamp end = duration ? Common::Timestamp(0, startFrame + duration, 75) : seekStream->getLength();
 
 	// Fake emulation since we're really playing an AIFF file
 	_emulating = true;

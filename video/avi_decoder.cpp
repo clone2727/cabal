@@ -487,15 +487,15 @@ bool AVIDecoder::shouldQueueAudio(TrackStatus& status) {
 	AVIAudioTrack *audioTrack = (AVIAudioTrack *)status.track;
 	const AVIStreamHeader &audioHeader = audioTrack->getStreamHeader();
 	const AVIStreamHeader &videoHeader = videoTrack->getStreamHeader();
-	Audio::Timestamp videoTimestamp(0, videoTrack->getCurFrame(), Common::Rational(videoHeader.rate, videoHeader.scale));
+	Common::Timestamp videoTimestamp(0, videoTrack->getCurFrame(), Common::Rational(videoHeader.rate, videoHeader.scale));
 
-	Audio::Timestamp audioTimestamp;
+	Common::Timestamp audioTimestamp;
 	if (audioHeader.sampleSize == 0) {
 		// Variable bitrate
-		audioTimestamp = Audio::Timestamp(0, audioTrack->getCurChunk(), Common::Rational(audioHeader.rate, audioHeader.scale));
+		audioTimestamp = Common::Timestamp(0, audioTrack->getCurChunk(), Common::Rational(audioHeader.rate, audioHeader.scale));
 	} else {
 		// Constant bitrate
-		audioTimestamp = Audio::Timestamp(0, audioTrack->getCurChunk(), Common::Rational(videoHeader.rate, videoHeader.scale));
+		audioTimestamp = Common::Timestamp(0, audioTrack->getCurChunk(), Common::Rational(videoHeader.rate, videoHeader.scale));
 	}
 
 	// Add 0.5s to the video timestamp so we get some extra audio queued
@@ -517,7 +517,7 @@ bool AVIDecoder::rewind() {
 	return true;
 }
 
-bool AVIDecoder::seekIntern(const Audio::Timestamp &time) {
+bool AVIDecoder::seekIntern(const Common::Timestamp &time) {
 	// Can't seek beyond the end
 	if (time > getDuration())
 		return false;
@@ -549,7 +549,7 @@ bool AVIDecoder::seekIntern(const Audio::Timestamp &time) {
 	return true;
 }
 
-bool AVIDecoder::seekTrackToTime(TrackStatus &status, const Audio::Timestamp &time) {
+bool AVIDecoder::seekTrackToTime(TrackStatus &status, const Common::Timestamp &time) {
 	Track *track = status.track;
 
 	// Figure out the frame rate of the track
@@ -673,7 +673,7 @@ bool AVIDecoder::seekTrackToTime(TrackStatus &status, const Audio::Timestamp &ti
 		((AVIAudioTrack *)track)->setCurChunk(frame);
 
 		// Figure out the time of the audio decoded
-		Audio::Timestamp decodedAudioTime(0, frame, frameRate);
+		Common::Timestamp decodedAudioTime(0, frame, frameRate);
 
 		// Skip excees audio to bring us to the right time
 		((AVIAudioTrack *)track)->skipAudio(time, decodedAudioTime);
@@ -942,8 +942,8 @@ void AVIDecoder::AVIAudioTrack::queueSound(Common::SeekableReadStream *stream) {
 	_curChunk++;
 }
 
-void AVIDecoder::AVIAudioTrack::skipAudio(const Audio::Timestamp &time, const Audio::Timestamp &frameTime) {
-	Audio::Timestamp timeDiff = time.convertToFramerate(_wvInfo.samplesPerSec) - frameTime.convertToFramerate(_wvInfo.samplesPerSec);
+void AVIDecoder::AVIAudioTrack::skipAudio(const Common::Timestamp &time, const Common::Timestamp &frameTime) {
+	Common::Timestamp timeDiff = time.convertToFramerate(_wvInfo.samplesPerSec) - frameTime.convertToFramerate(_wvInfo.samplesPerSec);
 	int skipFrames = timeDiff.totalNumberOfFrames();
 
 	if (skipFrames <= 0)

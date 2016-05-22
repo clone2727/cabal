@@ -28,11 +28,14 @@
 #include "common/types.h"
 #include "common/noncopyable.h"
 
+namespace Common {
+class Timestamp;
+}
+
 namespace Audio {
 
 class AudioStream;
 class Channel;
-class Timestamp;
 
 /**
  * A SoundHandle instances corresponds to a specific sound
@@ -243,7 +246,7 @@ public:
 	/**
 	 * Get approximation of for how long the channel has been playing.
 	 */
-	virtual Timestamp getElapsedTime(SoundHandle handle) = 0;
+	virtual Common::Timestamp getElapsedTime(SoundHandle handle) = 0;
 
 	/**
 	 * Check whether any channel of the given sound type is active.

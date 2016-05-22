@@ -79,7 +79,7 @@ public:
 protected:
 	// VideoDecoder API
 	void readNextPacket();
-	bool seekIntern(const Audio::Timestamp &time);
+	bool seekIntern(const Common::Timestamp &time);
 	bool supportsAudioTrackSwitching() const { return true; }
 	AudioTrack *getAudioTrack(int index);
 
@@ -216,7 +216,7 @@ protected:
 		virtual void createAudioStream();
 		virtual void queueSound(Common::SeekableReadStream *stream);
 		Audio::Mixer::SoundType getSoundType() const { return _soundType; }
-		void skipAudio(const Audio::Timestamp &time, const Audio::Timestamp &frameTime);
+		void skipAudio(const Common::Timestamp &time, const Common::Timestamp &frameTime);
 		virtual void resetStream();
 		uint32 getCurChunk() const { return _curChunk; }
 		void setCurChunk(uint32 chunk) { _curChunk = chunk; }
@@ -270,7 +270,7 @@ protected:
 
 	void handleNextPacket(TrackStatus& status);
 	bool shouldQueueAudio(TrackStatus& status);
-	bool seekTrackToTime(TrackStatus &status, const Audio::Timestamp &time);
+	bool seekTrackToTime(TrackStatus &status, const Common::Timestamp &time);
 	Common::Array<TrackStatus> _videoTracks, _audioTracks;
 
 public:

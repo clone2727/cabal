@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -19,6 +19,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
  */
+
+// Based on the ScummVM (GPLv2+) file of the same name
 
 #include "mohawk/mohawk.h"
 #include "mohawk/resource.h"
@@ -75,7 +77,7 @@ uint32 VideoEntry::getTime() const {
 	return _video->getTime();
 }
 
-Audio::Timestamp VideoEntry::getDuration() const {
+Common::Timestamp VideoEntry::getDuration() const {
 	assert(_video);
 	return _video->getDuration();
 }
@@ -91,14 +93,14 @@ void VideoEntry::center() {
 	_y = (g_system->getHeight() - _video->getHeight()) / 2;
 }
 
-void VideoEntry::setBounds(const Audio::Timestamp &startTime, const Audio::Timestamp &endTime) {
+void VideoEntry::setBounds(const Common::Timestamp &startTime, const Common::Timestamp &endTime) {
 	assert(_video);
 	_start = startTime;
 	_video->setEndTime(endTime);
 	_video->seek(startTime);
 }
 
-void VideoEntry::seek(const Audio::Timestamp &time) {
+void VideoEntry::seek(const Common::Timestamp &time) {
 	assert(_video);
 	_video->seek(time);
 }
@@ -557,7 +559,7 @@ bool VideoManager::isVideoPlaying() {
 	return false;
 }
 
-void VideoManager::drawVideoFrame(VideoHandle handle, const Audio::Timestamp &time) {
+void VideoManager::drawVideoFrame(VideoHandle handle, const Common::Timestamp &time) {
 	// FIXME: This should be done separately from the "playing"
 	// videos eventually.
 	assert(handle);

@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -19,6 +19,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
  */
+
+// Based on the ScummVM (GPLv2+) file of the same name
 
 //
 // Partially based on ffmpeg code.
@@ -275,7 +277,7 @@ void QuickTimeDecoder::AudioTrackHandler::updateBuffer() {
 	if (_decoder->endOfVideoTracks()) // If we have no video left (or no video), there's nothing to base our buffer against
 		_audioTrack->queueRemainingAudio();
 	else // Otherwise, queue enough to get us to the next frame plus another half second spare
-		_audioTrack->queueAudio(Audio::Timestamp(_decoder->getTimeToNextFrame() + 500, 1000));
+		_audioTrack->queueAudio(Common::Timestamp(_decoder->getTimeToNextFrame() + 500, 1000));
 }
 
 Audio::SeekableAudioStream *QuickTimeDecoder::AudioTrackHandler::getSeekableAudioStream() const {
@@ -317,7 +319,7 @@ bool QuickTimeDecoder::VideoTrackHandler::endOfTrack() const {
 	return _reversed ? (_curEdit == 0 && _curFrame < 0) : atLastEdit();
 }
 
-bool QuickTimeDecoder::VideoTrackHandler::seek(const Audio::Timestamp &requestedTime) {
+bool QuickTimeDecoder::VideoTrackHandler::seek(const Common::Timestamp &requestedTime) {
 	uint32 convertedFrames = requestedTime.convertToFramerate(_decoder->_timeScale).totalNumberOfFrames();
 	for (_curEdit = 0; !atLastEdit(); _curEdit++)
 		if (convertedFrames >= _parent->editList[_curEdit].timeOffset && convertedFrames < _parent->editList[_curEdit].timeOffset + _parent->editList[_curEdit].trackDuration)
@@ -346,7 +348,7 @@ bool QuickTimeDecoder::VideoTrackHandler::seek(const Audio::Timestamp &requested
 		return true;
 
 	// Now we're in the edit and need to figure out what frame we need
-	Audio::Timestamp time = requestedTime.convertToFramerate(_parent->timeScale);
+	Common::Timestamp time = requestedTime.convertToFramerate(_parent->timeScale);
 	while (getRateAdjustedFrameTime() < (uint32)time.totalNumberOfFrames()) {
 		_curFrame++;
 		if (_durationOverride >= 0) {
@@ -380,8 +382,8 @@ bool QuickTimeDecoder::VideoTrackHandler::seek(const Audio::Timestamp &requested
 	return true;
 }
 
-Audio::Timestamp QuickTimeDecoder::VideoTrackHandler::getDuration() const {
-	return Audio::Timestamp(0, _parent->duration, _decoder->_timeScale);
+Common::Timestamp QuickTimeDecoder::VideoTrackHandler::getDuration() const {
+	return Common::Timestamp(0, _parent->duration, _decoder->_timeScale);
 }
 
 uint16 QuickTimeDecoder::VideoTrackHandler::getWidth() const {
@@ -407,16 +409,16 @@ uint32 QuickTimeDecoder::VideoTrackHandler::getNextFrameStartTime() const {
 	if (endOfTrack())
 		return 0;
 
-	Audio::Timestamp frameTime(0, getRateAdjustedFrameTime(), _parent->timeScale);
+	Common::Timestamp frameTime(0, getRateAdjustedFrameTime(), _parent->timeScale);
 
 	// Check if the frame goes beyond the end of the edit. In that case, the next frame
 	// should really be when we cross the edit boundary.
 	if (_reversed) {
-		Audio::Timestamp editStartTime(0, _parent->editList[_curEdit].timeOffset, _decoder->_timeScale);
+		Common::Timestamp editStartTime(0, _parent->editList[_curEdit].timeOffset, _decoder->_timeScale);
 		if (frameTime < editStartTime)
 			return editStartTime.msecs();
 	} else {
-		Audio::Timestamp nextEditStartTime(0, _parent->editList[_curEdit].timeOffset + _parent->editList[_curEdit].trackDuration, _decoder->_timeScale);
+		Common::Timestamp nextEditStartTime(0, _parent->editList[_curEdit].timeOffset + _parent->editList[_curEdit].trackDuration, _decoder->_timeScale);
 		if (frameTime > nextEditStartTime)
 			return nextEditStartTime.msecs();
 	}

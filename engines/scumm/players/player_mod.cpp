@@ -95,7 +95,7 @@ void Player_MOD::startChannel(int id, void *data, int size, int rate, uint8 vol,
 
 	Audio::SeekableAudioStream *stream = Audio::makePCMStream((const byte *)data, size, rate, 0);
 	if (loopStart != loopEnd) {
-		_channels[i].input = new Audio::SubLoopingAudioStream(stream, 0, Audio::Timestamp(0, loopStart, rate), Audio::Timestamp(0, loopEnd, rate));
+		_channels[i].input = new Audio::SubLoopingAudioStream(stream, 0, Common::Timestamp(0, loopStart, rate), Common::Timestamp(0, loopEnd, rate));
 	} else {
 		_channels[i].input = stream;
 	}

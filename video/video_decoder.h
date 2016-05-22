@@ -26,10 +26,10 @@
 #define VIDEO_DECODER_H
 
 #include "audio/mixer.h"
-#include "audio/timestamp.h"	// TODO: Move this to common/ ?
 #include "common/array.h"
 #include "common/rational.h"
 #include "common/str.h"
+#include "common/timestamp.h"
 #include "graphics/pixelformat.h"
 
 namespace Audio {
@@ -178,7 +178,7 @@ public:
 	 * @param time The time to seek to
 	 * @return true on success, false otherwise
 	 */
-	bool seek(const Audio::Timestamp &time);
+	bool seek(const Common::Timestamp &time);
 
 	/**
 	 * Seek to a given frame.
@@ -213,7 +213,7 @@ public:
 	 * While the setting is stored even if a video is not playing,
 	 * endOfVideo() is only affected when the video is playing.
 	 */
-	void setEndTime(const Audio::Timestamp &endTime);
+	void setEndTime(const Common::Timestamp &endTime);
 
 	/**
 	 * Set the end frame.
@@ -229,7 +229,7 @@ public:
 	/**
 	 * Get the stop time of the video (if not set, zero)
 	 */
-	Audio::Timestamp getEndTime() const { return _endTime; }
+	Common::Timestamp getEndTime() const { return _endTime; }
 
 
 	/////////////////////////////////////////
@@ -308,7 +308,7 @@ public:
 	 * If the duration is unknown, this will return 0. If this is not
 	 * overriden, it will take the length of the longest track.
 	 */
-	virtual Audio::Timestamp getDuration() const;
+	virtual Common::Timestamp getDuration() const;
 
 
 	/////////////////////////////////////////
@@ -511,7 +511,7 @@ protected:
 		 * @param time The time to seek to, from the beginning of the video.
 		 * @return true on success, false otherwise.
 		 */
-		virtual bool seek(const Audio::Timestamp &time) { return false; }
+		virtual bool seek(const Common::Timestamp &time) { return false; }
 
 		/**
 		 * Set the pause status of the track.
@@ -528,7 +528,7 @@ protected:
 		 *
 		 * By default, this returns 0 for unknown.
 		 */
-		virtual Audio::Timestamp getDuration() const;
+		virtual Common::Timestamp getDuration() const;
 
 	protected:
 		/**
@@ -609,7 +609,7 @@ protected:
 		 * By default, this returns a negative (invalid) value. This function
 		 * should only be used by VideoDecoder::seekToFrame().
 		 */
-		virtual Audio::Timestamp getFrameTime(uint frame) const;
+		virtual Common::Timestamp getFrameTime(uint frame) const;
 
 		/**
 		 * Set the video track to play in reverse or forward.
@@ -648,14 +648,14 @@ protected:
 		virtual ~FixedRateVideoTrack() {}
 
 		uint32 getNextFrameStartTime() const;
-		virtual Audio::Timestamp getDuration() const;
-		Audio::Timestamp getFrameTime(uint frame) const;
+		virtual Common::Timestamp getDuration() const;
+		Common::Timestamp getFrameTime(uint frame) const;
 
 		/**
 		 * Get the frame that should be displaying at the given time. This is
 		 * helpful for someone implementing seek().
 		 */
-		uint getFrameAtTime(const Audio::Timestamp &time) const;
+		uint getFrameAtTime(const Common::Timestamp &time) const;
 
 	protected:
 		/**
@@ -686,7 +686,7 @@ protected:
 		 */
 		void stop();
 
-		void start(const Audio::Timestamp &limit);
+		void start(const Common::Timestamp &limit);
 
 		/**
 		 * Get the volume for this track
@@ -771,9 +771,9 @@ protected:
 		virtual ~SeekableAudioTrack() {}
 
 		bool isSeekable() const { return true; }
-		bool seek(const Audio::Timestamp &time);
+		bool seek(const Common::Timestamp &time);
 
-		Audio::Timestamp getDuration() const;
+		Common::Timestamp getDuration() const;
 
 	protected:
 		Audio::AudioStream *getAudioStream() const;
@@ -894,7 +894,7 @@ protected:
 	 *
 	 * @return true on success, false otherwise
 	 */
-	virtual bool seekIntern(const Audio::Timestamp &time);
+	virtual bool seekIntern(const Common::Timestamp &time);
 
 	/**
 	 * Does this video format support switching between audio tracks?
@@ -923,7 +923,7 @@ private:
 
 	// Current playback status
 	bool _needsUpdate;
-	Audio::Timestamp _lastTimeChange, _endTime;
+	Common::Timestamp _lastTimeChange, _endTime;
 	bool _endTimeSet;
 	Common::Rational _playbackRate;
 	VideoTrack *_nextVideoTrack;
@@ -941,7 +941,7 @@ private:
 	// Internal helper functions
 	void stopAudio();
 	void startAudio();
-	void startAudioLimit(const Audio::Timestamp &limit);
+	void startAudioLimit(const Common::Timestamp &limit);
 	bool hasFramesLeft() const;
 	bool hasAudio() const;
 

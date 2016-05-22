@@ -47,8 +47,8 @@ public:
 	void setRate(int newRate) { _rate = newRate; }
 	void beginFadeOut(uint32 millis);
 
-	bool seek(const Audio::Timestamp &where) { return _impl->seek(where); }
-	Audio::Timestamp getLength() const { return _impl->getLength(); }
+	bool seek(const Common::Timestamp &where) { return _impl->seek(where); }
+	Common::Timestamp getLength() const { return _impl->getLength(); }
 private:
 	Audio::SeekableAudioStream *_impl;
 
@@ -120,8 +120,8 @@ public:
 
 	int getRate() const { return _rate; }
 
-	bool seek(const Audio::Timestamp &where);
-	Audio::Timestamp getLength() const { return _length; }
+	bool seek(const Common::Timestamp &where);
+	Common::Timestamp getLength() const { return _length; }
 private:
 	Common::SeekableReadStream *_stream;
 	uint32 _streamStart;
@@ -129,7 +129,7 @@ private:
 	int _rate;
 	uint _processedSize;
 	uint _totalSize;
-	Audio::Timestamp _length;
+	Common::Timestamp _length;
 
 	int _bytesLeft;
 
@@ -167,7 +167,7 @@ AUDStream::AUDStream(Common::SeekableReadStream *stream) : _stream(stream), _end
 
 	debugC(5, kDebugLevelSound, "AUD Info: rate: %d, totalSize: %d, flags: %d, type: %d, streamStart: %d", _rate, _totalSize, flags, type, _streamStart);
 
-	_length = Audio::Timestamp(0, _rate);
+	_length = Common::Timestamp(0, _rate);
 	for (uint32 i = 0; i < _totalSize;) {
 		uint16 size = _stream->readUint16LE();
 		uint16 outSize = _stream->readUint16LE();
@@ -356,7 +356,7 @@ int AUDStream::readChunk(int16 *buffer, const int maxSamples) {
 	return samplesProcessed;
 }
 
-bool AUDStream::seek(const Audio::Timestamp &where) {
+bool AUDStream::seek(const Common::Timestamp &where) {
 	const uint32 seekSample = Audio::convertTimeToStreamPos(where, getRate(), getChannels()).totalNumberOfFrames();
 
 	_stream->seek(_streamStart);

@@ -4,9 +4,6 @@
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
- * Additional copyright for this file:
- * Copyright (C) 1995-1997 Presto Studios, Inc.
- *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
@@ -24,6 +21,9 @@
  */
 
 // Based on the ScummVM (GPLv2+) file of the same name
+
+// Additional copyright for this file:
+// Copyright (C) 1995-1997 Presto Studios, Inc.
 
 #include "common/config-manager.h"
 #include "common/error.h"
@@ -343,7 +343,7 @@ void PegasusEngine::runIntro() {
 
 	video->setVolume(MIN<uint>(getAmbienceLevel(), 0xFF));
 
-	video->seek(Audio::Timestamp(0, 10 * 600, 600));
+	video->seek(Common::Timestamp(0, 10 * 600, 600));
 	video->start();
 
 	playMovieScaled(video, 0, 0);
@@ -2285,7 +2285,7 @@ void PegasusEngine::doSubChase() {
 	if (!video->loadFile("Images/Norad Alpha/Sub Chase Movie"))
 		error("Failed to load sub chase");
 
-	video->setEndTime(Audio::Timestamp(0, 133200, 600));
+	video->setEndTime(Common::Timestamp(0, 133200, 600));
 	video->start();
 
 	while (!shouldQuit() && !video->endOfVideo()) {

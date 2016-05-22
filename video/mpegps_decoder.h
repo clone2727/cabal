@@ -103,7 +103,7 @@ private:
 		/**
 		 * Get the timestamp of the next frame
 		 */
-		virtual Audio::Timestamp getNextFrameStartTimestamp() const = 0;
+		virtual Common::Timestamp getNextFrameStartTimestamp() const = 0;
 
 		// MPEGStream API
 		StreamType getStreamType() const { return kStreamTypeVideo; }
@@ -136,14 +136,14 @@ private:
 		const Graphics::Surface *decodeNextFrame();
 
 		// MPEGVideoStream API
-		Audio::Timestamp getNextFrameStartTimestamp() const { return _nextFrameStartTime; }
+		Common::Timestamp getNextFrameStartTimestamp() const { return _nextFrameStartTime; }
 
 	protected:
 		bool decodePacket(Common::SeekableReadStream *packet);
 
 	private:
 		int _curFrame;
-		Audio::Timestamp _nextFrameStartTime;
+		Common::Timestamp _nextFrameStartTime;
 		Graphics::Surface *_surface;
 
 		void findDimensions(Common::SeekableReadStream *firstPacket, const Graphics::PixelFormat &format);

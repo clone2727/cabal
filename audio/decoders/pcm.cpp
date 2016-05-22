@@ -53,7 +53,7 @@ public:
 		assert(_buffer);
 
 		// Calculate the total playtime of the stream
-		_playtime = Timestamp(0, _stream->size() / channels / (is16Bit ? 2 : 1), rate);
+		_playtime = Common::Timestamp(0, _stream->size() / channels / (is16Bit ? 2 : 1), rate);
 	}
 
 	~PCMStream() {
@@ -66,13 +66,13 @@ public:
 	bool endOfData() const { return _endOfData; }
 
 	int getRate() const         { return _rate; }
-	Timestamp getLength() const { return _playtime; }
+	Common::Timestamp getLength() const { return _playtime; }
 
-	bool seek(const Timestamp &where);
+	bool seek(const Common::Timestamp &where);
 private:
 	const int _rate;                                           ///< Sample rate of stream
 	const uint _channels;                                      ///< The number of channels in the stream
-	Timestamp _playtime;                                       ///< Calculated total play time
+	Common::Timestamp _playtime;                                       ///< Calculated total play time
 	Common::DisposablePtr<Common::SeekableReadStream> _stream; ///< Stream to read data from
 	bool _endOfData;                                           ///< Whether the stream end has been reached
 
@@ -157,7 +157,7 @@ int PCMStream<is16Bit, isUnsigned, isLE>::fillBuffer(int maxSamples) {
 }
 
 template<bool is16Bit, bool isUnsigned, bool isLE>
-bool PCMStream<is16Bit, isUnsigned, isLE>::seek(const Timestamp &where) {
+bool PCMStream<is16Bit, isUnsigned, isLE>::seek(const Common::Timestamp &where) {
 	_endOfData = true;
 
 	if (where > _playtime)

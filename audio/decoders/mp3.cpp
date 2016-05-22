@@ -100,14 +100,14 @@ public:
 	               DisposeAfterUse::Flag dispose);
 
 	int readBuffer(int16 *buffer, const int numSamples);
-	bool seek(const Timestamp &where);
+	bool seek(const Common::Timestamp &where);
 	bool endOfData() const { return _state == MP3_STATE_EOS; }
-	Timestamp getLength() const { return _length; }
+	Common::Timestamp getLength() const { return _length; }
 
 protected:
 	Common::ScopedPtr<Common::SeekableReadStream> _inStream;
 
-	Timestamp _length;
+	Common::Timestamp _length;
 
 private:
 	static Common::SeekableReadStream *skipID3(Common::SeekableReadStream *stream, DisposeAfterUse::Flag dispose);
@@ -350,7 +350,7 @@ MP3Stream::MP3Stream(Common::SeekableReadStream *inStream, DisposeAfterUse::Flag
 	// Note that we allow "MAD_ERROR_BUFLEN" as error code here, since according
 	// to mad.h it is also set on EOF.
 	if ((_stream.error == MAD_ERROR_NONE || _stream.error == MAD_ERROR_BUFLEN) && getRate() > 0)
-		_length = Timestamp(mad_timer_count(_curTime, MAD_UNITS_MILLISECONDS), getRate());
+		_length = Common::Timestamp(mad_timer_count(_curTime, MAD_UNITS_MILLISECONDS), getRate());
 
 	deinitStream();
 
@@ -366,7 +366,7 @@ int MP3Stream::readBuffer(int16 *buffer, const int numSamples) {
 	return fillBuffer(*_inStream, buffer, numSamples);
 }
 
-bool MP3Stream::seek(const Timestamp &where) {
+bool MP3Stream::seek(const Common::Timestamp &where) {
 	if (where == _length) {
 		_state = MP3_STATE_EOS;
 		return true;

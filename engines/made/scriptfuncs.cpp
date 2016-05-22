@@ -709,7 +709,7 @@ int16 ScriptFunctions::sfGetSoundEnergy(int16 argc, int16 *argv) {
 	if (_vm->_mixer->isSoundHandleActive(_audioStreamHandle) && _vm->_soundEnergyArray) {
 		while (_vm->_soundEnergyIndex < _vm->_soundEnergyArray->size()) {
 			SoundEnergyItem *soundEnergyItem = &(*_vm->_soundEnergyArray)[_vm->_soundEnergyIndex];
-			const Audio::Timestamp ts = _vm->_mixer->getElapsedTime(_audioStreamHandle);
+			const Common::Timestamp ts = _vm->_mixer->getElapsedTime(_audioStreamHandle);
 			if (ts.convertToFramerate(_vm->_soundRate).totalNumberOfFrames() < (int)soundEnergyItem->position) {
 				result = soundEnergyItem->energy;
 				break;
