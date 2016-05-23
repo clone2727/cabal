@@ -157,7 +157,7 @@ void ComposerEngine::stopAnimation(Animation *anim, bool localOnly, bool pipesOn
 				removeSprite(entry.prevValue, anim->_id);
 			} else if (entry.op == kAnimOpPlayWave) {
 				if (_currSoundPriority >= entry.priority) {
-					_mixer->stopAll();
+					_mixer->stopHandle(_soundHandle);
 					_audioStream = NULL;
 				}
 			}
@@ -187,7 +187,7 @@ void ComposerEngine::playWaveForAnim(uint16 id, uint16 priority, bool bufferingO
 		if (_currSoundPriority < priority)
 			return;
 		if (_currSoundPriority > priority) {
-			_mixer->stopAll();
+			_mixer->stopHandle(_soundHandle);
 			_audioStream = NULL;
 		}
 	}
