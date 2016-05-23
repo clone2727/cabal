@@ -77,39 +77,41 @@ SoundSubsystemDialog::SoundSubsystemDialog() : TestbedInteractionDialog(80, 60, 
 void SoundSubsystemDialog::handleCommand(GUI::CommandSender *sender, uint32 cmd, uint32 data) {
 
 	switch (cmd) {
-		case kPlayChannel1:
-			_buttonArray[0]->setLabel("Pause Channel #1");
-			_buttonArray[0]->setCmd(kPauseChannel1);
-			_mixer->pauseHandle(_h1, false);
-			break;
-		case kPlayChannel2:
-			_buttonArray[1]->setLabel("Pause Channel #2");
-			_buttonArray[1]->setCmd(kPauseChannel2);
-			_mixer->pauseHandle(_h2, false);
-			break;
-		case kPlayChannel3:
-			_buttonArray[2]->setLabel("Pause Channel #3");
-			_buttonArray[2]->setCmd(kPauseChannel3);
-			_mixer->pauseHandle(_h3, false);
-			break;
-		case kPauseChannel1:
-			_buttonArray[0]->setLabel("Play Channel #1");
-			_buttonArray[0]->setCmd(kPlayChannel1);
-			_mixer->pauseHandle(_h1, true);
-			break;
-		case kPauseChannel2:
-			_buttonArray[1]->setLabel("Play Channel #2");
-			_buttonArray[1]->setCmd(kPlayChannel2);
-			_mixer->pauseHandle(_h2, true);
-			break;
-		case kPauseChannel3:
-			_buttonArray[2]->setLabel("Play Channel #3");
-			_buttonArray[2]->setCmd(kPlayChannel3);
-			_mixer->pauseHandle(_h3, true);
-			break;
-		default:
-			_mixer->stopAll();
-			GUI::Dialog::handleCommand(sender, cmd, data);
+	case kPlayChannel1:
+		_buttonArray[0]->setLabel("Pause Channel #1");
+		_buttonArray[0]->setCmd(kPauseChannel1);
+		_mixer->pauseHandle(_h1, false);
+		break;
+	case kPlayChannel2:
+		_buttonArray[1]->setLabel("Pause Channel #2");
+		_buttonArray[1]->setCmd(kPauseChannel2);
+		_mixer->pauseHandle(_h2, false);
+		break;
+	case kPlayChannel3:
+		_buttonArray[2]->setLabel("Pause Channel #3");
+		_buttonArray[2]->setCmd(kPauseChannel3);
+		_mixer->pauseHandle(_h3, false);
+		break;
+	case kPauseChannel1:
+		_buttonArray[0]->setLabel("Play Channel #1");
+		_buttonArray[0]->setCmd(kPlayChannel1);
+		_mixer->pauseHandle(_h1, true);
+		break;
+	case kPauseChannel2:
+		_buttonArray[1]->setLabel("Play Channel #2");
+		_buttonArray[1]->setCmd(kPlayChannel2);
+		_mixer->pauseHandle(_h2, true);
+		break;
+	case kPauseChannel3:
+		_buttonArray[2]->setLabel("Play Channel #3");
+		_buttonArray[2]->setCmd(kPlayChannel3);
+		_mixer->pauseHandle(_h3, true);
+		break;
+	default:
+		_mixer->stopHandle(_h1);
+		_mixer->stopHandle(_h2);
+		_mixer->stopHandle(_h3);
+		GUI::Dialog::handleCommand(sender, cmd, data);
 	}
 }
 
@@ -152,6 +154,10 @@ TestExitStatus SoundSubsystem::playBeeps() {
 		Testsuite::logDetailedPrintf("Error! Right Beep couldn't be detected : Error with Mixer::setChannelBalance()\n");
 		passed = kTestFailed;
 	}
+
+	// Stop the handle
+	mixer->stopHandle(handle);
+
 	return passed;
 }
 
@@ -240,6 +246,9 @@ TestExitStatus SoundSubsystem::sampleRates() {
 		Testsuite::logDetailedPrintf("Error! Error with variable sample rates\n");
 		passed = kTestFailed;
 	}
+
+	// Stop the stream
+	mixer->stopHandle(handle);
 
 	return passed;
 }
