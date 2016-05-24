@@ -82,6 +82,7 @@ SoundManager::SoundManager(MortevielleEngine *vm, Audio::Mixer *mixer) {
 SoundManager::~SoundManager() {
 	if (_audioStream)
 		_audioStream->finish();
+	_mixer->stopHandle(_soundHandle);
 	free(_ambiantNoiseBuf);
 	free(_noiseBuf);
 }
