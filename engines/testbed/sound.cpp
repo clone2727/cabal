@@ -148,15 +148,12 @@ TestExitStatus SoundSubsystem::playBeeps() {
 	mixer->setChannelBalance(handle, 127);
 	mixer->pauseHandle(handle, false);
 	g_system->delayMillis(500);
-	mixer->stopAll();
+	mixer->stopHandle(handle);
 
 	if (Testsuite::handleInteractiveInput("Were you able to hear the right beep?", "Yes", "No", kOptionRight)) {
 		Testsuite::logDetailedPrintf("Error! Right Beep couldn't be detected : Error with Mixer::setChannelBalance()\n");
 		passed = kTestFailed;
 	}
-
-	// Stop the handle
-	mixer->stopHandle(handle);
 
 	return passed;
 }
