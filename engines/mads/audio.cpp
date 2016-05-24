@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -20,6 +20,8 @@
  *
  */
 
+// Based on the ScummVM (GPLv2+) file of the same name
+
 #include "mads/audio.h"
 #include "mads/compression.h"
 
@@ -36,6 +38,7 @@ AudioPlayer::AudioPlayer(Audio::Mixer *mixer, uint32 gameID) : _mixer(mixer), _g
 }
 
 AudioPlayer::~AudioPlayer() {
+	stop();
 	_dsrEntries.clear();
 	_filename = "";
 }
