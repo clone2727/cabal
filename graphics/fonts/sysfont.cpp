@@ -54,17 +54,31 @@ Graphics::Font *SystemFontManager::createFont(const Common::String &name, const 
 		if (!name.equalsIgnoreCase(s_substituteFonts[i].familyName))
 			continue;
 
+		// Compare without emulation
 		if (s_substituteFonts[i].style != (style & ~kFontStyleEmulate))
 			continue;
 
-		// Capture the style, and ensure it gets copied
-		uint32 subStyle = s_substituteFonts[i].subStyle;
-		if (style & kFontStyleEmulate)
-			subStyle |= kFontStyleEmulate;
-
-		font = createFontIntern(s_substituteFonts[i].subFamilyName, size, subStyle, render, dpi);
+		// Found a match without emulation; attempt to find the font
+		font = createFontIntern(s_substituteFonts[i].subFamilyName, size, s_substituteFonts[i].subStyle, render, dpi);
 		if (font)
 			return font;
+	}
+
+	// Look for substitute fonts forcing emulation
+	if ((style & kFontStyleEmulate) != 0) {
+		for (int i = 0; i < ARRAYSIZE(s_substituteFonts); i++) {
+			if (!name.equalsIgnoreCase(s_substituteFonts[i].familyName))
+				continue;
+
+			// Look for normal ones, so we can use emulation mode
+			if (s_substituteFonts[i].style != kFontStyleNormal)
+				continue;
+
+			// Found a match without emulation; attempt to find the font
+			font = createFontIntern(s_substituteFonts[i].subFamilyName, size, style, render, dpi);
+			if (font)
+				return font;
+		}
 	}
 
 	return 0;
