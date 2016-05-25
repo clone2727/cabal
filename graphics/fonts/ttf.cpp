@@ -715,10 +715,6 @@ FontPropertyMap scanDirectoryForTTF(const Common::FSNode &node) {
 
 		FontProperties properties(familyName, styleName);
 		fontMap[properties] = child.getPath();
-
-		debug("Path: %s", child.getPath().c_str());
-		debug("\tFamily: %s", familyName.empty() ? "<empty>" : familyName.c_str());
-		debug("\tStyle: %s", styleName.empty() ? "<empty>" : styleName.c_str());
 	}
 
 	return fontMap;
