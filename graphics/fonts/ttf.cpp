@@ -749,8 +749,14 @@ FontPropertyMap scanArchiveForTTF(const Common::Archive &archive) {
 	archive.listMembers(members);
 
 	for (Common::ArchiveMemberList::const_iterator it = members.begin(); it != members.end(); it++) {
+		// Only look at .ttf and .ttc files
+		// Otherwise, we'll be loading in tons of other data that we don't want to
+		Common::String name = (*it)->getName();
+		if (!name.matchString("*.ttf", true) && !name.matchString("*.ttc", true))
+			continue;
+
 		// Pull out the stream
-		Common::ScopedPtr<Common::SeekableReadStream> stream(archive.createReadStreamForMember((*it)->getName()));
+		Common::ScopedPtr<Common::SeekableReadStream> stream(archive.createReadStreamForMember(name));
 		if (!stream)
 			continue;
 
@@ -760,7 +766,7 @@ FontPropertyMap scanArchiveForTTF(const Common::Archive &archive) {
 			continue;
 
 		FontProperties properties(familyName, styleName);
-		fontMap[properties] = (*it)->getName();
+		fontMap[properties] = name;
 	}
 
 	return fontMap;
