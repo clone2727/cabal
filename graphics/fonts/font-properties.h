@@ -27,6 +27,7 @@
 #include "common/scummsys.h"
 
 namespace Common {
+class Archive;
 class FSNode;
 }
 
@@ -95,6 +96,11 @@ FontPropertyMap scanDirectoryForTTF(const Common::String &path);
  * Scan for TTF fonts in a directory
  */
 FontPropertyMap scanDirectoryForTTF(const Common::FSNode &node);
+
+/**
+ * Scan for TTF fonts in an archive
+ */
+FontPropertyMap scanArchiveForTTF(const Common::Archive &archive);
 
 #endif
 

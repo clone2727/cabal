@@ -742,6 +742,30 @@ FontPropertyMap scanDirectoryForTTF(const Common::FSNode &node) {
 	return fontMap;
 }
 
+FontPropertyMap scanArchiveForTTF(const Common::Archive &archive) {
+	FontPropertyMap fontMap;
+
+	Common::ArchiveMemberList members;
+	archive.listMembers(members);
+
+	for (Common::ArchiveMemberList::const_iterator it = members.begin(); it != members.end(); it++) {
+		// Pull out the stream
+		Common::ScopedPtr<Common::SeekableReadStream> stream(archive.createReadStreamForMember((*it)->getName()));
+		if (!stream)
+			continue;
+
+		// Grab data from freetype2
+		Common::String familyName, styleName;
+		if (!getTTFDetails(*stream, familyName, styleName))
+			continue;
+
+		FontProperties properties(familyName, styleName);
+		fontMap[properties] = (*it)->getName();
+	}
+
+	return fontMap;
+}
+
 } // End of namespace Graphics
 
 namespace Common {
