@@ -22,6 +22,7 @@
 
 #include "common/ustr.h"
 #include "common/memorypool.h"
+#include "common/str.h"
 #include "common/util.h"
 
 namespace Common {
@@ -70,6 +71,17 @@ U32String::U32String(const U32String &str)
 		_str = str._str;
 	}
 	assert(_str != 0);
+}
+
+U32String::U32String(const String &str, const value_type *codepage) : _size(0), _str(_storage) {
+	ensureCapacity(str.size() + 1, false);
+
+	value_type *output = _str;
+	for (uint32 i = 0; i < str.size(); i++)
+		*output++ = codepage[(byte)str[i]];
+
+	*output++ = 0;
+	_size = str.size();
 }
 
 U32String::~U32String() {

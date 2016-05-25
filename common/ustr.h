@@ -27,6 +27,8 @@
 
 namespace Common {
 
+class String;
+
 /**
  * Very simple string class for UTF-32 strings in ScummVM. The main intention
  * behind this class is to feature a simple way of displaying UTF-32 strings
@@ -99,6 +101,9 @@ public:
 
 	/** Construct a copy of the given string. */
 	U32String(const U32String &str);
+
+	/** Construct a copy of the given string using a codepage */
+	U32String(const String &str, const value_type *codepage);
 
 	~U32String();
 
