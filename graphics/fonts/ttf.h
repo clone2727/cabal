@@ -65,6 +65,15 @@ Font *loadTTFFont(Common::SeekableReadStream &stream, const FontSize &size, uint
  */
 bool getTTFDetails(const Common::String &path, Common::String &family, Common::String &style);
 
+/**
+ * Get the font family and style for a TTF font
+ * @param stream The stream containing the font
+ * @param family The family name
+ * @param style The style name
+ * @return true on success, false otherwise
+ */
+bool getTTFDetails(Common::SeekableReadStream &stream, Common::String &family, Common::String &style);
+
 void shutdownTTF();
 
 } // End of namespace Graphics

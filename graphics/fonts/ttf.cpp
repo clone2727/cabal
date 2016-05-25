@@ -685,6 +685,28 @@ bool getTTFDetails(const Common::String &path, Common::String &family, Common::S
 	return true;
 }
 
+bool getTTFDetails(Common::SeekableReadStream &stream, Common::String &family, Common::String &style) {
+	Common::ScopedArray<byte> data(new byte[stream.size()]);
+	stream.read(data.get(), stream.size());
+
+	FT_Face face;
+	if (!g_ttf.loadFont(data.get(), stream.size(), face))
+		return false;
+
+	if (face->family_name)
+		family = face->family_name;
+	else
+		family.clear();
+
+	if (face->style_name)
+		style = face->style_name;
+	else
+		style.clear();
+
+	g_ttf.closeFont(face);
+	return true;
+}
+
 FontPropertyMap scanDirectoryForTTF(const Common::String &path) {
 	return scanDirectoryForTTF(Common::FSNode(path));
 }
