@@ -23,23 +23,19 @@
 // Additional copyright for this file:
 // Copyright (C) 1995 Presto Studios, Inc.
 
-#include "common/config-manager.h"
-#include "common/fs.h"
+#include "common/archive.h"
 #ifdef USE_ICONV
 #include "common/iconv.h"
 #endif
-#ifdef MACOSX
-#include "common/macresman.h"
-#endif
+#include "common/stream.h"
 #include "common/str-array.h"
 #include "common/system.h"
-#include "common/unzip.h"
 #include "graphics/cursorman.h"
 #include "graphics/font.h"
 #include "graphics/palette.h"
 #include "graphics/surface.h"
 #include "graphics/wincursor.h"
-#include "graphics/fonts/ttf.h"
+#include "graphics/fonts/sysfont.h"
 #include "image/bmp.h"
 
 #include "buried/buried.h"
@@ -161,41 +157,16 @@ Graphics::Font *GraphicsManager::createFont(int size, bool bold) const {
 }
 
 Graphics::Font *GraphicsManager::createArialFont(int size, bool bold) const {
-	Common::SeekableReadStream *stream = findArialStream(bold);
-
-	if (!stream)
-		error("Failed to find Arial%s font", bold ? " Bold" : "");
-
-	// Map the heights needed to point sizes
-	if (bold) {
-		if (size != 20)
-			error("Unhandled Arial Bold height %d", size);
-
-		size = 12;
-	} else {
-		switch (size) {
-		case 12:
-		case 13:
-			size = 7;
-			break;
-		case 14:
-			size = 8;
-			break;
-		default:
-			error("Unhandled Arial height %d", size);
-		}
-	}
-
 	// TODO: Make the monochrome mode optional
 	// Win3.1 obviously only had raster fonts, but BIT Win3.1 will render
 	// with the TrueType font on Win7/Win8 (at least)
 	// FIXME: The font is slightly off from the original... need to check. Sizes are right though!
-	Graphics::Font *font = Graphics::loadTTFFont(*stream, size, 96, _vm->isTrueColor() ? Graphics::kFontRenderLight : Graphics::kFontRenderMonochrome);
+
+	Graphics::Font *font = SystemFontMan.createFont("Arial", Graphics::FontSize(size, Graphics::kFontSizeHeight), bold ? Graphics::kFontStyleBold : Graphics::kFontStyleNormal,  _vm->isTrueColor() ? Graphics::kFontRenderLight : Graphics::kFontRenderMonochrome);
 
 	if (!font)
 		error("Failed to load Arial%s font", bold ? " Bold" : "");
 
-	delete stream;
 	return font;
 }
 
@@ -582,75 +553,6 @@ Graphics::Surface *GraphicsManager::remapPalettedFrame(const Graphics::Surface *
 	return convertedSurface;
 }
 
-Common::SeekableReadStream *GraphicsManager::findArialStream(bool bold) const {
-	Common::SeekableReadStream *stream = 0;
-
-	// Try to see if the user supplied a font
-	Common::String defaultBaseName = bold ? "arialbd.ttf" : "arial.ttf";
-	stream = SearchMan.createReadStreamForMember(defaultBaseName);
-	if (stream)
-		return stream;
-
-	// HACK: Try to load the system font
-#if defined(WIN32)
-	Common::FSNode fontPath("C:/WINDOWS/Fonts/" + defaultBaseName);
-
-	if (fontPath.exists() && !fontPath.isDirectory() && fontPath.isReadable())
-		stream = fontPath.createReadStream();
-
-	if (!stream) {
-		Common::FSNode win2kFontPath("C:/WINNT/Fonts/" + defaultBaseName);
-
-		if (win2kFontPath.exists() && !win2kFontPath.isDirectory() && win2kFontPath.isReadable())
-			stream = win2kFontPath.createReadStream();
-	}
-#elif defined(MACOSX)
-	// Attempt to load the font from the Arial.ttf font first
-	Common::String baseName = bold ? "Arial Bold" : "Arial";
-	Common::FSNode fontPath(Common::String::format("/Library/Fonts/%s.ttf", baseName.c_str()));
-
-	if (fontPath.exists() && !fontPath.isDirectory() && fontPath.isReadable())
-		stream = fontPath.createReadStream();
-
-	if (!stream) {
-		// Try the suitcase on the system
-		Common::FSNode fontDirectory("/Library/Fonts");
-		Common::MacResManager resFork;
-
-		// DOUBLE HACK WARNING: Just assume it's 0x1000
-		// (it should always be this, the first font, but parsing the FOND would be better)
-		if (fontDirectory.exists() && fontDirectory.isDirectory() && resFork.open(fontPath, "Arial") && resFork.hasResFork())
-			stream = resFork.getResource(MKTAG('s', 'f', 'n', 't'), baseName);
-
-		// ...and one last try
-		if (!stream) {
-			Common::FSNode msFontDirectory("/Library/Fonts/Microsoft");
-			if (fontDirectory.exists() && fontDirectory.isDirectory() && resFork.open(fontPath, "Arial") && resFork.hasResFork())
-				stream = resFork.getResource(MKTAG('s', 'f', 'n', 't'), baseName);
-		}
-	}
-#elif defined(__linux__)
-	// TODO: Could also check for other fonts, other paths, etc.
-	Common::String baseName = bold ? "arialbd.ttf" : "arial.ttf";
-	Common::FSNode fontPath("/usr/share/fonts/truetype/msttcorefonts/" + baseName);
-
-	if (fontPath.exists() && !fontPath.isDirectory() && fontPath.isReadable())
-		stream = fontPath.createReadStream();
-#endif
-
-	if (!stream) {
-		// TODO: It would really be nice to have "Liberation Sans", since it is metric
-		// compatible with Arial.
-
-		if (bold)
-			stream = getThemeFontStream("FreeSansBold.ttf");
-		else
-			stream = getThemeFontStream("FreeSans.ttf");
-	}
-
-	return stream;
-}
-
 int GraphicsManager::computeHPushOffset(int speed) {
 	switch (speed) {
 	case 3:
@@ -689,98 +591,14 @@ void GraphicsManager::crossBlit(Graphics::Surface *dst, int xDst, int yDst, int 
 }
 
 Graphics::Font *GraphicsManager::createMSGothicFont(int size, bool bold) const {
-	Common::SeekableReadStream *stream = findMSGothicStream();
-
-	if (!stream)
-		error("Failed to find MS Gothic font");
-
-	switch (size) {
-	case 10:	
-	case 11:
-		size = 8;
-		break;
-	case 12:
-		size = 9;
-		break;
-	case 20:
-		size = 16;
-		break;
-	default:
-		error("Unknown MS Gothic font size %d", size);
-	}
-
-	// TODO: Fake a bold version
-
 	// Force monochrome, since the original uses the bitmap glyphs in the font
-	Graphics::Font *font = Graphics::loadTTFFont(*stream, size, 96, Graphics::kFontRenderMonochrome);
+
+	Graphics::Font *font = SystemFontMan.createFont("MS Gothic", Graphics::FontSize(size, Graphics::kFontSizeHeight), bold ? (Graphics::kFontStyleBold | Graphics::kFontStyleEmulate) : Graphics::kFontStyleNormal, Graphics::kFontRenderMonochrome);
 
 	if (!font)
 		error("Failed to load MS Gothic font");
 
-	delete stream;
 	return font;
-}
-
-Common::SeekableReadStream *GraphicsManager::findMSGothicStream() const {
-	Common::SeekableReadStream *stream = 0;
-
-	// Try to see if the user supplied a font
-	stream = SearchMan.createReadStreamForMember("msgothic.ttc");
-	if (stream)
-		return stream;
-
-	// HACK: Try to load the system font
-#if defined(WIN32)
-	Common::FSNode fontPath("C:/WINDOWS/Fonts/msgothic.ttc");
-
-	if (fontPath.exists() && !fontPath.isDirectory() && fontPath.isReadable())
-		stream = fontPath.createReadStream();
-
-	if (!stream) {
-		Common::FSNode win2kFontPath("C:/WINNT/Fonts/msgothic.ttc");
-
-		if (win2kFontPath.exists() && !win2kFontPath.isDirectory() && win2kFontPath.isReadable())
-			stream = win2kFontPath.createReadStream();
-	}
-#endif
-
-	if (!stream) {
-		// TODO: Find the equivalent free font (probably "VL Gothic", which is what Wine uses)
-		// "Ume Gothic" might be another alternative
-	}
-
-	return stream;
-}
-
-Common::SeekableReadStream *GraphicsManager::getThemeFontStream(const Common::String &fileName) const {
-	// Without needing to actually come out and say it, this is all one huge hack.
-	// OK, I said it anyway.
-
-	Common::SeekableReadStream *stream = 0;
-
-	// Code loosely based on the similar Wintermute code, minus the C++11 nullptr nonsense
-	// Attempt to load it from the theme
-
-	if (ConfMan.hasKey("themepath")) {
-		Common::SeekableReadStream *archiveStream = 0;
-		Common::FSNode themeFile(ConfMan.get("themepath") + "/scummmodern.zip");
-
-		if (themeFile.exists() && !themeFile.isDirectory() && themeFile.isReadable())
-			archiveStream = themeFile.createReadStream();
-
-		if (!archiveStream)
-			archiveStream = SearchMan.createReadStreamForMember("scummmodern.zip");
-
-		if (archiveStream) {
-			Common::Archive *archive = Common::makeZipArchive(archiveStream);
-			if (archive)
-				stream = archive->createReadStreamForMember(fileName);
-
-			delete archive;
-		}
-	}
-
-	return stream;
 }
 
 void GraphicsManager::renderText(Graphics::Surface *dst, Graphics::Font *font, const Common::String &text, int x, int y, int w, int h, uint32 color, int lineHeight, TextAlign textAlign, bool centerVertically) {
