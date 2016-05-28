@@ -20,9 +20,15 @@
  *
  */
 
+#include "common/archive.h"
 #include "common/config-manager.h"
+#include "common/stream.h"
 #include "common/system.h"
+#include "graphics/fonts/font-properties.h"
 #include "graphics/fonts/sysfont.h"
+#ifdef USE_FREETYPE2
+#include "graphics/fonts/ttf.h"
+#endif
 
 namespace Common {
 DECLARE_SINGLETON(Graphics::SystemFontManager);
@@ -85,14 +91,32 @@ Graphics::Font *SystemFontManager::createFont(const Common::String &name, const 
 }
 
 Graphics::Font *SystemFontManager::createFontIntern(const Common::String &name, const FontSize &size, uint32 style, FontRenderMode render, uint dpi) {
-	SystemFontProvider *provider = g_system->getSystemFontProvider();
+#ifdef USE_FREETYPE2
+	// Attempt to find the font in the game's search set
+	{
+		FontPropertyMap gameFonts = scanArchiveForTTF(SearchMan);
+		FontPropertyMap::const_iterator it = gameFonts.find(FontProperties(name, Graphics::getFontStyleString(style)));
+		if (it != gameFonts.end()) {
+			Common::ScopedPtr<Common::SeekableReadStream> stream(SearchMan.createReadStreamForMember(it->_value));
+			if (stream) {
+				Font *font = loadTTFFont(*stream, size, dpi, render);
+				if (font)
+					return font;
+			}
+		}
+	}
+#endif
 
+	// Actually query the system for the font
+	SystemFontProvider *provider = g_system->getSystemFontProvider();
 	if (provider) {
 		Graphics::Font *font = provider->createFont(name, size, style, render, dpi);
 
 		if (font)
 			return font;
 	}
+
+	// TODO: Last resort: check the theme
 
 	return 0;
 }
