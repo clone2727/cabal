@@ -38,7 +38,7 @@ private:
 };
 
 Common::SeekableReadStream *MacOSXFontProvider::createReadStreamForFont(const Common::String &name, uint32 style) {
-	Common::String styleName = makeStyleString(style);
+	Common::String styleName = Graphics::getFontStyleString(style);
 
 	// Try the user's font directory
 	// Use the BSD interface so we don't have to touch Obj-C (which is always a plus)

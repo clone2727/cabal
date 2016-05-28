@@ -28,8 +28,8 @@
 Graphics::Font *TTFFontProvider::createFont(const Common::String &name, const Graphics::FontSize &size, uint32 style, Graphics::FontRenderMode render, uint dpi) {
 	Common::ScopedPtr<Common::SeekableReadStream> stream(createReadStreamForFont(name, style));
 	bool emulateMode = false;
-	if (!stream && (style & kFontStyleEmulate) != 0) {
-		stream.reset(createReadStreamForFont(name, kFontStyleNormal));
+	if (!stream && (style & Graphics::kFontStyleEmulate) != 0) {
+		stream.reset(createReadStreamForFont(name, Graphics::kFontStyleNormal));
 		emulateMode = true;
 	}
 
@@ -41,21 +41,3 @@ Graphics::Font *TTFFontProvider::createFont(const Common::String &name, const Gr
 	return Graphics::loadTTFFont(*stream, size, dpi, render);
 }
 
-Common::String TTFFontProvider::makeStyleString(uint32 style) {
-	// Ignore force
-	style &= ~kFontStyleEmulate;
-
-	switch (style) {
-	case kFontStyleNormal:
-		return "Regular";
-	case kFontStyleBold:
-		return "Bold";
-	case kFontStyleItalic:
-		return "Italic";
-	case kFontStyleBold | kFontStyleItalic:
-		return "Bold Italic";
-	}
-
-	// Default to regular
-	return "Regular";
-}

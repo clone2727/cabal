@@ -85,6 +85,37 @@ struct FontPropertiesHash {
  */
 typedef Common::HashMap<FontProperties, Common::String, FontPropertiesHash> FontPropertyMap;
 
+/**
+ * Bit flags for choosing the style of the font found
+ */
+enum FontStyle {
+	/**
+	 * The normal style
+	 */
+	kFontStyleNormal = 0,
+
+	/**
+	 * The bold version of a font
+	 */
+	kFontStyleBold = (1 << 0),
+
+	/**
+	 * The italic version of a font
+	 */
+	kFontStyleItalic = (1 << 1),
+
+	/**
+	 * Force the emulation of the style if a normal version of the font
+	 * is found, but not the requested style.
+	 */
+	kFontStyleEmulate = (1 << 31)
+};
+
+/**
+ * Get the style string based on the flags
+ */
+Common::String getFontStyleString(uint32 style);
+
 #ifdef USE_FREETYPE2
 
 /**

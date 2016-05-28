@@ -40,7 +40,7 @@ class SeekableReadStream;
 class TTFFontProvider : public SystemFontProvider {
 public:
 	// SystemFontProvider API
-	Graphics::Font *createFont(const Common::String &name, const Graphics::FontSize &size, uint32 style = kFontStyleNormal, Graphics::FontRenderMode render = Graphics::kFontRenderNormal, uint dpi = Graphics::kFontDefaultDPI);
+	Graphics::Font *createFont(const Common::String &name, const Graphics::FontSize &size, uint32 style = Graphics::kFontStyleNormal, Graphics::FontRenderMode render = Graphics::kFontRenderNormal, uint dpi = Graphics::kFontDefaultDPI);
 
 protected:
 	/**
@@ -50,12 +50,7 @@ protected:
 	 * @param style A set of flags representing style
 	 * @return The pointer to the TTF stream, or 0 if it could not be found
 	 */
-	virtual Common::SeekableReadStream *createReadStreamForFont(const Common::String &name, uint32 style = kFontStyleNormal) = 0;
-
-	/**
-	 * Get the style string based on the flags
-	 */
-	static Common::String makeStyleString(uint32 style);
+	virtual Common::SeekableReadStream *createReadStreamForFont(const Common::String &name, uint32 style = Graphics::kFontStyleNormal) = 0;
 };
 
 #endif

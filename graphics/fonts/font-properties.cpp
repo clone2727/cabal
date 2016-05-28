@@ -20,35 +20,27 @@
  *
  */
 
-#ifndef BACKENDS_FONTS_PROVIDER_H
-#define BACKENDS_FONTS_PROVIDER_H
-
-#include "graphics/font.h"
 #include "graphics/fonts/font-properties.h"
 
-namespace Common {
-class String;
+namespace Graphics {
+
+Common::String getFontStyleString(uint32 style) {
+	// Ignore force
+	style &= ~kFontStyleEmulate;
+
+	switch (style) {
+	case kFontStyleNormal:
+		return "Regular";
+	case kFontStyleBold:
+		return "Bold";
+	case kFontStyleItalic:
+		return "Italic";
+	case kFontStyleBold | kFontStyleItalic:
+		return "Bold Italic";
+	}
+
+	// Default to regular
+	return "Regular";
 }
 
-/**
- * A class providing access to system fonts
- */
-class SystemFontProvider {
-public:
-	virtual ~SystemFontProvider() {}
-
-	/**
-	 * Create a font for the given name and style. The font returned will be
-	 * an exact match for the name requested, if present.
-	 *
-	 * @param name The name of the font face, not including style
-	 * @param size The font size
-	 * @param style A set of flags representing style
-	 * @param render A set of flags for rendering the font
-	 * @param dpi The DPI to load the font in
-	 * @return A pointer to the font, or 0 if it could not be found
-	 */
-	virtual Graphics::Font *createFont(const Common::String &name, const Graphics::FontSize &size, uint32 style = Graphics::kFontStyleNormal, Graphics::FontRenderMode render = Graphics::kFontRenderNormal, uint dpi = Graphics::kFontDefaultDPI) = 0;
-};
-
-#endif
+} // End of namespace Graphics

@@ -50,7 +50,7 @@ Common::SeekableReadStream *Win32FontProvider::createReadStreamForFont(const Com
 		return 0;
 	}
 
-	Graphics::FontProperties property(name, makeStyleString(style));
+	Graphics::FontProperties property(name, Graphics::getFontStyleString(style));
 	Graphics::FontPropertyMap fontMap = Graphics::scanDirectoryForTTF(fontNode.getPath());
 	Graphics::FontPropertyMap::iterator it = fontMap.find(property);
 	if (it != fontMap.end()) {

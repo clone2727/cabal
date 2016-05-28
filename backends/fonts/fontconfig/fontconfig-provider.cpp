@@ -63,7 +63,7 @@ Common::SeekableReadStream *FontconfigFontProvider::createReadStreamForFont(cons
 	if (!_config)
 		return 0;
 
-	Common::String styleName = makeStyleString(style);
+	Common::String styleName = Graphics::getFontStyleString(style);
 
 	FcPattern *pattern = FcPatternCreate();
 
