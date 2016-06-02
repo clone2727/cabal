@@ -27,12 +27,12 @@
 
 #include "audio/audiostream.h"
 #include "audio/decoders/aiff.h"
-#include "audio/timestamp.h"
 #include "common/config-manager.h"
 #include "common/debug.h"
 #include "common/fs.h"
 #include "common/hashmap.h"
 #include "common/textconsole.h"
+#include "common/timestamp.h"
 #include "backends/audiocd/default/default-audiocd.h"
 #include "backends/audiocd/macosx/macosx-audiocd.h"
 #include "backends/fs/stdiostream.h"
