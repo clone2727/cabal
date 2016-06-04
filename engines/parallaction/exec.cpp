@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -19,6 +19,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
  */
+
+// Based on the ScummVM (GPLv2+) file of the same name
 
 #include "parallaction/exec.h"
 #include "parallaction/parallaction.h"
@@ -102,7 +104,7 @@ void CommandExec::runList(CommandList::iterator first, CommandList::iterator las
 		if (cmd->_valid && !cmd->_zone && !cmd->_zoneName.empty()) {
 			// try binding the command to a zone
 			cmd->_zone = _vm->_location.findZone(cmd->_zoneName.c_str());
-			cmd->_valid = cmd->_zone != 0;
+			cmd->_valid = static_cast<bool>(cmd->_zone);
 		}
 
 		if (!cmd->_valid) {
