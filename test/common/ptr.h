@@ -81,8 +81,8 @@ class PtrTestSuite : public CxxTest::TestSuite {
 		TS_ASSERT(p1);
 		TS_ASSERT(!p2);
 
-		TS_ASSERT(p1 != 0);
-		TS_ASSERT(p2 == 0);
+		TS_ASSERT(static_cast<bool>(p1));
+		TS_ASSERT(!static_cast<bool>(p2));
 
 		p1.reset();
 		TS_ASSERT(!p1);
