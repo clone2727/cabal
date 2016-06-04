@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -19,6 +19,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
  */
+
+// Based on the ScummVM (GPLv2+) file of the same name
 
 /*
  * This code is based on Broken Sword 2.5 engine
@@ -211,11 +213,11 @@ bool PackageManager::fileExists(const Common::String &fileName) {
 	// the English voick pack
 	if (fileName == "/speech/en") {
 		// To get around this, change to detecting one of the files in the folder
-		return getArchiveMember(normalizePath(fileName + "/APO0001.ogg", _currentDirectory));
+		return static_cast<bool>(getArchiveMember(normalizePath(fileName + "/APO0001.ogg", _currentDirectory)));
 	}
 
 	Common::ArchiveMemberPtr fileNode = getArchiveMember(normalizePath(fileName, _currentDirectory));
-	return fileNode;
+	return static_cast<bool>(fileNode);
 }
 
 int PackageManager::doSearch(Common::ArchiveMemberList &list, const Common::String &filter, const Common::String &path, uint typeFilter) {
