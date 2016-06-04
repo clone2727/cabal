@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -19,6 +19,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
  */
+
+// Based on the ScummVM (GPLv2+) file of the same name
 
 #include "common/system.h"
 #include "common/textconsole.h"
@@ -62,7 +64,7 @@ bool FSNode::exists() const {
 
 FSNode FSNode::getChild(const String &n) const {
 	// If this node is invalid or not a directory, return an invalid node
-	if (_realNode == 0 || !_realNode->isDirectory())
+	if (!_realNode || !_realNode->isDirectory())
 		return FSNode();
 
 	AbstractFSNode *node = _realNode->getChild(n);
@@ -97,7 +99,7 @@ String FSNode::getName() const {
 }
 
 FSNode FSNode::getParent() const {
-	if (_realNode == 0)
+	if (!_realNode)
 		return *this;
 
 	AbstractFSNode *node = _realNode->getParent();
@@ -126,7 +128,7 @@ bool FSNode::isWritable() const {
 }
 
 SeekableReadStream *FSNode::createReadStream() const {
-	if (_realNode == 0)
+	if (!_realNode)
 		return 0;
 
 	if (!_realNode->exists()) {
@@ -141,7 +143,7 @@ SeekableReadStream *FSNode::createReadStream() const {
 }
 
 WriteStream *FSNode::createWriteStream() const {
-	if (_realNode == 0)
+	if (!_realNode)
 		return 0;
 
 	if (_realNode->isDirectory()) {
