@@ -169,7 +169,7 @@ public:
 	 * Implicit conversion operator to bool for convenience, to make
 	 * checks like "if (sharedPtr) ..." possible.
 	 */
-	operator bool() const { return _pointer != 0; }
+	CABAL_EXPLICIT_OPERATOR_CONV operator bool() const { return _pointer != 0; }
 
 	/**
 	 * Checks if the SharedPtr object is the only object refering
@@ -240,7 +240,7 @@ public:
 	 * Implicit conversion operator to bool for convenience, to make
 	 * checks like "if (scopedPtr) ..." possible.
 	 */
-	operator bool() const { return _pointer != 0; }
+	CABAL_EXPLICIT_OPERATOR_CONV operator bool() const { return _pointer != 0; }
 
 	~ScopedPtr() {
 		delete _pointer;
@@ -293,7 +293,7 @@ public:
 	 * Implicit conversion operator to bool for convenience, to make
 	 * checks like "if (scopedArray) ..." possible.
 	 */
-	operator bool() const { return _pointer != 0; }
+	CABAL_EXPLICIT_OPERATOR_CONV operator bool() const { return _pointer != 0; }
 
 	~ScopedArray() {
 		delete[] _pointer;
@@ -351,7 +351,7 @@ public:
 	 * Implicit conversion operator to bool for convenience, to make
 	 * checks like "if (scopedPtr) ..." possible.
 	 */
-	operator bool() const { return _pointer; }
+	CABAL_EXPLICIT_OPERATOR_CONV operator bool() const { return _pointer; }
 
 	/**
 	 * Returns the plain pointer value.

@@ -73,7 +73,7 @@ public:
 	/**
 	 * Convenience implicit cast to bool
 	 */
-	operator bool() const { return isOpen(); }
+	CABAL_EXPLICIT_OPERATOR_CONV operator bool() const { return isOpen(); }
 
 	/**
 	 * Is the video open?
@@ -274,7 +274,7 @@ public:
 	/**
 	 * Convenience implicit cast to bool
 	 */
-	operator bool() const { return isValid(); }
+	CABAL_EXPLICIT_OPERATOR_CONV operator bool() const { return isValid(); }
 
 	/**
 	 * Simple equality operator
