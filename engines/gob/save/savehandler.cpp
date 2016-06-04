@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -19,6 +19,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
  */
+
+// Based on the ScummVM (GPLv2+) file of the same name
 
 #include "common/endian.h"
 
@@ -317,7 +319,7 @@ bool TempSpriteHandler::create(uint32 width, uint32 height, bool trueColor) {
 }
 
 bool TempSpriteHandler::createFromSprite(int16 dataVar, int32 size, int32 offset) {
-	return createSprite(dataVar, size, offset) != 0;
+	return static_cast<bool>(createSprite(dataVar, size, offset));
 }
 
 SurfacePtr TempSpriteHandler::createSprite(int16 dataVar, int32 size, int32 offset) {

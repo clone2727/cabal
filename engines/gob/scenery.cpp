@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -19,6 +19,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
  */
+
+// Based on the ScummVM (GPLv2+) file of the same name
 
 #include "common/endian.h"
 #include "common/stream.h"
@@ -186,7 +188,7 @@ int16 Scenery::loadStatic(char search) {
 			_staticPictToSprite[7 * sceneryIndex + i] = sprIndex;
 			_spriteRefs[sprIndex]++;
 		} else {
-			for (sprIndex = 19; _vm->_draw->_spritesArray[sprIndex] != 0; sprIndex--) { }
+			for (sprIndex = 19; _vm->_draw->_spritesArray[sprIndex]; sprIndex--) { }
 
 			_staticPictToSprite[7 * sceneryIndex + i] = sprIndex;
 			_spriteRefs[sprIndex] = 1;
