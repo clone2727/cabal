@@ -29,6 +29,7 @@
 #include "backends/audiocd/macosx/macosx-audiocd.h"
 #include "backends/fonts/macosx/macosx-font-provider.h"
 #include "backends/mixer/doublebuffersdl/doublebuffersdl-mixer.h"
+#include "backends/platform/darwin/cfref.h"
 #include "backends/platform/sdl/macosx/appmenu_osx.h"
 #include "backends/platform/sdl/macosx/macosx.h"
 #include "backends/updates/macosx/macosx-updates.h"
@@ -98,16 +99,15 @@ void OSystem_MacOSX::addSysArchivesToSearchSet(Common::SearchSet &s, int priorit
 	OSystem_POSIX::addSysArchivesToSearchSet(s, priority);
 
 	// Get URL of the Resource directory of the .app bundle
-	CFURLRef fileUrl = CFBundleCopyResourcesDirectoryURL(CFBundleGetMainBundle());
+	ScopedCFRef<CFURLRef> fileUrl(CFBundleCopyResourcesDirectoryURL(CFBundleGetMainBundle()));
 	if (fileUrl) {
 		// Try to convert the URL to an absolute path
 		UInt8 buf[MAXPATHLEN];
-		if (CFURLGetFileSystemRepresentation(fileUrl, true, buf, sizeof(buf))) {
+		if (CFURLGetFileSystemRepresentation(fileUrl.get(), true, buf, sizeof(buf))) {
 			// Success: Add it to the search path
 			Common::String bundlePath((const char *)buf);
 			s.add("__OSX_BUNDLE__", new Common::FSDirectory(bundlePath), priority);
 		}
-		CFRelease(fileUrl);
 	}
 }
 
@@ -123,21 +123,20 @@ bool OSystem_MacOSX::displayLogFile() {
 	if (_logFilePath.empty())
 		return false;
 
-    CFURLRef url = CFURLCreateFromFileSystemRepresentation(kCFAllocatorDefault, (const UInt8 *)_logFilePath.c_str(), _logFilePath.size(), false);
-    OSStatus err = LSOpenCFURLRef(url, NULL);
-    CFRelease(url);
+    ScopedCFRef<CFURLRef> url(CFURLCreateFromFileSystemRepresentation(kCFAllocatorDefault, (const UInt8 *)_logFilePath.c_str(), _logFilePath.size(), false));
+    OSStatus err = LSOpenCFURLRef(url.get(), NULL);
 
 	return err != noErr;
 }
 
 Common::String OSystem_MacOSX::getSystemLanguage() const {
 #if defined(USE_DETECTLANG) && defined(USE_TRANSLATION)
-	CFArrayRef availableLocalizations = CFBundleCopyBundleLocalizations(CFBundleGetMainBundle());
+	ScopedCFRef<CFArrayRef> availableLocalizations(CFBundleCopyBundleLocalizations(CFBundleGetMainBundle()));
 	if (availableLocalizations) {
-		CFArrayRef preferredLocalizations = CFBundleCopyPreferredLocalizationsFromArray(availableLocalizations);
-		CFRelease(availableLocalizations);
+		ScopedCFRef<CFArrayRef> preferredLocalizations(CFBundleCopyPreferredLocalizationsFromArray(availableLocalizations.get()));
+
 		if (preferredLocalizations) {
-			CFIndex localizationsSize = CFArrayGetCount(preferredLocalizations);
+			CFIndex localizationsSize = CFArrayGetCount(preferredLocalizations.get());
 			// Since we have a list of sorted preferred localization, I would like here to
 			// check that they are supported by the TranslationManager and take the first
 			// one that is supported. The listed localizations are taken from the Bundle
@@ -149,27 +148,24 @@ Common::String OSystem_MacOSX::getSystemLanguage() const {
 			// instances.
 			/*
 			for (CFIndex i = 0 ; i < localizationsSize ; ++i) {
-				CFStringRef language = (CFStringRef)CFArrayGetValueAtIndex(preferredLocalizations, i);
+				CFStringRef language = (CFStringRef)CFArrayGetValueAtIndex(preferredLocalizations.get(), i);
 				char buffer[10];
 				CFStringGetCString(language, buffer, sizeof(buffer), kCFStringEncodingASCII);
 				int32 languageId = TransMan.findMatchingLanguage(buffer);
-				if (languageId != -1) {
-					CFRelease(preferredLocalizations);
+				if (languageId != -1)
 					return TransMan.getLangById(languageId);
-				}
 			}
 			*/
 			if (localizationsSize > 0) {
-				CFStringRef language = (CFStringRef)CFArrayGetValueAtIndex(preferredLocalizations, 0);
+				CFStringRef language = (CFStringRef)CFArrayGetValueAtIndex(preferredLocalizations.get(), 0);
 				char buffer[10];
 				CFStringGetCString(language, buffer, sizeof(buffer), kCFStringEncodingASCII);
-				CFRelease(preferredLocalizations);
 				return buffer;
 			}
-			CFRelease(preferredLocalizations);
 		}
 
 	}
+
 	// Falback to POSIX implementation
 	return OSystem_POSIX::getSystemLanguage();
 #else // USE_DETECTLANG

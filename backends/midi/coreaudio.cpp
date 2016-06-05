@@ -59,7 +59,7 @@
 	#define DEPRECATED_ATTRIBUTE
 #endif
 
-
+#include "backends/platform/darwin/cfref.h"
 #include "common/config-manager.h"
 #include "common/error.h"
 #include "common/textconsole.h"
@@ -247,17 +247,16 @@ void MidiDriver_CORE::loadSoundFont(const char *soundfont) {
 #else
 	// kMusicDeviceProperty_SoundBankURL was added in 10.5 as a replacement
 	// In addition, the File Manager API became deprecated starting in 10.8
-	CFURLRef url = CFURLCreateFromFileSystemRepresentation(kCFAllocatorDefault, (const UInt8 *)soundfont, strlen(soundfont), false);
+	ScopedCFRef<CFURLRef> url(CFURLCreateFromFileSystemRepresentation(kCFAllocatorDefault, (const UInt8 *)soundfont, strlen(soundfont), false));
 
 	if (url) {
+		CFURLRef tmpUrl = url.get();
 		err = AudioUnitSetProperty(
 			_synth,
 			kMusicDeviceProperty_SoundBankURL, kAudioUnitScope_Global,
 			0,
-			&url, sizeof(url)
+			&tmpUrl, sizeof(tmpUrl)
 		);
-
-		CFRelease(url);
 	} else {
 		warning("Failed to allocate CFURLRef from '%s'", soundfont);
 	}

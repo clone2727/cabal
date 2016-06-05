@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -20,8 +20,7 @@
  *
  */
 
-// Disable symbol overrides so that we can use system headers
-#define FORBIDDEN_SYMBOL_ALLOW_ALL
+// Based on the ScummVM (GPLv2+) file of the same name
 
 #include "gui/browser.h"
 
@@ -89,9 +88,8 @@ BrowserDialog::BrowserDialog(const char *title, bool dirBrowser)
 
 	// Get current encoding
 #ifdef USE_TRANSLATION
-	CFStringRef encStr = CFStringCreateWithCString(NULL, TransMan.getCurrentCharset().c_str(), kCFStringEncodingASCII);
-	CFStringEncoding stringEncoding = CFStringConvertIANACharSetNameToEncoding(encStr);
-	CFRelease(encStr);
+	ScopedCFRef<CFStringRef> encStr(CFStringCreateWithCString(NULL, TransMan.getCurrentCharset().c_str(), kCFStringEncodingASCII));
+	CFStringEncoding stringEncoding = CFStringConvertIANACharSetNameToEncoding(encStr.get());
 #else
 	CFStringEncoding stringEncoding = kCFStringEncodingASCII;
 #endif

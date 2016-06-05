@@ -35,6 +35,7 @@
 
 #include "base/main.h"
 
+#include "backends/platform/darwin/cfref.h"
 #include "backends/saves/default/default-saves.h"
 #include "backends/timer/default/default-timer.h"
 #include "audio/mixer.h"
@@ -262,16 +263,15 @@ Common::String OSystem_IPHONE::getDefaultConfigFileName() {
 
 void OSystem_IPHONE::addSysArchivesToSearchSet(Common::SearchSet &s, int priority) {
 	// Get URL of the Resource directory of the .app bundle
-	CFURLRef fileUrl = CFBundleCopyResourcesDirectoryURL(CFBundleGetMainBundle());
+	ScopedCFRef<CFURLRef> fileUrl(CFBundleCopyResourcesDirectoryURL(CFBundleGetMainBundle()));
 	if (fileUrl) {
 		// Try to convert the URL to an absolute path
 		UInt8 buf[MAXPATHLEN];
-		if (CFURLGetFileSystemRepresentation(fileUrl, true, buf, sizeof(buf))) {
+		if (CFURLGetFileSystemRepresentation(fileUrl.get(), true, buf, sizeof(buf))) {
 			// Success: Add it to the search path
 			Common::String bundlePath((const char *)buf);
 			s.add("__OSX_BUNDLE__", new Common::FSDirectory(bundlePath), priority);
 		}
-		CFRelease(fileUrl);
 	}
 }
 

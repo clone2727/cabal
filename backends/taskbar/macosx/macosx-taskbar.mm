@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -20,8 +20,8 @@
  *
  */
 
-// Disable symbol overrides so that we can use system headers
-#define FORBIDDEN_SYMBOL_ALLOW_ALL
+// Based on the ScummVM (GPLv2+) file of the same name
+
 #include "common/scummsys.h"
 
 #if defined(MACOSX) && defined(USE_TASKBAR)
@@ -32,6 +32,7 @@
 // TODO: Implement recent list, maybe as a custom menu on dock tile when app is not running
 // See Dock Tile plug-in at https://developer.apple.com/library/mac/documentation/Carbon/Conceptual/customizing_docktile/CreatingaDockTilePlug-in/CreatingaDockTilePlug-in.html
 
+#include "backends/platform/darwin/cfref.h"
 #include "backends/taskbar/macosx/macosx-taskbar.h"
 #include "common/config-manager.h"
 #include "common/file.h"
@@ -119,11 +120,10 @@ void MacOSXTaskbarManager::setOverlayIcon(const Common::String &name, const Comm
 	
 	initOverlayIconView();
 
-	CFStringRef imageFile = CFStringCreateWithCString(0, path.c_str(), kCFStringEncodingASCII);
-	NSImage* image = [[NSImage alloc] initWithContentsOfFile:(NSString *)imageFile];
+	ScopedCFRef<CFStringRef> imageFile(CFStringCreateWithCString(0, path.c_str(), kCFStringEncodingASCII));
+	NSImage* image = [[NSImage alloc] initWithContentsOfFile:(NSString *)imageFile.get()];
 	[_overlayIconView setImage:image];
 	[image release];
-	CFRelease(imageFile);
 
 	[_dockTile performSelector:@selector(display)];
 }

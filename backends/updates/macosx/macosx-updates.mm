@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -20,12 +20,12 @@
  *
  */
 
-// Disable symbol overrides so that we can use system headers.
-#define FORBIDDEN_SYMBOL_ALLOW_ALL
+// Based on the ScummVM (GPLv2+) file of the same name
 
 #include "backends/updates/macosx/macosx-updates.h"
 
 #ifdef USE_SPARKLE
+#include "backends/platform/darwin/cfref.h"
 #include "common/translation.h"
 
 #include <Cocoa/Cocoa.h>
@@ -59,14 +59,12 @@ MacOSXUpdateManager::MacOSXUpdateManager() {
 	[sparkleUpdater setFeedURL:[NSURL URLWithString:feedbackURL]];
 
 	// Get current encoding
-	CFStringRef encStr = CFStringCreateWithCString(NULL, TransMan.getCurrentCharset().c_str(), kCFStringEncodingASCII);
-	CFStringEncoding stringEncoding = CFStringConvertIANACharSetNameToEncoding(encStr);
-	CFRelease(encStr);
+	ScopedCFRef<CFStringRef> encStr(CFStringCreateWithCString(NULL, TransMan.getCurrentCharset().c_str(), kCFStringEncodingASCII));
+	CFStringEncoding stringEncoding = CFStringConvertIANACharSetNameToEncoding(encStr.get());
 
 	// Add "Check for Updates..." menu item
-	CFStringRef title = CFStringCreateWithCString(NULL, _("Check for Updates..."), stringEncoding);
-	NSMenuItem *updateMenuItem = [applicationMenu insertItemWithTitle:(NSString *)title action:@selector(checkForUpdates:) keyEquivalent:@"" atIndex:1];
-	CFRelease(title);
+	ScopedCFRef<CFStringRef> title(CFStringCreateWithCString(NULL, _("Check for Updates..."), stringEncoding));
+	NSMenuItem *updateMenuItem = [applicationMenu insertItemWithTitle:(NSString *)title.get() action:@selector(checkForUpdates:) keyEquivalent:@"" atIndex:1];
 
 	// Set the target of the new menu item
 	[updateMenuItem setTarget:sparkleUpdater];
