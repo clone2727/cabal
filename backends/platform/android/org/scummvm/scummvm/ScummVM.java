@@ -443,6 +443,6 @@ public abstract class ScummVM implements SurfaceHolder.Callback, Runnable {
 			}
 		}
 
-		System.loadLibrary("scummvm");
+		System.loadLibrary("cabalexec");
 	}
 }

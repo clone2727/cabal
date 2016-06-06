@@ -3,7 +3,7 @@
 # These must be incremented for each market upload
 ANDROID_VERSIONCODE = 6
 
-ANDROID_TARGET_VERSION = 14
+ANDROID_TARGET_VERSION = 23
 
 NDK_BUILD = $(ANDROID_NDK)/ndk-build APP_ABI=$(ABI)
 SDK_ANDROID = $(ANDROID_SDK)/tools/android
@@ -28,13 +28,13 @@ DIST_BUILD_XML = $(PATH_DIST)/custom_rules.xml
 PATH_BUILD = ./build.tmp
 PATH_BUILD_ASSETS = $(PATH_BUILD)/assets
 PATH_BUILD_RES = $(PATH_BUILD)/res
-PATH_BUILD_LIBSCUMMVM = $(PATH_BUILD)/lib/$(ABI)/libscummvm.so
+PATH_BUILD_LIBCABALEXEC = $(PATH_BUILD)/lib/$(ABI)/libcabalexec.so
 
 FILE_MANIFEST_SRC = $(srcdir)/dists/android/AndroidManifest.xml
 FILE_MANIFEST = $(PATH_BUILD)/AndroidManifest.xml
 
-APK_MAIN = ScummVM-debug.apk
-APK_MAIN_RELEASE = ScummVM-release-unsigned.apk
+APK_MAIN = Cabal-debug.apk
+APK_MAIN_RELEASE = Cabal-release-unsigned.apk
 
 $(FILE_MANIFEST): $(FILE_MANIFEST_SRC) | $(PATH_BUILD)
 	@$(MKDIR) -p $(@D)
@@ -59,23 +59,23 @@ $(PATH_BUILD): $(DIST_ANDROID_MK)
 	$(MKDIR) -p $(PATH_BUILD) $(PATH_BUILD)/res
 	$(MKDIR) -p $(PATH_BUILD)/libs
 
-$(PATH_BUILD_LIBSCUMMVM): libscummvm.so | $(PATH_BUILD)
-	$(INSTALL) -c -m 644 libscummvm.so $(PATH_BUILD)
-	$(STRIP) $(PATH_BUILD)/libscummvm.so
+$(PATH_BUILD_LIBCABALEXEC): libcabalexec.so | $(PATH_BUILD)
+	$(INSTALL) -c -m 644 libcabalexec.so $(PATH_BUILD)
+	$(STRIP) $(PATH_BUILD)/libcabalexec.so
 	cd $(PATH_BUILD); $(NDK_BUILD)
 
 $(PATH_BUILD_RES): $(RESOURCES) | $(PATH_BUILD)
 
-setupapk: $(FILE_MANIFEST) $(PATH_BUILD_RES) $(PATH_BUILD_ASSETS) $(PATH_BUILD_LIBSCUMMVM) | $(PATH_BUILD)
-	$(SDK_ANDROID) update project -p $(PATH_BUILD) -t android-$(ANDROID_TARGET_VERSION) -n ScummVM
+setupapk: $(FILE_MANIFEST) $(PATH_BUILD_RES) $(PATH_BUILD_ASSETS) $(PATH_BUILD_LIBCABALEXEC) | $(PATH_BUILD)
+	$(SDK_ANDROID) update project -p $(PATH_BUILD) -t android-$(ANDROID_TARGET_VERSION) -n Cabal
 
 $(APK_MAIN): setupapk | $(PATH_BUILD)
 	(cd $(PATH_BUILD); ant debug -Dsource.dir="$(realpath $(DIST_JAVA_SRC_DIR))")
-	$(CP) $(PATH_BUILD)/bin/ScummVM-debug.apk $@
+	$(CP) $(PATH_BUILD)/bin/Cabal-debug.apk $@
 
 $(APK_MAIN_RELEASE): setupapk | $(PATH_BUILD)
 	(cd $(PATH_BUILD); ant release -Dsource.dir="$(realpath $(DIST_JAVA_SRC_DIR))")
-	$(CP) $(PATH_BUILD)/bin/ScummVM-release-unsigned.apk $@
+	$(CP) $(PATH_BUILD)/bin/Cabal-release-unsigned.apk $@
 
 all: $(APK_MAIN)
 
