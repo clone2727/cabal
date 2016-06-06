@@ -117,7 +117,7 @@ private:
 	Common::Rect _focus_rect;
 
 	// Overlay layer
-	GLES4444Texture *_overlay_texture;
+	GLESBaseTexture *_overlay_texture;
 	bool _show_overlay;
 
 	// Mouse layer

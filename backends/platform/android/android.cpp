@@ -363,7 +363,7 @@ void OSystem_Android::initBackend() {
 	initViewport();
 
 	_game_texture = new GLESFakePalette565Texture();
-	_overlay_texture = new GLES4444Texture();
+	_overlay_texture = new GLES8888Texture();
 	_mouse_texture_palette = new GLESFakePalette5551Texture();
 	_mouse_texture = _mouse_texture_palette;
 
