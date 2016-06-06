@@ -355,7 +355,7 @@ bool LinuxAudioCDManager::tryAddDrive(DeviceList &devices, const Common::String 
 bool LinuxAudioCDManager::tryAddDrive(DeviceList &devices, dev_t device) {
 	// Construct the block name
 	// (Does anyone have a better way to do this? bdevname is kernel only)
-	Common::String name = Common::String::format("/dev/block/%d:%d", gnu_dev_major(device), gnu_dev_minor(device));
+	Common::String name = Common::String::format("/dev/block/%d:%d", major(device), minor(device));
 
 	return tryAddDrive(devices, name, device);
 }
