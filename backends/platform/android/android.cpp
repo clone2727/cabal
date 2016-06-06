@@ -330,9 +330,6 @@ void OSystem_Android::initBackend() {
 
 	_main_thread = pthread_self();
 
-	ConfMan.registerDefault("fullscreen", true);
-	ConfMan.registerDefault("aspect_ratio", true);
-
 	ConfMan.setInt("autosave_period", 0);
 	ConfMan.setBool("FM_high_quality", false);
 	ConfMan.setBool("FM_medium_quality", true);
