@@ -8,6 +8,11 @@ MODULE_OBJS := \
 	gfx.o \
 	events.o
 
+ifdef USE_FREETYPE2
+MODULE_OBJS += \
+	android-font-provider.o
+endif
+
 # We don't use rules.mk but rather manually update OBJS and MODULE_DIRS.
 MODULE_OBJS := $(addprefix $(MODULE)/, $(MODULE_OBJS))
 OBJS := $(MODULE_OBJS) $(OBJS)

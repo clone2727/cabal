@@ -42,8 +42,9 @@
 #include "backends/saves/default/default-saves.h"
 #include "backends/timer/default/default-timer.h"
 
-#include "backends/platform/android/jni.h"
 #include "backends/platform/android/android.h"
+#include "backends/platform/android/android-font-provider.h"
+#include "backends/platform/android/jni.h"
 
 const char *android_log_tag = "ScummVM";
 
@@ -347,6 +348,9 @@ void OSystem_Android::initBackend() {
 	// (via ConfMan.registerDefault)
 	_savefileManager = new DefaultSaveFileManager(ConfMan.get("savepath"));
 	_timerManager = new DefaultTimerManager();
+
+	// Create the custom Android font provider
+	_systemFontProvider = createAndroidFontProvider();
 
 	gettimeofday(&_startTime, 0);
 
