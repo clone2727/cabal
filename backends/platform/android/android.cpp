@@ -46,7 +46,7 @@
 #include "backends/platform/android/android-font-provider.h"
 #include "backends/platform/android/jni.h"
 
-const char *android_log_tag = "ScummVM";
+const char *android_log_tag = "Cabal";
 
 // This replaces the bionic libc assert functions with something that
 // actually prints the assertion failure before aborting.

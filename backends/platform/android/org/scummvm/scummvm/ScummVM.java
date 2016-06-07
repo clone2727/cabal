@@ -18,7 +18,7 @@ import java.io.File;
 import java.util.LinkedHashMap;
 
 public abstract class ScummVM implements SurfaceHolder.Callback, Runnable {
-	final protected static String LOG_TAG = "ScummVM";
+	final protected static String LOG_TAG = "Cabal";
 	final private AssetManager _asset_manager;
 	final private Object _sem_surface;
 
