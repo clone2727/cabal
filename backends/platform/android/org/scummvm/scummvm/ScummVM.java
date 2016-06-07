@@ -321,8 +321,9 @@ public abstract class ScummVM implements SurfaceHolder.Callback, Runnable {
 			if (value == size || (size > 0 && value > size))
 				score += 10;
 
-			// penalize for wasted bits
-			score -= value - size;
+			// Give extra score for extra bits. We want the best format
+			// available so we don't have banding in high color games.
+			score += value - size;
 
 			return score;
 		}
@@ -334,6 +335,7 @@ public abstract class ScummVM implements SurfaceHolder.Callback, Runnable {
 				score -= 1000;
 
 			// less MSAA is better
+			// FIXME: Why?
 			score -= get(EGL10.EGL_SAMPLES) * 100;
 
 			// Must be at least 565, but then smaller is better
