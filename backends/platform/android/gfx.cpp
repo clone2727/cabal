@@ -76,9 +76,9 @@ Graphics::PixelFormat OSystem_Android::getScreenFormat() const {
 
 Common::List<Graphics::PixelFormat> OSystem_Android::getSupportedFormats() const {
 	Common::List<Graphics::PixelFormat> res;
+	res.push_back(GLES8888Texture::pixelFormat());
 	res.push_back(GLES565Texture::pixelFormat());
 	res.push_back(GLES5551Texture::pixelFormat());
-	res.push_back(GLES8888Texture::pixelFormat());
 	res.push_back(GLES4444Texture::pixelFormat());
 	res.push_back(Graphics::PixelFormat::createFormatCLUT8());
 
