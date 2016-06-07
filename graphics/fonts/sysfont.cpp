@@ -44,8 +44,17 @@ struct SubstituteFont {
 };
 
 static const SubstituteFont s_substituteFonts[] = {
+	// Arial
+	// - Liberation Sans, FreeSans, and Arimo should be metrically compatible
+	// - Roboto doesn't seem to be 100%. It should be close enough for games that
+	//   need it, but keep it below others to let them take priority.
 	{ "Arial", kFontStyleNormal, "FreeSans", kFontStyleNormal },
+	{ "Arial", kFontStyleNormal, "Roboto", kFontStyleNormal },
 	{ "Arial", kFontStyleBold, "FreeSans", kFontStyleBold },
+	{ "Arial", kFontStyleBold, "Roboto", kFontStyleBold },
+
+	// MS Gothic
+	// - Ume Gothic should be metrically compatible
 	{ "MS Gothic", kFontStyleNormal, "Ume Gothic", kFontStyleNormal }
 };
 
