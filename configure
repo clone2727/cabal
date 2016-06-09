@@ -4311,6 +4311,20 @@ echo "$linuxcd"
 
 
 #
+# Check for CoreText support
+#
+echocheck "CoreText"
+coretext=no
+cat > $TMPC << EOF
+#include <ApplicationServices/ApplicationServices.h>
+int main(void) { if (kCTFontURLAttribute == 0) return 1; return 0; }
+EOF
+cc_check $DEFINES $CFLAGS $LIBS && coretext=yes
+define_in_config_if_yes "$coretext" 'USE_CORETEXT'
+echo "$coretext"
+
+
+#
 # Check for nasm
 #
 if test "$_have_x86" = yes ; then

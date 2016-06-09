@@ -27,6 +27,7 @@
 #ifdef MACOSX
 
 #include "backends/audiocd/macosx/macosx-audiocd.h"
+#include "backends/fonts/coretext/coretext.h"
 #include "backends/fonts/macosx/macosx-font-provider.h"
 #include "backends/mixer/doublebuffersdl/doublebuffersdl-mixer.h"
 #include "backends/platform/darwin/cfref.h"
@@ -86,8 +87,13 @@ void OSystem_MacOSX::initBackend() {
 
 #ifdef USE_FREETYPE2
 	// Create the font provider
-	if (!_systemFontProvider)
+	if (!_systemFontProvider) {
+#ifdef USE_CORETEXT
+		_systemFontProvider = createCoreTextFontProvider();
+#else
 		_systemFontProvider = createMacOSXFontProvider();
+#endif
+	}
 #endif
 
 	// Invoke parent implementation of this method

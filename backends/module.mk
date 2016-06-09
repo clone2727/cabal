@@ -76,6 +76,12 @@ MODULE_OBJS += \
 	fonts/macosx/macosx-font-provider.o
 endif
 
+# Handle CoreText-specific source files
+ifdef USE_CORETEXT
+MODULE_OBJS += \
+	fonts/coretext/coretext.o
+endif
+
 # Handle the Win32-specific source files
 ifdef WIN32
 MODULE_OBJS += \
