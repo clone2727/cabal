@@ -22,11 +22,7 @@
 
 // Based on the ScummVM (GPLv2+) file of the same name
 
-#include "common/scummsys.h"
-
-#ifdef MACOSX
-
-#include <AvailabilityMacros.h>
+#include "backends/platform/sdl/macosx/macosx_compat.h"
 
 // With the release of Mac OS X 10.5 in October 2007, Apple deprecated the
 // AUGraphNewNode & AUGraphGetNodeInfo APIs in favor of the new AUGraphAddNode &
@@ -51,12 +47,6 @@
 	#else
 		#define USE_DEPRECATED_COREAUDIO_API 0
 	#endif
-#endif
-
-#if USE_DEPRECATED_COREAUDIO_API
-	// Try to silence warnings about use of deprecated APIs
-	#undef DEPRECATED_ATTRIBUTE
-	#define DEPRECATED_ATTRIBUTE
 #endif
 
 #include "backends/platform/darwin/cfref.h"
@@ -337,4 +327,3 @@ Common::Error CoreAudioMusicPlugin::createInstance(MidiDriver **mididriver, Midi
 	REGISTER_PLUGIN_STATIC(COREAUDIO, PLUGIN_TYPE_MUSIC, CoreAudioMusicPlugin);
 //#endif
 
-#endif // MACOSX
