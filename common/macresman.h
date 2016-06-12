@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -20,6 +20,8 @@
  *
  */
 
+// Based on the ScummVM (GPLv2+) file of the same name
+
 /**
  * @file
  * Macintosh resource fork manager used in engines:
@@ -30,14 +32,16 @@
  * - scumm
  */
 
-#include "common/array.h"
-#include "common/fs.h"
-#include "common/str.h"
-
 #ifndef COMMON_MACRESMAN_H
 #define COMMON_MACRESMAN_H
 
+#include "common/array.h"
+#include "common/str.h"
+
 namespace Common {
+
+class FSNode;
+class SeekableReadStream;
 
 typedef Array<uint16> MacResIDArray;
 typedef Array<uint32> MacResTagArray;

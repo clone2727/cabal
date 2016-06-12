@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -20,6 +20,9 @@
  *
  */
 
+// Based on the ScummVM (GPLv2+) file of the same name
+
+#include "common/archive.h"
 #include "common/savefile.h"
 #include "common/stream.h"
 
