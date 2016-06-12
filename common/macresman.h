@@ -179,7 +179,11 @@ private:
 	bool loadFromMacBinary(SeekableReadStream &stream);
 	bool loadFromAppleDouble(SeekableReadStream &stream);
 
-	static String constructAppleDoubleName(String name);
+	/**
+	 * Given a path, create the path where Mac OS X would place the AppleDouble file
+	 * containing the resource fork (regardless whether or not it exists)
+	 */
+	static String constructAppleDoubleName(const String &path);
 
 	/**
 	 * Check if the given stream is in the MacBinary format.

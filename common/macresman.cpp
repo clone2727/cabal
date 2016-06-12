@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -19,6 +19,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
  */
+
+// Based on the ScummVM (GPLv2+) file of the same name
 
 #include "common/scummsys.h"
 #include "common/debug.h"
@@ -576,20 +578,18 @@ void MacResManager::readMap() {
 	}
 }
 
-String MacResManager::constructAppleDoubleName(String name) {
-	// Insert "._" before the last portion of a path name
-	for (int i = name.size() - 1; i >= 0; i--) {
-		if (i == 0) {
-			name.insertChar('_', 0);
-			name.insertChar('.', 0);
-		} else if (name[i] == '/') {
-			name.insertChar('_', i + 1);
-			name.insertChar('.', i + 1);
-			break;
-		}
+String MacResManager::constructAppleDoubleName(const String &path) {
+	// Try to find the last slash in the string
+	const char *lastPathComponent = strrchr(path.c_str(), '/');
+
+	if (lastPathComponent) {
+		// Skip the actual slash so it gets copied into the right spot
+		lastPathComponent++;
+		return String(path.c_str(), lastPathComponent) + "._" + lastPathComponent;
 	}
 
-	return name;
+	// Can just insert "._" before the beginning of the string
+	return "._" + path;
 }
 
 } // End of namespace Common
