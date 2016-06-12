@@ -163,12 +163,12 @@ public:
 	/**
 	 * Return list of resource IDs with specified type ID
 	 */
-	MacResIDArray getResIDArray(uint32 typeID);
+	MacResIDArray getResIDArray(uint32 typeID) const;
 
 	/**
 	 * Return list of resource tags
 	 */
-	MacResTagArray getResTagArray();
+	MacResTagArray getResTagArray() const;
 
 private:
 	SeekableReadStream *_stream;

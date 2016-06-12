@@ -400,7 +400,7 @@ SeekableReadStream *MacResManager::getDataFork() {
 	return NULL;
 }
 
-MacResIDArray MacResManager::getResIDArray(uint32 typeID) {
+MacResIDArray MacResManager::getResIDArray(uint32 typeID) const {
 	MacResIDArray res;
 
 	ResourceTypeMap::const_iterator typeIt = _resTypeMap.find(typeID);
@@ -416,7 +416,7 @@ MacResIDArray MacResManager::getResIDArray(uint32 typeID) {
 	return res;
 }
 
-MacResTagArray MacResManager::getResTagArray() {
+MacResTagArray MacResManager::getResTagArray() const {
 	MacResTagArray tagArray;
 
 	tagArray.reserve(_resTypeMap.size());
