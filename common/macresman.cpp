@@ -29,6 +29,7 @@
 #include "common/fs.h"
 #include "common/macresman.h"
 #include "common/md5.h"
+#include "common/ptr.h"
 #include "common/substream.h"
 #include "common/textconsole.h"
 
@@ -47,9 +48,8 @@ namespace Common {
 #define MBI_RFLEN 87
 #define MAXNAMELEN 63
 
-MacResManager::MacResManager() {
-	memset(this, 0, sizeof(MacResManager));
-	close();
+MacResManager::MacResManager() : _stream(0), _mode(kResForkNone), _resForkOffset(-1),
+		_resForkSize(0), _dataOffset(0), _dataLength(0), _mapOffset(0), _mapLength(0) {
 }
 
 MacResManager::~MacResManager() {
@@ -59,19 +59,8 @@ MacResManager::~MacResManager() {
 void MacResManager::close() {
 	_resForkOffset = -1;
 	_mode = kResForkNone;
-
-	for (int i = 0; i < _resMap.numTypes; i++) {
-		for (int j = 0; j < _resTypes[i].items; j++)
-			if (_resLists[i][j].nameOffset != -1)
-				delete[] _resLists[i][j].name;
-
-		delete[] _resLists[i];
-	}
-
-	delete[] _resLists; _resLists = 0;
-	delete[] _resTypes; _resTypes = 0;
+	_resTypeMap.clear();
 	delete _stream; _stream = 0;
-	_resMap.numTypes = 0;
 }
 
 bool MacResManager::hasDataFork() const {
@@ -384,7 +373,7 @@ bool MacResManager::load(SeekableReadStream &stream) {
 		return false;
 	}
 
-	debug(7, "got header: data %d [%d] map %d [%d]",
+	debug(7, "Resource fork header: data %d [%d] map %d [%d]",
 		_dataOffset, _dataLength, _mapOffset, _mapLength);
 
 	_stream = &stream;
@@ -412,22 +401,17 @@ SeekableReadStream *MacResManager::getDataFork() {
 }
 
 MacResIDArray MacResManager::getResIDArray(uint32 typeID) {
-	int typeNum = -1;
 	MacResIDArray res;
 
-	for (int i = 0; i < _resMap.numTypes; i++)
-		if (_resTypes[i].id == typeID) {
-			typeNum = i;
-			break;
-		}
-
-	if (typeNum == -1)
+	ResourceTypeMap::const_iterator typeIt = _resTypeMap.find(typeID);
+	if (typeIt == _resTypeMap.end())
 		return res;
 
-	res.resize(_resTypes[typeNum].items);
+	const ResourceMap &resMap = typeIt->_value;
+	res.reserve(resMap.size());
 
-	for (int i = 0; i < _resTypes[typeNum].items; i++)
-		res[i] = _resLists[typeNum][i].id;
+	for (ResourceMap::const_iterator it = resMap.begin(); it != resMap.end(); it++)
+		res.push_back(it->_key);
 
 	return res;
 }
@@ -435,77 +419,64 @@ MacResIDArray MacResManager::getResIDArray(uint32 typeID) {
 MacResTagArray MacResManager::getResTagArray() {
 	MacResTagArray tagArray;
 
-	if (!hasResFork())
-		return tagArray;
+	tagArray.reserve(_resTypeMap.size());
 
-	tagArray.resize(_resMap.numTypes);
-
-	for (uint32 i = 0; i < _resMap.numTypes; i++)
-		tagArray[i] = _resTypes[i].id;
+	for (ResourceTypeMap::const_iterator it = _resTypeMap.begin(); it != _resTypeMap.end(); it++)
+		tagArray.push_back(it->_key);
 
 	return tagArray;
 }
 
 String MacResManager::getResName(uint32 typeID, uint16 resID) const {
-	int typeNum = -1;
-
-	for (int i = 0; i < _resMap.numTypes; i++)
-		if (_resTypes[i].id == typeID) {
-			typeNum = i;
-			break;
-		}
-
-	if (typeNum == -1)
+	ResourceTypeMap::const_iterator typeIt = _resTypeMap.find(typeID);
+	if (typeIt == _resTypeMap.end())
 		return "";
 
-	for (int i = 0; i < _resTypes[typeNum].items; i++)
-		if (_resLists[typeNum][i].id == resID)
-			return _resLists[typeNum][i].name;
+	const ResourceMap &resMap = typeIt->_value;
+	ResourceMap::const_iterator it = resMap.find(resID);
+	if (it == resMap.end())
+		return "";
 
-	return "";
+	return it->_value.name;
 }
 
 SeekableReadStream *MacResManager::getResource(uint32 typeID, uint16 resID) {
-	int typeNum = -1;
-	int resNum = -1;
+	ResourceTypeMap::const_iterator typeIt = _resTypeMap.find(typeID);
+	if (typeIt == _resTypeMap.end())
+		return 0;
 
-	for (int i = 0; i < _resMap.numTypes; i++)
-		if (_resTypes[i].id == typeID) {
-			typeNum = i;
-			break;
-		}
+	const ResourceMap &resMap = typeIt->_value;
+	ResourceMap::const_iterator it = resMap.find(resID);
+	if (it == resMap.end())
+		return 0;
 
-	if (typeNum == -1)
-		return NULL;
-
-	for (int i = 0; i < _resTypes[typeNum].items; i++)
-		if (_resLists[typeNum][i].id == resID) {
-			resNum = i;
-			break;
-		}
-
-	if (resNum == -1)
-		return NULL;
-
-	_stream->seek(_dataOffset + _resLists[typeNum][resNum].dataOffset);
+	const Resource &resource = it->_value;
+	_stream->seek(_dataOffset + resource.dataOffset);
 	uint32 len = _stream->readUint32BE();
 
 	// Ignore resources with 0 length
-	if (!len)
+	if (len == 0)
 		return 0;
 
 	return _stream->readStream(len);
 }
 
 SeekableReadStream *MacResManager::getResource(const String &fileName) {
-	for (uint32 i = 0; i < _resMap.numTypes; i++) {
-		for (uint32 j = 0; j < _resTypes[i].items; j++) {
-			if (_resLists[i][j].nameOffset != -1 && fileName.equalsIgnoreCase(_resLists[i][j].name)) {
-				_stream->seek(_dataOffset + _resLists[i][j].dataOffset);
+	if (fileName.empty())
+		return 0;
+
+	for (ResourceTypeMap::const_iterator typeIt = _resTypeMap.begin(); typeIt != _resTypeMap.end(); typeIt++) {
+		const ResourceMap &resMap = typeIt->_value;
+
+		for (ResourceMap::const_iterator it = resMap.begin(); it != resMap.end(); it++) {
+			const Resource &resource = it->_value;
+
+			if (fileName.equalsIgnoreCase(resource.name)) {
+				_stream->seek(_dataOffset + resource.dataOffset);
 				uint32 len = _stream->readUint32BE();
 
 				// Ignore resources with 0 length
-				if (!len)
+				if (len == 0)
 					return 0;
 
 				return _stream->readStream(len);
@@ -517,21 +488,27 @@ SeekableReadStream *MacResManager::getResource(const String &fileName) {
 }
 
 SeekableReadStream *MacResManager::getResource(uint32 typeID, const String &fileName) {
-	for (uint32 i = 0; i < _resMap.numTypes; i++) {
-		if (_resTypes[i].id != typeID)
-			continue;
+	if (fileName.empty())
+		return 0;
 
-		for (uint32 j = 0; j < _resTypes[i].items; j++) {
-			if (_resLists[i][j].nameOffset != -1 && fileName.equalsIgnoreCase(_resLists[i][j].name)) {
-				_stream->seek(_dataOffset + _resLists[i][j].dataOffset);
-				uint32 len = _stream->readUint32BE();
+	ResourceTypeMap::const_iterator typeIt = _resTypeMap.find(typeID);
+	if (typeIt == _resTypeMap.end())
+		return 0;
 
-				// Ignore resources with 0 length
-				if (!len)
-					return 0;
+	const ResourceMap &resMap = typeIt->_value;
 
-				return _stream->readStream(len);
-			}
+	for (ResourceMap::const_iterator it = resMap.begin(); it != resMap.end(); it++) {
+		const Resource &resource = it->_value;
+
+		if (fileName.equalsIgnoreCase(resource.name)) {
+			_stream->seek(_dataOffset + resource.dataOffset);
+			uint32 len = _stream->readUint32BE();
+
+			// Ignore resources with 0 length
+			if (len == 0)
+				return 0;
+
+			return _stream->readStream(len);
 		}
 	}
 
@@ -541,53 +518,69 @@ SeekableReadStream *MacResManager::getResource(uint32 typeID, const String &file
 void MacResManager::readMap() {
 	_stream->seek(_mapOffset + 22);
 
-	_resMap.resAttr = _stream->readUint16BE();
-	_resMap.typeOffset = _stream->readUint16BE();
-	_resMap.nameOffset = _stream->readUint16BE();
-	_resMap.numTypes = _stream->readUint16BE();
-	_resMap.numTypes++;
+	/*uint16 resAttr = */ _stream->readUint16BE();
+	uint16 typeOffset = _stream->readUint16BE();
+	uint16 nameOffset = _stream->readUint16BE();
+	uint32 typeCount = _stream->readUint16BE() + 1;
 
-	_stream->seek(_mapOffset + _resMap.typeOffset + 2);
-	_resTypes = new ResType[_resMap.numTypes];
+	_stream->seek(_mapOffset + typeOffset + 2);
 
-	for (int i = 0; i < _resMap.numTypes; i++) {
-		_resTypes[i].id = _stream->readUint32BE();
-		_resTypes[i].items = _stream->readUint16BE();
-		_resTypes[i].offset = _stream->readUint16BE();
-		_resTypes[i].items++;
+	// Make some temporary maps to help with parsing
+	typedef HashMap<uint32, uint32> ItemCountMap;
+	typedef HashMap<uint32, uint16> OffsetMap;
 
-		debug(8, "resType: <%s> items: %d offset: %d (0x%x)", tag2str(_resTypes[i].id), _resTypes[i].items,  _resTypes[i].offset, _resTypes[i].offset);
+	ItemCountMap itemCountMap;
+	OffsetMap offsetMap;
+
+	for (uint32 i = 0; i < typeCount; i++) {
+		uint32 id = _stream->readUint32BE();
+		uint32 itemCount = _stream->readUint16BE() + 1;
+		uint16 offset = _stream->readUint16BE();
+
+		itemCountMap[id] = itemCount;
+		offsetMap[id] = offset;
+
+		debug(8, "Resource Type <%s>: items = %d, offset = %d (0x%x)", tag2str(id), itemCount, offset, offset);
 	}
 
-	_resLists = new ResPtr[_resMap.numTypes];
+	for (ItemCountMap::const_iterator it = itemCountMap.begin(); it != itemCountMap.end(); it++) {
+		uint32 itemCount = it->_value;
+		ResourceMap resMap;
 
-	for (int i = 0; i < _resMap.numTypes; i++) {
-		_resLists[i] = new Resource[_resTypes[i].items];
-		_stream->seek(_resTypes[i].offset + _mapOffset + _resMap.typeOffset);
+		_stream->seek(_mapOffset + typeOffset + offsetMap[it->_key]);
 
-		for (int j = 0; j < _resTypes[i].items; j++) {
-			ResPtr resPtr = _resLists[i] + j;
+		// Read in the basic item info
+		for (uint32 i = 0; i < itemCount; i++) {
+			uint16 id = _stream->readUint16BE();
 
-			resPtr->id = _stream->readUint16BE();
-			resPtr->nameOffset = _stream->readUint16BE();
-			resPtr->dataOffset = _stream->readUint32BE();
+			Resource res;
+			uint16 resNameOffset = _stream->readUint16BE();
+			res.dataOffset = _stream->readUint32BE();
 			_stream->readUint32BE();
-			resPtr->name = 0;
 
-			resPtr->attr = resPtr->dataOffset >> 24;
-			resPtr->dataOffset &= 0xFFFFFF;
-		}
+			res.attr = res.dataOffset >> 24;
+			res.dataOffset &= 0xFFFFFF;
 
-		for (int j = 0; j < _resTypes[i].items; j++) {
-			if (_resLists[i][j].nameOffset != -1) {
-				_stream->seek(_resLists[i][j].nameOffset + _mapOffset + _resMap.nameOffset);
+			// Pull out the name, if available
+			if (resNameOffset != 0xFFFF) {
+				// Store the position so we can get back after getting the name
+				uint32 lastPos = _stream->pos();
 
-				byte len = _stream->readByte();
-				_resLists[i][j].name = new char[len + 1];
-				_resLists[i][j].name[len] = 0;
-				_stream->read(_resLists[i][j].name, len);
+				// Pull the string out of the name table
+				_stream->seek(_mapOffset + nameOffset + resNameOffset);
+				byte nameSize = _stream->readByte();
+				ScopedArray<char> nameBuf(new char[nameSize]);
+				_stream->read(nameBuf.get(), nameSize);
+				res.name = String(nameBuf.get(), nameSize);
+
+				// Seek back to the next entry
+				_stream->seek(lastPos);
 			}
+
+			resMap[id] = res;
 		}
+
+		_resTypeMap[it->_key] = resMap;
 	}
 }
 

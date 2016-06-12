@@ -36,6 +36,7 @@
 #define COMMON_MACRESMAN_H
 
 #include "common/array.h"
+#include "common/hashmap.h"
 #include "common/str.h"
 
 namespace Common {
@@ -200,28 +201,16 @@ private:
 
 	void readMap();
 
-	struct ResMap {
-		uint16 resAttr;
-		uint16 typeOffset;
-		uint16 nameOffset;
-		uint16 numTypes;
-	};
-
-	struct ResType {
-		uint32 id;
-		uint16 items;
-		uint16 offset;
-	};
-
 	struct Resource {
-		uint16 id;
-		int16 nameOffset;
 		byte attr;
 		uint32 dataOffset;
-		char *name;
+		String name;
 	};
 
-	typedef Resource *ResPtr;
+	typedef Common::HashMap<uint16, Resource> ResourceMap;
+	typedef Common::HashMap<uint32, ResourceMap> ResourceTypeMap;
+
+	ResourceTypeMap _resTypeMap;
 
 	int32 _resForkOffset;
 	uint32 _resForkSize;
@@ -230,9 +219,6 @@ private:
 	uint32 _dataLength;
 	uint32 _mapOffset;
 	uint32 _mapLength;
-	ResMap _resMap;
-	ResType *_resTypes;
-	ResPtr  *_resLists;
 };
 
 } // End of namespace Common
