@@ -108,18 +108,20 @@ bool MacResManager::open(const String &fileName) {
 	close();
 
 #ifdef MACOSX
-	// Check the actual fork on a Mac computer
-	String fullPath = ConfMan.get("path") + "/" + fileName + "/..namedfork/rsrc";
-	FSNode resFsNode = FSNode(fullPath);
-	if (resFsNode.exists()) {
-		SeekableReadStream *macResForkRawStream = resFsNode.createReadStream();
+	{
+		// Check the actual fork on a Mac computer
+		String fullPath = ConfMan.get("path") + "/" + fileName + "/..namedfork/rsrc";
+		FSNode resFsNode = FSNode(fullPath);
+		if (resFsNode.exists()) {
+			SeekableReadStream *macResForkRawStream = resFsNode.createReadStream();
 
-		if (macResForkRawStream && loadFromRawFork(*macResForkRawStream)) {
-			_baseFileName = fileName;
-			return true;
+			if (macResForkRawStream && loadFromRawFork(*macResForkRawStream)) {
+				_baseFileName = fileName;
+				return true;
+			}
+
+			delete macResForkRawStream;
 		}
-
-		delete macResForkRawStream;
 	}
 #endif
 
@@ -172,18 +174,20 @@ bool MacResManager::open(const FSNode &path, const String &fileName) {
 	close();
 
 #ifdef MACOSX
-	// Check the actual fork on a Mac computer
-	String fullPath = path.getPath() + "/" + fileName + "/..namedfork/rsrc";
-	FSNode resFsNode = FSNode(fullPath);
-	if (resFsNode.exists()) {
-		SeekableReadStream *macResForkRawStream = resFsNode.createReadStream();
+	{
+		// Check the actual fork on a Mac computer
+		String fullPath = path.getPath() + "/" + fileName + "/..namedfork/rsrc";
+		FSNode resFsNode = FSNode(fullPath);
+		if (resFsNode.exists()) {
+			SeekableReadStream *macResForkRawStream = resFsNode.createReadStream();
 
-		if (macResForkRawStream && loadFromRawFork(*macResForkRawStream)) {
-			_baseFileName = fileName;
-			return true;
+			if (macResForkRawStream && loadFromRawFork(*macResForkRawStream)) {
+				_baseFileName = fileName;
+				return true;
+			}
+
+			delete macResForkRawStream;
 		}
-
-		delete macResForkRawStream;
 	}
 #endif
 
@@ -257,24 +261,32 @@ bool MacResManager::exists(const String &fileName) {
 		return true;
 
 	// Check if we have an AppleDouble file
-	if (tempFile.open(constructAppleDoubleName(fileName)) && tempFile.readUint32BE() == 0x00051607)
-		return true;
+	if (tempFile.open(constructAppleDoubleName(fileName))) {
+		uint32 tag = tempFile.readUint32BE();
+		if (!tempFile.eos() && tag == 0x00051607)
+			return true;
+	}
 
 	return false;
 }
 
 bool MacResManager::loadFromAppleDouble(SeekableReadStream &stream) {
-	if (stream.readUint32BE() != 0x00051607) // tag
+	uint32 tag = stream.readUint32BE();
+	if (stream.eos() || tag != 0x00051607) // tag
 		return false;
 
 	stream.skip(20); // version + home file system
 
 	uint16 entryCount = stream.readUint16BE();
+	if (stream.eos())
+		return false;
 
 	for (uint16 i = 0; i < entryCount; i++) {
 		uint32 id = stream.readUint32BE();
 		uint32 offset = stream.readUint32BE();
-		uint32 length = stream.readUint32BE(); // length
+		uint32 length = stream.readUint32BE();
+		if (stream.eos())
+			return false;
 
 		if (id == 2) {
 			// Found the resource fork!
@@ -290,10 +302,11 @@ bool MacResManager::loadFromAppleDouble(SeekableReadStream &stream) {
 
 bool MacResManager::isMacBinary(SeekableReadStream &stream) {
 	byte infoHeader[MBI_INFOHDR];
-	int resForkOffset = -1;
+	uint32 size = stream.read(infoHeader, MBI_INFOHDR);
+	if (size != MBI_INFOHDR)
+		return false;
 
-	stream.read(infoHeader, MBI_INFOHDR);
-
+	// Check that the header is correct
 	if (infoHeader[MBI_ZERO1] == 0 && infoHeader[MBI_ZERO2] == 0 &&
 		infoHeader[MBI_ZERO3] == 0 && infoHeader[MBI_NAMELEN] <= MAXNAMELEN) {
 
@@ -304,21 +317,21 @@ bool MacResManager::isMacBinary(SeekableReadStream &stream) {
 		uint32 dataSizePad = (((dataSize + 127) >> 7) << 7);
 		uint32 rsrcSizePad = (((rsrcSize + 127) >> 7) << 7);
 
-		// Length check
-		if (MBI_INFOHDR + dataSizePad + rsrcSizePad == (uint32)stream.size()) {
-			resForkOffset = MBI_INFOHDR + dataSizePad;
-		}
+		// If the header + data size + rsrc size equal the stream size, it should
+		// be MacBinary.
+		if (MBI_INFOHDR + dataSizePad + rsrcSizePad == (uint32)stream.size())
+			return true;
 	}
 
-	if (resForkOffset < 0)
-		return false;
-
-	return true;
+	// Not detected as MacBinary
+	return false;
 }
 
 bool MacResManager::loadFromMacBinary(SeekableReadStream &stream) {
 	byte infoHeader[MBI_INFOHDR];
-	stream.read(infoHeader, MBI_INFOHDR);
+	uint32 size = stream.read(infoHeader, MBI_INFOHDR);
+	if (size != MBI_INFOHDR)
+		return false;
 
 	// Maybe we have MacBinary?
 	if (infoHeader[MBI_ZERO1] == 0 && infoHeader[MBI_ZERO2] == 0 &&
