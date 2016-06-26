@@ -24,6 +24,7 @@
 
 #include "gui/browser.h"
 
+#include "backends/platform/darwin/cfref.h"
 #include "common/config-manager.h"
 #include "common/system.h"
 #include "common/algorithm.h"
