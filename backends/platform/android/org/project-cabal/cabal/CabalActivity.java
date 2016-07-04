@@ -1,4 +1,4 @@
-package org.scummvm.scummvm;
+package org.project_cabal.cabal;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -18,7 +18,7 @@ import android.widget.Toast;
 
 import java.io.File;
 
-public class ScummVMActivity extends Activity {
+public class CabalActivity extends Activity {
 
 	/* Establish whether the hover events are available */
 	private static boolean _hoverAvailable;
@@ -32,7 +32,7 @@ public class ScummVMActivity extends Activity {
 		}
 	}
 
-	private class MyScummVM extends ScummVM {
+	private class MyCabal extends Cabal {
 		private boolean usingSmallScreen() {
 			// Multiple screen sizes came in with Android 1.6.  Have
 			// to use reflection in order to continue supporting 1.5
@@ -50,10 +50,10 @@ public class ScummVMActivity extends Activity {
 			}
 		}
 
-		public MyScummVM(SurfaceHolder holder) {
-			super(ScummVMActivity.this.getAssets(), holder);
+		public MyCabal(SurfaceHolder holder) {
+			super(CabalActivity.this.getAssets(), holder);
 
-			// Enable ScummVM zoning on 'small' screens.
+			// Enable zoning on 'small' screens.
 			// FIXME make this optional for the user
 			// disabled for now since it crops too much
 			//enableZoning(usingSmallScreen());
@@ -71,7 +71,7 @@ public class ScummVMActivity extends Activity {
 		@Override
 		protected void displayMessageOnOSD(String msg) {
 			Log.i(LOG_TAG, "OSD: " + msg);
-			Toast.makeText(ScummVMActivity.this, msg, Toast.LENGTH_LONG).show();
+			Toast.makeText(CabalActivity.this, msg, Toast.LENGTH_LONG).show();
 		}
 
 		@Override
@@ -99,10 +99,10 @@ public class ScummVMActivity extends Activity {
 
 	}
 
-	private MyScummVM _scummvm;
-	private ScummVMEvents _events;
+	private MyCabal _cabal;
+	private CabalEvents _events;
 	private MouseHelper _mouseHelper;
-	private Thread _scummvm_thread;
+	private Thread _cabal_thread;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -140,7 +140,7 @@ public class ScummVMActivity extends Activity {
 
 		// Store savegames on external storage if we can, which means they're
 		// world-readable and don't get deleted on uninstall.
-		String savePath = Environment.getExternalStorageDirectory() + "/ScummVM/Saves/";
+		String savePath = Environment.getExternalStorageDirectory() + "/Cabal/Saves/";
 		File saveDir = new File(savePath);
 		saveDir.mkdirs();
 		if (!saveDir.isDirectory()) {
@@ -148,77 +148,77 @@ public class ScummVMActivity extends Activity {
 			savePath = getDir("saves", MODE_WORLD_READABLE).getPath();
 		}
 
-		// Start ScummVM
-		_scummvm = new MyScummVM(main_surface.getHolder());
+		// Start Cabal
+		_cabal = new MyCabal(main_surface.getHolder());
 
-		_scummvm.setArgs(new String[] {
-			"ScummVM",
-			"--config=" + getFileStreamPath("scummvmrc").getPath(),
+		_cabal.setArgs(new String[] {
+			"cabalexec",
+			"--config=" + getFileStreamPath("cabalexecrc").getPath(),
 			"--path=" + Environment.getExternalStorageDirectory().getPath(),
 			"--savepath=" + savePath
 		});
 
-		Log.d(ScummVM.LOG_TAG, "Hover available: " + _hoverAvailable);
+		Log.d(Cabal.LOG_TAG, "Hover available: " + _hoverAvailable);
 		if (_hoverAvailable) {
-			_mouseHelper = new MouseHelper(_scummvm);
+			_mouseHelper = new MouseHelper(_cabal);
 			_mouseHelper.attach(main_surface);
 		}
 
 		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB_MR1)
 		{
-			_events = new ScummVMEvents(this, _scummvm, _mouseHelper);
+			_events = new CabalEvents(this, _cabal, _mouseHelper);
 		}
 		else
 		{
-			_events = new ScummVMEventsHoneycomb(this, _scummvm, _mouseHelper);
+			_events = new CabalEventsHoneycomb(this, _cabal, _mouseHelper);
 		}
 
 		main_surface.setOnKeyListener(_events);
 		main_surface.setOnTouchListener(_events);
 
-		_scummvm_thread = new Thread(_scummvm, "ScummVM");
-		_scummvm_thread.start();
+		_cabal_thread = new Thread(_cabal, "Cabal");
+		_cabal_thread.start();
 	}
 
 	@Override
 	public void onStart() {
-		Log.d(ScummVM.LOG_TAG, "onStart");
+		Log.d(Cabal.LOG_TAG, "onStart");
 
 		super.onStart();
 	}
 
 	@Override
 	public void onResume() {
-		Log.d(ScummVM.LOG_TAG, "onResume");
+		Log.d(Cabal.LOG_TAG, "onResume");
 
 		super.onResume();
 
-		if (_scummvm != null)
-			_scummvm.setPause(false);
+		if (_cabal != null)
+			_cabal.setPause(false);
 		showMouseCursor(false);
 	}
 
 	@Override
 	public void onPause() {
-		Log.d(ScummVM.LOG_TAG, "onPause");
+		Log.d(Cabal.LOG_TAG, "onPause");
 
 		super.onPause();
 
-		if (_scummvm != null)
-			_scummvm.setPause(true);
+		if (_cabal != null)
+			_cabal.setPause(true);
 		showMouseCursor(true);
 	}
 
 	@Override
 	public void onStop() {
-		Log.d(ScummVM.LOG_TAG, "onStop");
+		Log.d(Cabal.LOG_TAG, "onStop");
 
 		super.onStop();
 	}
 
 	@Override
 	public void onDestroy() {
-		Log.d(ScummVM.LOG_TAG, "onDestroy");
+		Log.d(Cabal.LOG_TAG, "onDestroy");
 
 		super.onDestroy();
 
@@ -227,12 +227,12 @@ public class ScummVMActivity extends Activity {
 
 			try {
 				// 1s timeout
-				_scummvm_thread.join(1000);
+				_cabal_thread.join(1000);
 			} catch (InterruptedException e) {
-				Log.i(ScummVM.LOG_TAG, "Error while joining ScummVM thread", e);
+				Log.i(Cabal.LOG_TAG, "Error while joining Cabal thread", e);
 			}
 
-			_scummvm = null;
+			_cabal = null;
 		}
 	}
 

@@ -18,8 +18,8 @@ RESOURCES = \
 	$(PATH_BUILD_RES)/values/strings.xml \
 	$(PATH_BUILD_RES)/values-television/margins.xml \
 	$(PATH_BUILD_RES)/layout/main.xml \
-	$(PATH_BUILD_RES)/drawable/scummvm.png \
-	$(PATH_BUILD_RES)/drawable/scummvm_big.png \
+	$(PATH_BUILD_RES)/drawable/cabal.png \
+	$(PATH_BUILD_RES)/drawable/cabal_big.png \
 	$(PATH_BUILD_RES)/drawable-xhdpi/ouya_icon.png
 
 DIST_ANDROID_MK = $(PATH_DIST)/jni/Android.mk
@@ -88,13 +88,13 @@ androidrelease: $(APK_MAIN_RELEASE)
 
 androidtestmain: $(APK_MAIN)
 	$(ADB) install -r $(APK_MAIN)
-	$(ADB) shell am start -a android.intent.action.MAIN -c android.intent.category.LAUNCHER -n org.scummvm.scummvm/.ScummVMActivity
+	$(ADB) shell am start -a android.intent.action.MAIN -c android.intent.category.LAUNCHER -n org.project-cabal.cabal/.CabalActivity
 
 androidtest: $(APK_MAIN)
 	@set -e; for apk in $^; do \
 		$(ADB) install -r $$apk; \
 	done
-	$(ADB) shell am start -a android.intent.action.MAIN -c android.intent.category.LAUNCHER -n org.scummvm.scummvm/.ScummVMActivity
+	$(ADB) shell am start -a android.intent.action.MAIN -c android.intent.category.LAUNCHER -n org.project-cabal.cabal/.CabalActivity
 
 # used by buildbot!
 androiddistdebug: all

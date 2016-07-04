@@ -1,4 +1,4 @@
-package org.scummvm.scummvm;
+package org.project_cabal.cabal;
 
 import android.os.Handler;
 import android.os.Message;
@@ -12,7 +12,7 @@ import android.view.GestureDetector;
 import android.view.InputDevice;
 import android.view.inputmethod.InputMethodManager;
 
-public class ScummVMEvents implements
+public class CabalEvents implements
 		android.view.View.OnKeyListener,
 		android.view.View.OnTouchListener,
 		android.view.GestureDetector.OnGestureListener,
@@ -39,14 +39,14 @@ public class ScummVMEvents implements
 	public static final int JE_QUIT = 0x1000;
 
 	final protected Context _context;
-	final protected ScummVM _scummvm;
+	final protected Cabal _cabal;
 	final protected GestureDetector _gd;
 	final protected int _longPress;
 	final protected MouseHelper _mouseHelper;
 
-	public ScummVMEvents(Context context, ScummVM scummvm, MouseHelper mouseHelper) {
+	public CabalEvents(Context context, Cabal cabal, MouseHelper mouseHelper) {
 		_context = context;
-		_scummvm = scummvm;
+		_cabal = cabal;
 		_mouseHelper = mouseHelper;
 
 		_gd = new GestureDetector(context, this);
@@ -57,11 +57,11 @@ public class ScummVMEvents implements
 	}
 
 	final public void sendQuitEvent() {
-		_scummvm.pushEvent(JE_QUIT, 0, 0, 0, 0, 0);
+		_cabal.pushEvent(JE_QUIT, 0, 0, 0, 0, 0);
 	}
 
 	public boolean onTrackballEvent(MotionEvent e) {
-		_scummvm.pushEvent(JE_BALL, e.getAction(),
+		_cabal.pushEvent(JE_BALL, e.getAction(),
 							(int)(e.getX() * e.getXPrecision() * 100),
 							(int)(e.getY() * e.getYPrecision() * 100),
 							0, 0);
@@ -153,7 +153,7 @@ public class ScummVMEvents implements
 					return true;
 			}
 
-			_scummvm.pushEvent(JE_SYS_KEY, action, keyCode, 0, 0, 0);
+			_cabal.pushEvent(JE_SYS_KEY, action, keyCode, 0, 0, 0);
 
 			return true;
 		}
@@ -168,7 +168,7 @@ public class ScummVMEvents implements
 				return true;
 
 			for (KeyEvent s : es) {
-				_scummvm.pushEvent(JE_KEY, s.getAction(), s.getKeyCode(),
+				_cabal.pushEvent(JE_KEY, s.getAction(), s.getKeyCode(),
 					s.getUnicodeChar() & KeyCharacterMap.COMBINING_ACCENT_MASK,
 					s.getMetaState(), s.getRepeatCount());
 			}
@@ -182,7 +182,7 @@ public class ScummVMEvents implements
 		case KeyEvent.KEYCODE_DPAD_LEFT:
 		case KeyEvent.KEYCODE_DPAD_RIGHT:
 		case KeyEvent.KEYCODE_DPAD_CENTER:
-			_scummvm.pushEvent(JE_DPAD, action, keyCode,
+			_cabal.pushEvent(JE_DPAD, action, keyCode,
 								(int)(e.getEventTime() - e.getDownTime()),
 								e.getRepeatCount(), 0);
 			return true;
@@ -201,13 +201,13 @@ public class ScummVMEvents implements
 		case KeyEvent.KEYCODE_BUTTON_START:
 		case KeyEvent.KEYCODE_BUTTON_SELECT:
 		case KeyEvent.KEYCODE_BUTTON_MODE:
-			_scummvm.pushEvent(JE_GAMEPAD, action, keyCode,
+			_cabal.pushEvent(JE_GAMEPAD, action, keyCode,
 								(int)(e.getEventTime() - e.getDownTime()),
 								e.getRepeatCount(), 0);
 			return true;
 		}
 
-		_scummvm.pushEvent(JE_KEY, action, keyCode,
+		_cabal.pushEvent(JE_KEY, action, keyCode,
 					e.getUnicodeChar() & KeyCharacterMap.COMBINING_ACCENT_MASK,
 					e.getMetaState(), e.getRepeatCount());
 
@@ -232,7 +232,7 @@ public class ScummVMEvents implements
 		final int pointer = (action & 0xff00) >> 8;
 
 		if (pointer > 0) {
-			_scummvm.pushEvent(JE_MULTI, pointer, action & 0xff, // ACTION_MASK
+			_cabal.pushEvent(JE_MULTI, pointer, action & 0xff, // ACTION_MASK
 								(int)e.getX(), (int)e.getY(), 0);
 			return true;
 		}
@@ -243,14 +243,14 @@ public class ScummVMEvents implements
 	// OnGestureListener
 	@Override
 	final public boolean onDown(MotionEvent e) {
-		_scummvm.pushEvent(JE_DOWN, (int)e.getX(), (int)e.getY(), 0, 0, 0);
+		_cabal.pushEvent(JE_DOWN, (int)e.getX(), (int)e.getY(), 0, 0, 0);
 		return true;
 	}
 
 	@Override
 	final public boolean onFling(MotionEvent e1, MotionEvent e2,
 									float velocityX, float velocityY) {
-		//Log.d(ScummVM.LOG_TAG, String.format("onFling: %s -> %s (%.3f %.3f)",
+		//Log.d(Cabal.LOG_TAG, String.format("onFling: %s -> %s (%.3f %.3f)",
 		//										e1.toString(), e2.toString(),
 		//										velocityX, velocityY));
 
@@ -265,7 +265,7 @@ public class ScummVMEvents implements
 	@Override
 	final public boolean onScroll(MotionEvent e1, MotionEvent e2,
 									float distanceX, float distanceY) {
-		_scummvm.pushEvent(JE_SCROLL, (int)e1.getX(), (int)e1.getY(),
+		_cabal.pushEvent(JE_SCROLL, (int)e1.getX(), (int)e1.getY(),
 							(int)e2.getX(), (int)e2.getY(), 0);
 
 		return true;
@@ -277,7 +277,7 @@ public class ScummVMEvents implements
 
 	@Override
 	final public boolean onSingleTapUp(MotionEvent e) {
-		_scummvm.pushEvent(JE_TAP, (int)e.getX(), (int)e.getY(),
+		_cabal.pushEvent(JE_TAP, (int)e.getX(), (int)e.getY(),
 							(int)(e.getEventTime() - e.getDownTime()), 0, 0);
 
 		return true;
@@ -291,7 +291,7 @@ public class ScummVMEvents implements
 
 	@Override
 	final public boolean onDoubleTapEvent(MotionEvent e) {
-		_scummvm.pushEvent(JE_DOUBLE_TAP, (int)e.getX(), (int)e.getY(),
+		_cabal.pushEvent(JE_DOUBLE_TAP, (int)e.getX(), (int)e.getY(),
 							e.getAction(), 0, 0);
 
 		return true;

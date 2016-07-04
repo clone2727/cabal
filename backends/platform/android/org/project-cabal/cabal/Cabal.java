@@ -1,4 +1,4 @@
-package org.scummvm.scummvm;
+package org.project_cabal.cabal;
 
 import android.util.Log;
 import android.content.res.AssetManager;
@@ -17,7 +17,7 @@ import javax.microedition.khronos.egl.EGLSurface;
 import java.io.File;
 import java.util.LinkedHashMap;
 
-public abstract class ScummVM implements SurfaceHolder.Callback, Runnable {
+public abstract class Cabal implements SurfaceHolder.Callback, Runnable {
 	final protected static String LOG_TAG = "Cabal";
 	final private AssetManager _asset_manager;
 	final private Object _sem_surface;
@@ -46,7 +46,7 @@ public abstract class ScummVM implements SurfaceHolder.Callback, Runnable {
 	// pause the engine and all native threads
 	final public native void setPause(boolean pause);
 	final public native void enableZoning(boolean enable);
-	// Feed an event to ScummVM.  Safe to call from other threads.
+	// Feed an event to Cabal.  Safe to call from other threads.
 	final public native void pushEvent(int type, int arg1, int arg2, int arg3,
 										int arg4, int arg5);
 
@@ -57,7 +57,7 @@ public abstract class ScummVM implements SurfaceHolder.Callback, Runnable {
 	abstract protected void showVirtualKeyboard(boolean enable);
 	abstract protected String[] getSysArchives();
 
-	public ScummVM(AssetManager asset_manager, SurfaceHolder holder) {
+	public Cabal(AssetManager asset_manager, SurfaceHolder holder) {
 		_asset_manager = asset_manager;
 		_sem_surface = new Object();
 
@@ -127,7 +127,7 @@ public abstract class ScummVM implements SurfaceHolder.Callback, Runnable {
 			deinitEGL();
 			deinitAudio();
 
-			throw new RuntimeException("Error preparing the ScummVM thread", e);
+			throw new RuntimeException("Error preparing the Cabal thread", e);
 		}
 
 		create(_asset_manager, _egl, _egl_display,

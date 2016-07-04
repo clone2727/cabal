@@ -1,4 +1,4 @@
-package org.scummvm.scummvm;
+package org.project_cabal.cabal;
 
 import android.content.Context;
 import android.text.InputType;
