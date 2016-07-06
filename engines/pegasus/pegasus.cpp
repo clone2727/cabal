@@ -116,6 +116,9 @@ PegasusEngine::~PegasusEngine() {
 	InputDeviceManager::destroy();
 	GameStateManager::destroy();
 
+	// Ensure the screen dimmer isn't showing
+	_screenDimmer.stopDisplaying();
+
 	// NOTE: This must be deleted last!
 	delete _gfx;
 }
