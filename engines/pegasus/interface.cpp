@@ -1,27 +1,29 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
- *
- * Additional copyright for this file:
- * Copyright (C) 1995-1997 Presto Studios, Inc.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
-
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
-
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
  */
+
+// Based on the ScummVM (GPLv2+) file of the same name
+
+// Additional copyright for this file:
+// Copyright (C) 1995-1997 Presto Studios, Inc.
 
 #include "pegasus/compass.h"
 #include "pegasus/energymonitor.h"
@@ -483,8 +485,10 @@ void Interface::inventoryDrawerDown(const bool doCallBacks) {
 void Interface::inventoryLidClosed() {
 	_inventoryLid.stop();
 
-	if (!_biochipUp)
+	if (!_biochipUp) {
 		InputHandler::setInputHandler(_previousHandler);
+		_previousHandler = 0;
+	}
 
 	_inventoryLid.hide();
 	_inventoryPush.hide();
@@ -568,8 +572,10 @@ void Interface::biochipDrawerDown(const bool doCallBacks) {
 void Interface::biochipLidClosed() {
 	_biochipLid.stop();
 
-	if (!_inventoryUp)
+	if (!_inventoryUp) {
 		InputHandler::setInputHandler(_previousHandler);
+		_previousHandler = 0;
+	}
 
 	_biochipLid.hide();
 	_biochipPush.hide();
