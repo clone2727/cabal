@@ -75,12 +75,11 @@ public:
 
 protected:
 	void readNextPacket();
-	bool useAudioSync() const;
 
 private:
 	class PSXVideoTrack : public VideoTrack {
 	public:
-		PSXVideoTrack(Common::SeekableReadStream *firstSector, CDSpeed speed, int frameCount);
+		PSXVideoTrack(Common::SeekableReadStream &firstSector, CDSpeed speed, int frameCount);
 		~PSXVideoTrack();
 
 		uint16 getWidth() const { return _surface->w; }
@@ -89,11 +88,12 @@ private:
 		bool endOfTrack() const { return _endOfTrack; }
 		int getCurFrame() const { return _curFrame; }
 		int getFrameCount() const { return _frameCount; }
-		uint32 getNextFrameStartTime() const;
+		uint32 getNextFrameStartTime() const { return _nextFrameStartTime.msecs(); }
 		const Graphics::Surface *decodeNextFrame();
+		const Common::Timestamp &getNextFrameStartTimestamp() const { return _nextFrameStartTime; }
 
 		void setEndOfTrack() { _endOfTrack = true; }
-		void decodeFrame(Common::SeekableReadStream *frame, uint sectorCount);
+		void decodeFrame(Common::SeekableReadStream &frame, uint sectorCount);
 
 	private:
 		Graphics::Surface *_surface;
@@ -110,35 +110,37 @@ private:
 
 		uint16 _macroBlocksW, _macroBlocksH;
 		byte *_yBuffer, *_cbBuffer, *_crBuffer;
-		void decodeMacroBlock(Common::BitStream *bits, int mbX, int mbY, uint16 scale, uint16 version);
-		void decodeBlock(Common::BitStream *bits, byte *block, int pitch, uint16 scale, uint16 version, PlaneType plane);
+		void decodeMacroBlock(Common::BitStream &bits, int mbX, int mbY, uint16 scale, uint16 version);
+		void decodeBlock(Common::BitStream &bits, byte *block, int pitch, uint16 scale, uint16 version, PlaneType plane);
 
-		void readAC(Common::BitStream *bits, int *block);
+		void readAC(Common::BitStream &bits, int *block);
 		Common::Huffman *_acHuffman;
 
-		int readDC(Common::BitStream *bits, uint16 version, PlaneType plane);
+		int readDC(Common::BitStream &bits, uint16 version, PlaneType plane);
 		Common::Huffman *_dcHuffmanLuma, *_dcHuffmanChroma;
 		int _lastDC[3];
 
 		void dequantizeBlock(int *coefficients, float *block, uint16 scale);
 		void idct(float *dequantData, float *result);
-		int readSignedCoefficient(Common::BitStream *bits);
+		int readSignedCoefficient(Common::BitStream &bits);
 	};
 
 	class PSXAudioTrack : public AudioTrack {
 	public:
-		PSXAudioTrack(Common::SeekableReadStream *sector);
+		PSXAudioTrack(Common::SeekableReadStream &sector);
 		~PSXAudioTrack();
 
 		bool endOfTrack() const;
 
 		void setEndOfTrack() { _endOfTrack = true; }
-		void queueAudioFromSector(Common::SeekableReadStream *sector);
+		void queueAudioFromSector(Common::SeekableReadStream &sector);
+		const Common::Timestamp &getQueuedAudioTime() const { return _queuedAudioTime; }
 
 	private:
 		Audio::AudioStream *getAudioStream() const;
 
 		Audio::QueuingAudioStream *_audStream;
+		Common::Timestamp _queuedAudioTime;
 
 		struct ADPCMStatus {
 			int16 sample[2];
@@ -151,8 +153,11 @@ private:
 	uint32 _frameCount;
 	Common::SeekableReadStream *_stream;
 	PSXVideoTrack *_videoTrack;
+	uint32 _videoTrackPos;
 	PSXAudioTrack *_audioTrack;
+	uint32 _audioTrackPos;
 
+	bool scanForTracks();
 	Common::SeekableReadStream *readSector();
 };
 

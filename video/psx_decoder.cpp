@@ -154,7 +154,9 @@ static const uint32 s_huffmanACSymbols[AC_CODE_COUNT] = {
 PSXStreamDecoder::PSXStreamDecoder(CDSpeed speed, uint32 frameCount) : _speed(speed), _frameCount(frameCount) {
 	_stream = 0;
 	_videoTrack = 0;
+	_videoTrackPos = 0;
 	_audioTrack = 0;
+	_audioTrackPos = 0;
 }
 
 PSXStreamDecoder::~PSXStreamDecoder() {
@@ -172,7 +174,11 @@ bool PSXStreamDecoder::loadStream(Common::SeekableReadStream *stream) {
 	close();
 
 	_stream = stream;
-	readNextPacket();
+
+	if (!scanForTracks()) {
+		close();
+		return false;
+	}
 
 	return true;
 }
@@ -180,121 +186,157 @@ bool PSXStreamDecoder::loadStream(Common::SeekableReadStream *stream) {
 void PSXStreamDecoder::close() {
 	VideoDecoder::close();
 	_audioTrack = 0;
+	_audioTrackPos = 0;
 	_videoTrack = 0;
+	_videoTrackPos = 0;
 	_frameCount = 0;
 
 	delete _stream;
 	_stream = 0;
 }
 
+bool PSXStreamDecoder::scanForTracks() {
+	while (_stream->pos() < _stream->size()) {
+		Common::ScopedPtr<Common::SeekableReadStream> sector(readSector());
+		if (!sector)
+			return false;
+
+		sector->seek(0x11);
+		byte track = sector->readByte();
+		byte sectorType = sector->readByte() & CDXA_TYPE_MASK;
+
+		switch (sectorType) {
+		case CDXA_TYPE_DATA:
+		case CDXA_TYPE_VIDEO:
+			if (track != 1) {
+				warning("Unhandled PSX stream video track %d", track);
+			} else if (!_videoTrack) {
+				_videoTrack = new PSXVideoTrack(*sector, _speed, _frameCount);
+				addTrack(_videoTrack);
+			}
+			break;
+		case CDXA_TYPE_AUDIO:
+			if (track != 1) {
+				warning("Unhandled PSX stream audio track %d", track);
+			} else if (!_audioTrack) {
+				_audioTrack = new PSXAudioTrack(*sector);
+				addTrack(_audioTrack);
+			}
+			break;
+		default:
+			// Ignore the sector
+			break;
+		}
+	}
+
+	// Need to at least have a video track
+	return _videoTrack != 0;
+}
+
 #define VIDEO_DATA_CHUNK_SIZE   2016
 #define VIDEO_DATA_HEADER_SIZE  56
 
 void PSXStreamDecoder::readNextPacket() {
-	Common::SeekableReadStream *sector = 0;
-	byte *partialFrame = 0;
-	int sectorsRead = 0;
+	// Bail if there's no video track or have finished reading it
+	if (!_videoTrack || _videoTrackPos >= (uint32)_stream->size())
+		return;
 
-	while (_stream->pos() < _stream->size()) {
-		sector = readSector();
+	// Seek to the last video track search position
+	_stream->seek(_videoTrackPos);
+
+	Common::ScopedArray<byte> partialFrame;
+	uint sectorsRead = 0;
+
+	while (_videoTrackPos < (uint32)_stream->size()) {
+		Common::ScopedPtr<Common::SeekableReadStream> sector(readSector());
 		sectorsRead++;
+		_videoTrackPos = _stream->pos();
 
 		if (!sector)
 			error("Corrupt PSX stream sector");
 
 		sector->seek(0x11);
 		byte track = sector->readByte();
-		if (track >= 32)
-			error("Bad PSX stream track");
-
 		byte sectorType = sector->readByte() & CDXA_TYPE_MASK;
 
-		switch (sectorType) {
-		case CDXA_TYPE_DATA:
-		case CDXA_TYPE_VIDEO:
-			if (track == 1) {
-				if (!_videoTrack) {
-					_videoTrack = new PSXVideoTrack(sector, _speed, _frameCount);
-					addTrack(_videoTrack);
-				}
+		// We're only looking for a video sector in track 1
+		if ((sectorType != CDXA_TYPE_DATA && sectorType != CDXA_TYPE_VIDEO) || track != 1)
+			continue;
 
-				sector->seek(28);
-				uint16 curSector = sector->readUint16LE();
-				uint16 sectorCount = sector->readUint16LE();
-				sector->readUint32LE();
-				uint16 frameSize = sector->readUint32LE();
+		sector->seek(28);
+		uint16 curSector = sector->readUint16LE();
+		uint16 sectorCount = sector->readUint16LE();
+		sector->readUint32LE();
+		uint16 frameSize = sector->readUint32LE();
 
-				if (curSector >= sectorCount)
-					error("Bad sector");
+		if (curSector >= sectorCount)
+			error("Bad sector");
 
-				if (!partialFrame)
-					partialFrame = (byte *)malloc(sectorCount * VIDEO_DATA_CHUNK_SIZE);
+		if (!partialFrame)
+			partialFrame.reset(new byte[sectorCount * VIDEO_DATA_CHUNK_SIZE]);
 
-				sector->seek(VIDEO_DATA_HEADER_SIZE);
-				sector->read(partialFrame + curSector * VIDEO_DATA_CHUNK_SIZE, VIDEO_DATA_CHUNK_SIZE);
+		sector->seek(VIDEO_DATA_HEADER_SIZE);
+		sector->read(partialFrame.get() + curSector * VIDEO_DATA_CHUNK_SIZE, VIDEO_DATA_CHUNK_SIZE);
 
-				if (curSector == sectorCount - 1) {
-					// Done assembling the frame
-					Common::SeekableReadStream *frame = new Common::MemoryReadStream(partialFrame, frameSize, DisposeAfterUse::YES);
-
-					_videoTrack->decodeFrame(frame, sectorsRead);
-
-					delete frame;
-					delete sector;
-					return;
-				}
-			} else
-				error("Unhandled multi-track video");
-			break;
-		case CDXA_TYPE_AUDIO:
-			// We only handle one audio channel so far
-			if (track == 1) {
-				if (!_audioTrack) {
-					_audioTrack = new PSXAudioTrack(sector);
-					addTrack(_audioTrack);
-				}
-
-				_audioTrack->queueAudioFromSector(sector);
-			} else {
-				warning("Unhandled multi-track audio");
-			}
-			break;
-		default:
-			// This shows up way too often, but the other sectors
-			// are safe to ignore
-			//warning("Unknown PSX sector type 0x%x", sectorType);
+		if (curSector == sectorCount - 1) {
+			// Done assembling the frame
+			Common::MemoryReadStream frame(partialFrame.get(), frameSize);
+			_videoTrack->decodeFrame(frame, sectorsRead);
 			break;
 		}
-
-		delete sector;
 	}
 
-	if (_stream->pos() >= _stream->size()) {
-		if (_videoTrack)
-			_videoTrack->setEndOfTrack();
+	// Mark the video track as over if we've reached the end of the stream
+	if (_videoTrackPos >= (uint32)_stream->size())
+		_videoTrack->setEndOfTrack();
 
-		if (_audioTrack)
-			_audioTrack->setEndOfTrack();
+	// If there's no audio, bail here
+	if (!_audioTrack || _audioTrackPos >= (uint32)_stream->size())
+		return;
+
+	// Seek to where we left off for audio
+	_stream->seek(_audioTrackPos);
+
+	// Scan for audio track chunks up to 0.5 seconds after the next video frame start
+	Common::Timestamp audioMax = _videoTrack->getNextFrameStartTimestamp().addMsecs(500);
+	while (_audioTrackPos < (uint32)_stream->size() && (_videoTrack->endOfTrack() || _audioTrack->getQueuedAudioTime() < audioMax)) {
+		Common::ScopedPtr<Common::SeekableReadStream> sector(readSector());
+		_audioTrackPos = _stream->pos();
+
+		if (!sector)
+			error("Corrupt PSX stream sector");
+
+		// Pull header info
+		sector->seek(0x11);
+		byte track = sector->readByte();
+		byte sectorType = sector->readByte() & CDXA_TYPE_MASK;
+
+		// Only looking for audio, track 1
+		if (sectorType != CDXA_TYPE_AUDIO || track != 1)
+			continue;
+
+		// Queue audio from this sector
+		_audioTrack->queueAudioFromSector(*sector);
 	}
+
+	// End the audio track if it's done
+	if (_audioTrackPos >= (uint32)_stream->size())
+		_audioTrack->setEndOfTrack();
 }
 
-bool PSXStreamDecoder::useAudioSync() const {
-	// Audio sync is disabled since most audio data comes after video
-	// data.
-	return false;
-}
-
-static const byte s_syncHeader[12] = { 0x00, 0xff ,0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0x00 };
+static const byte s_syncHeader[] = { 0x00, 0xff ,0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0x00 };
 
 Common::SeekableReadStream *PSXStreamDecoder::readSector() {
 	assert(_stream);
 
-	Common::SeekableReadStream *stream = _stream->readStream(RAW_CD_SECTOR_SIZE);
+	Common::ScopedPtr<Common::SeekableReadStream> sector(_stream->readStream(RAW_CD_SECTOR_SIZE));
 
-	byte syncHeader[12];
-	stream->read(syncHeader, 12);
-	if (!memcmp(s_syncHeader, syncHeader, 12))
-		return stream;
+	byte syncHeader[sizeof(s_syncHeader)];
+	sector->read(syncHeader, sizeof(s_syncHeader));
+	if (!memcmp(s_syncHeader, syncHeader, sizeof(s_syncHeader))) {
+		sector->seek(0);
+		return sector.release();
+	}
 
 	return 0;
 }
@@ -311,17 +353,18 @@ static const int s_xaTable[5][2] = {
    { 122, -60 }
 };
 
-PSXStreamDecoder::PSXAudioTrack::PSXAudioTrack(Common::SeekableReadStream *sector) {
-	assert(sector);
+PSXStreamDecoder::PSXAudioTrack::PSXAudioTrack(Common::SeekableReadStream &sector) {
 	_endOfTrack = false;
 
-	sector->seek(19);
-	byte format = sector->readByte();
+	sector.seek(19);
+	byte format = sector.readByte();
 	bool stereo = (format & (1 << 0)) != 0;
 	uint rate = (format & (1 << 2)) ? 18900 : 37800;
 	_audStream = Audio::makeQueuingAudioStream(rate, stereo ? 2 : 1);
 
 	memset(&_adpcmStatus, 0, sizeof(_adpcmStatus));
+
+	_queuedAudioTime = Common::Timestamp(0, rate);
 }
 
 PSXStreamDecoder::PSXAudioTrack::~PSXAudioTrack() {
@@ -332,25 +375,26 @@ bool PSXStreamDecoder::PSXAudioTrack::endOfTrack() const {
 	return AudioTrack::endOfTrack() && _endOfTrack;
 }
 
-void PSXStreamDecoder::PSXAudioTrack::queueAudioFromSector(Common::SeekableReadStream *sector) {
-	assert(sector);
-
-	sector->seek(24);
+void PSXStreamDecoder::PSXAudioTrack::queueAudioFromSector(Common::SeekableReadStream &sector) {
+	sector.seek(24);
 
 	// This XA audio is different (yet similar) from normal XA audio! Watch out!
 	// TODO: It's probably similar enough to normal XA that we can merge it somehow...
 	// TODO: RTZ PSX needs the same audio code in a regular AudioStream class. Probably
 	// will do something similar to QuickTime and creating a base class 'ISOMode2Parser'
 	// or something similar.
-	byte *buf = new byte[AUDIO_DATA_CHUNK_SIZE];
-	sector->read(buf, AUDIO_DATA_CHUNK_SIZE);
+	Common::ScopedArray<byte> buf(new byte[AUDIO_DATA_CHUNK_SIZE]);
+	sector.read(buf.get(), AUDIO_DATA_CHUNK_SIZE);
 
 	int channels = _audStream->isStereo() ? 2 : 1;
-	int16 *dst = new int16[AUDIO_DATA_SAMPLE_COUNT];
+	int16 *dst = (int16 *)malloc(AUDIO_DATA_SAMPLE_COUNT * 2);
+	if (!dst)
+		error("Failed to allocate PSX audio buffer");
+
 	int16 *leftChannel = dst;
 	int16 *rightChannel = dst + 1;
 
-	for (byte *src = buf; src < buf + AUDIO_DATA_CHUNK_SIZE; src += 128) {
+	for (byte *src = buf.get(); src < buf.get() + AUDIO_DATA_CHUNK_SIZE; src += 128) {
 		for (int i = 0; i < 4; i++) {
 			int shift = 12 - (src[4 + i * 2] & 0xf);
 			int filter = src[4 + i * 2] >> 4;
@@ -412,7 +456,9 @@ void PSXStreamDecoder::PSXAudioTrack::queueAudioFromSector(Common::SeekableReadS
 		flags |= Audio::FLAG_STEREO;
 
 	_audStream->queueBuffer((byte *)dst, AUDIO_DATA_SAMPLE_COUNT * 2, DisposeAfterUse::YES, flags);
-	delete[] buf;
+
+	// Adjust the time of the amount of samples queued
+	_queuedAudioTime = _queuedAudioTime.addFrames(AUDIO_DATA_SAMPLE_COUNT / channels);
 }
 
 Audio::AudioStream *PSXStreamDecoder::PSXAudioTrack::getAudioStream() const {
@@ -420,12 +466,10 @@ Audio::AudioStream *PSXStreamDecoder::PSXAudioTrack::getAudioStream() const {
 }
 
 
-PSXStreamDecoder::PSXVideoTrack::PSXVideoTrack(Common::SeekableReadStream *firstSector, CDSpeed speed, int frameCount) : _nextFrameStartTime(0, speed), _frameCount(frameCount) {
-	assert(firstSector);
-
-	firstSector->seek(40);
-	uint16 width = firstSector->readUint16LE();
-	uint16 height = firstSector->readUint16LE();
+PSXStreamDecoder::PSXVideoTrack::PSXVideoTrack(Common::SeekableReadStream &firstSector, CDSpeed speed, int frameCount) : _nextFrameStartTime(0, speed), _frameCount(frameCount) {
+	firstSector.seek(40);
+	uint16 width = firstSector.readUint16LE();
+	uint16 height = firstSector.readUint16LE();
 	_surface = new Graphics::Surface();
 	_surface->create(width, height, g_system->getScreenFormat());
 
@@ -454,18 +498,14 @@ PSXStreamDecoder::PSXVideoTrack::~PSXVideoTrack() {
 	delete _dcHuffmanLuma;
 }
 
-uint32 PSXStreamDecoder::PSXVideoTrack::getNextFrameStartTime() const {
-	return _nextFrameStartTime.msecs();
-}
-
 const Graphics::Surface *PSXStreamDecoder::PSXVideoTrack::decodeNextFrame() {
 	return _surface;
 }
 
-void PSXStreamDecoder::PSXVideoTrack::decodeFrame(Common::SeekableReadStream *frame, uint sectorCount) {
+void PSXStreamDecoder::PSXVideoTrack::decodeFrame(Common::SeekableReadStream &frame, uint sectorCount) {
 	// A frame is essentially an MPEG-1 intra frame
 
-	Common::BitStream16LEMSB bits(frame);
+	Common::BitStream16LEMSB bits(&frame);
 
 	bits.skip(16); // unknown
 	bits.skip(16); // 0x3800
@@ -480,7 +520,7 @@ void PSXStreamDecoder::PSXVideoTrack::decodeFrame(Common::SeekableReadStream *fr
 
 	for (int mbX = 0; mbX < _macroBlocksW; mbX++)
 		for (int mbY = 0; mbY < _macroBlocksH; mbY++)
-			decodeMacroBlock(&bits, mbX, mbY, scale, version);
+			decodeMacroBlock(bits, mbX, mbY, scale, version);
 
 	// Output data onto the frame
 	YUVToRGBMan.convert420(_surface, Graphics::YUVToRGBManager::kScaleFull, _yBuffer, _cbBuffer, _crBuffer, _surface->w, _surface->h, _macroBlocksW * 16, _macroBlocksW * 8);
@@ -497,7 +537,7 @@ void PSXStreamDecoder::PSXVideoTrack::decodeFrame(Common::SeekableReadStream *fr
 	_nextFrameStartTime = _nextFrameStartTime.addFrames(sectorCount);
 }
 
-void PSXStreamDecoder::PSXVideoTrack::decodeMacroBlock(Common::BitStream *bits, int mbX, int mbY, uint16 scale, uint16 version) {
+void PSXStreamDecoder::PSXVideoTrack::decodeMacroBlock(Common::BitStream &bits, int mbX, int mbY, uint16 scale, uint16 version) {
 	int pitchY = _macroBlocksW * 16;
 	int pitchC = _macroBlocksW * 8;
 
@@ -544,7 +584,7 @@ void PSXStreamDecoder::PSXVideoTrack::dequantizeBlock(int *coefficients, float *
 	}
 }
 
-int PSXStreamDecoder::PSXVideoTrack::readDC(Common::BitStream *bits, uint16 version, PlaneType plane) {
+int PSXStreamDecoder::PSXVideoTrack::readDC(Common::BitStream &bits, uint16 version, PlaneType plane) {
 	// Version 2 just has its coefficient as 10-bits
 	if (version == 2)
 		return readSignedCoefficient(bits);
@@ -553,12 +593,12 @@ int PSXStreamDecoder::PSXVideoTrack::readDC(Common::BitStream *bits, uint16 vers
 
 	Common::Huffman *huffman = (plane == kPlaneY) ? _dcHuffmanLuma : _dcHuffmanChroma;
 
-	uint32 symbol = huffman->getSymbol(*bits);
+	uint32 symbol = huffman->getSymbol(bits);
 	int dc = 0;
 
 	if (GET_DC_BITS(symbol) != 0) {
-		bool negative = (bits->getBit() == 0);
-		dc = bits->getBits(GET_DC_BITS(symbol) - 1);
+		bool negative = (bits.getBit() == 0);
+		dc = bits.getBits(GET_DC_BITS(symbol) - 1);
 
 		if (negative)
 			dc -= GET_DC_NEG(symbol);
@@ -571,22 +611,24 @@ int PSXStreamDecoder::PSXVideoTrack::readDC(Common::BitStream *bits, uint16 vers
 }
 
 #define BLOCK_OVERFLOW_CHECK() \
-	if (count > 63) \
-		error("PSXStreamDecoder::readAC(): Too many coefficients")
+	do { \
+		if (count > 63) \
+			error("PSXStreamDecoder::readAC(): Too many coefficients"); \
+	} while(0)
 
-void PSXStreamDecoder::PSXVideoTrack::readAC(Common::BitStream *bits, int *block) {
+void PSXStreamDecoder::PSXVideoTrack::readAC(Common::BitStream &bits, int *block) {
 	// Clear the block first
 	for (int i = 0; i < 63; i++)
 		block[i] = 0;
 
 	int count = 0;
 
-	while (!bits->eos()) {
-		uint32 symbol = _acHuffman->getSymbol(*bits);
+	while (!bits.eos()) {
+		uint32 symbol = _acHuffman->getSymbol(bits);
 
 		if (symbol == ESCAPE_CODE) {
 			// The escape code!
-			int zeroes = bits->getBits(6);
+			int zeroes = bits.getBits(6);
 			count += zeroes + 1;
 			BLOCK_OVERFLOW_CHECK();
 			block += zeroes;
@@ -601,7 +643,7 @@ void PSXStreamDecoder::PSXVideoTrack::readAC(Common::BitStream *bits, int *block
 			BLOCK_OVERFLOW_CHECK();
 			block += zeroes;
 
-			if (bits->getBit())
+			if (bits.getBit())
 				*block++ = -GET_AC_COEFFICIENT(symbol);
 			else
 				*block++ = GET_AC_COEFFICIENT(symbol);
@@ -609,8 +651,8 @@ void PSXStreamDecoder::PSXVideoTrack::readAC(Common::BitStream *bits, int *block
 	}
 }
 
-int PSXStreamDecoder::PSXVideoTrack::readSignedCoefficient(Common::BitStream *bits) {
-	uint val = bits->getBits(10);
+int PSXStreamDecoder::PSXVideoTrack::readSignedCoefficient(Common::BitStream &bits) {
+	uint val = bits.getBits(10);
 
 	// extend the sign
 	uint shift = 8 * sizeof(int) - 10;
@@ -670,7 +712,7 @@ void PSXStreamDecoder::PSXVideoTrack::idct(float *dequantData, float *result) {
 	}
 }
 
-void PSXStreamDecoder::PSXVideoTrack::decodeBlock(Common::BitStream *bits, byte *block, int pitch, uint16 scale, uint16 version, PlaneType plane) {
+void PSXStreamDecoder::PSXVideoTrack::decodeBlock(Common::BitStream &bits, byte *block, int pitch, uint16 scale, uint16 version, PlaneType plane) {
 	// Version 2 just has signed 10 bits for DC
 	// Version 3 has them huffman coded
 	int coefficients[8 * 8];
