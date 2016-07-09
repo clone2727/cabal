@@ -248,14 +248,12 @@ uint32 VideoDecoder::getTime() const {
 	if (isPaused())
 		return MAX<int>((_playbackRate * (_pauseStartTime - _startTime)).toInt(), 0);
 
-	if (useAudioSync()) {
-		for (TrackList::const_iterator it = _tracks.begin(); it != _tracks.end(); it++) {
-			if ((*it)->getTrackType() == Track::kTrackTypeAudio && !(*it)->endOfTrack()) {
-				uint32 time = ((const AudioTrack *)*it)->getRunningTime();
+	for (TrackList::const_iterator it = _tracks.begin(); it != _tracks.end(); it++) {
+		if ((*it)->getTrackType() == Track::kTrackTypeAudio && !(*it)->endOfTrack()) {
+			uint32 time = ((const AudioTrack *)*it)->getRunningTime();
 
-				if (time != 0)
-					return time + _lastTimeChange.msecs();
-			}
+			if (time != 0)
+				return time + _lastTimeChange.msecs();
 		}
 	}
 

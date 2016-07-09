@@ -831,13 +831,6 @@ protected:
 	void addTrack(Track *track, bool isExternal = false);
 
 	/**
-	 * Whether or not getTime() will sync with a playing audio track.
-	 *
-	 * A subclass can override this to disable this feature.
-	 */
-	virtual bool useAudioSync() const { return true; }
-
-	/**
 	 * Get the given track based on its index.
 	 *
 	 * @return A valid track pointer on success, 0 otherwise
