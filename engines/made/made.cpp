@@ -24,7 +24,7 @@
 
 #include "made/made.h"
 #include "made/console.h"
-#include "made/pmvplayer.h"
+#include "made/pmv_decoder.h"
 #include "made/resource.h"
 #include "made/screen.h"
 #include "made/database.h"
@@ -71,7 +71,6 @@ MadeEngine::MadeEngine(OSystem *syst, const MadeGameDescription *gameDesc) : Eng
 
 	_system->getAudioCDManager()->open();
 
-	_pmvPlayer = new PmvPlayer(this, _mixer);
 	_res = new ResourceReader();
 	_screen = new Screen(this);
 
@@ -109,7 +108,6 @@ MadeEngine::~MadeEngine() {
 
 	delete _rnd;
 	delete _console;
-	delete _pmvPlayer;
 	delete _res;
 	delete _screen;
 	delete _dat;
@@ -328,6 +326,49 @@ Common::Error MadeEngine::run() {
 #endif
 
 	return Common::kNoError;
+}
+
+bool MadeEngine::playMovie(const Common::String &fileName) {
+	Common::ScopedPtr<Video::VideoDecoder> decoder(new PMVDecoder());
+
+	if (!decoder->loadFile(fileName))
+		return false;
+
+	bool result = false;
+	uint16 x = (_system->getWidth() - decoder->getWidth()) / 2;
+	uint16 y = (_system->getHeight() - decoder->getHeight()) / 2;
+
+	decoder->start();
+
+	while (!shouldQuit() && !decoder->endOfVideo() && !result) {
+		if (decoder->needsUpdate()) {
+			const Graphics::Surface *frame = decoder->decodeNextFrame();
+
+			if (decoder->hasDirtyPalette())
+				_screen->setRGBPalette(decoder->getPalette());
+
+			if (frame) {
+				_system->copyRectToScreen(frame->getPixels(), frame->pitch, x, y, frame->w, frame->h);
+				_system->updateScreen();
+			}
+		}
+
+		Common::Event event;
+		while (_system->getEventManager()->pollEvent(event)) {
+			switch (event.type) {
+			case Common::EVENT_KEYDOWN:
+				if (event.kbd.keycode == Common::KEYCODE_ESCAPE)
+					result = true;
+				break;
+			default:
+				break;
+			}
+		}
+
+		_system->delayMillis(10);
+	}
+
+	return !result;
 }
 
 } // End of namespace Made

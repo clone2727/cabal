@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -19,6 +19,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
  */
+
+// Based on the ScummVM (GPLv2+) file of the same name
 
 #ifndef MADE_MADE_H
 #define MADE_MADE_H
@@ -99,7 +101,6 @@ public:
 private:
 	MadeConsole *_console;
 public:
-	PmvPlayer *_pmvPlayer;
 	ResourceReader *_res;
 	Screen *_screen;
 	GameDatabase *_dat;
@@ -132,6 +133,7 @@ public:
 
 	void handleEvents();
 
+	bool playMovie(const Common::String &fileName);
 };
 
 } // End of namespace Made

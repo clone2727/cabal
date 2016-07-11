@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -19,6 +19,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
  */
+
+// Based on the ScummVM (GPLv2+) file of the same name
 
 #ifndef MADE_SCREEN_H
 #define MADE_SCREEN_H
@@ -80,7 +82,7 @@ public:
 
 	void drawSurface(Graphics::Surface *sourceSurface, int x, int y, int16 flipX, int16 flipY, int16 mask, const ClipInfo &clipInfo);
 
-	void setRGBPalette(byte *palRGB, int start = 0, int count = 256);
+	void setRGBPalette(const byte *palRGB, int start = 0, int count = 256);
 	bool isPaletteLocked() { return _paletteLock; }
 	void setPaletteLock(bool lock) { _paletteLock = lock; }
 	bool isScreenLocked() { return _screenLock; }
