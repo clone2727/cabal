@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -20,6 +20,8 @@
  *
  */
 
+// Based on the ScummVM (GPLv2+) file of the same name
+
 #include "made/script.h"
 #include "made/scriptfuncs.h"
 #include "made/made.h"
@@ -34,11 +36,7 @@ namespace Made {
 
 
 ScriptInterpreter::ScriptInterpreter(MadeEngine *vm) : _vm(vm) {
-#ifdef DUMP_SCRIPTS
 #define COMMAND(x, sig) { &ScriptInterpreter::x, #x, sig }
-#else
-#define COMMAND(x, sig) { &ScriptInterpreter::x, #x}
-#endif
 	static CommandEntry commandProcs[] = {
 		/* 01 */
 		COMMAND(cmd_branchTrue, "W"),
@@ -626,10 +624,8 @@ void ScriptInterpreter::cmd_setx() {
 	warning("Unimplemented command: cmd_setx");
 }
 
-#ifdef DUMP_SCRIPTS
 void ScriptInterpreter::dumpScript(int16 objectIndex, int *opcodeStats, int *externStats) {
-
-	debug(1, "Dumping code for object %04X", objectIndex);
+	debug("Dumping code for object %04X", objectIndex);
 
 	Object *obj = _vm->_dat->getObject(objectIndex);
 	byte *code = obj->getData(), *codeStart = code, *codeEnd = code + obj->getSize();
@@ -692,12 +688,12 @@ void ScriptInterpreter::dumpScript(int16 objectIndex, int *opcodeStats, int *ext
 				}
 				codeLine += tempStr;
 			}
-			debug(1, "%s", codeLine.c_str());
+			debug("%s", codeLine.c_str());
 		} else {
 			error("ScriptInterpreter::dumpScript(%d) Unknown opcode %02X", objectIndex, opcode);
 		}
 	}
-	debug(1, "-------------------------------------------");
+	debug("-------------------------------------------");
 }
 
 void ScriptInterpreter::dumpAllScripts() {
@@ -722,29 +718,28 @@ void ScriptInterpreter::dumpAllScripts() {
 		}
 	}
 
-	debug(1, "OPCODE statistics:");
+	debug("OPCODE statistics:");
 	for (int i = 0; i < _commandsMax - 1; i++)
 		if (opcodeStats[i] > 0)
-			debug(1, "%-30s: %d", _commands[i].desc, opcodeStats[i]);
-	debug(1, "UNUSED OPCODE statistics:");
+			debug("%-30s: %d", _commands[i].desc, opcodeStats[i]);
+	debug("UNUSED OPCODE statistics:");
 	for (int i = 0; i < _commandsMax - 1; i++)
 		if (opcodeStats[i] == 0)
-			debug(1, "%-30s: %d", _commands[i].desc, opcodeStats[i]);
-	debug(1, ".");
+			debug("%-30s: %d", _commands[i].desc, opcodeStats[i]);
+	debug(".");
 
-	debug(1, "EXTERN statistics (%d):", _functions->getCount());
+	debug("EXTERN statistics (%d):", _functions->getCount());
 	for (int i = 0; i < _functions->getCount(); i++)
 		if (externStats[i] > 0)
-			debug(1, "%-30s: %d", _functions->getFuncName(i), externStats[i]);
-	debug(1, "UNUSED EXTERN statistics (%d):", _functions->getCount());
+			debug("%-30s: %d", _functions->getFuncName(i), externStats[i]);
+	debug("UNUSED EXTERN statistics (%d):", _functions->getCount());
 	for (int i = 0; i < _functions->getCount(); i++)
 		if (externStats[i] == 0)
-			debug(1, "%-30s: %d", _functions->getFuncName(i), externStats[i]);
-	debug(1, ".");
+			debug("%-30s: %d", _functions->getFuncName(i), externStats[i]);
+	debug(".");
 
 	delete[] opcodeStats;
 	delete[] externStats;
 }
-#endif
 
 } // End of namespace Made

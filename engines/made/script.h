@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -20,17 +20,14 @@
  *
  */
 
+// Based on the ScummVM (GPLv2+) file of the same name
+
 #ifndef MADE_SCRIPT_H
 #define MADE_SCRIPT_H
 
 #include "common/textconsole.h"
 
 namespace Made {
-
-// Define this to dump all game scripts and a usage statistic of all
-// opcodes/extended functions instead of running the actual game.
-// Then run ScummVM with debuglevel 1.
-//#define DUMP_SCRIPTS
 
 class MadeEngine;
 class ScriptFunctions;
@@ -94,9 +91,7 @@ protected:
 	struct CommandEntry {
 		CommandProc proc;
 		const char *desc;
-#ifdef DUMP_SCRIPTS
 		const char *sig;
-#endif
 	};
 
 	const CommandEntry *_commands;

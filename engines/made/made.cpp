@@ -318,12 +318,8 @@ Common::Error MadeEngine::run() {
 	_autoStopSound = false;
 	_eventNum = _eventKey = _eventMouseX = _eventMouseY = 0;
 
-#ifdef DUMP_SCRIPTS
-	_script->dumpAllScripts();
-#else
 	_screen->setDefaultMouseCursor();
 	_script->runScript(_dat->getMainCodeObjectIndex());
-#endif
 
 	return Common::kNoError;
 }
