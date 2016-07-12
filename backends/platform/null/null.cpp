@@ -55,7 +55,7 @@ public:
 	virtual Common::EventSource *getDefaultEventSource() { return this; }
 	virtual bool pollEvent(Common::Event &event);
 
-	virtual uint32 getMillis(bool skipRecord = false);
+	virtual uint32 getMillis();
 	virtual void delayMillis(uint msecs);
 	virtual void getTimeAndDate(TimeDate &t) const {}
 
@@ -98,7 +98,7 @@ bool OSystem_NULL::pollEvent(Common::Event &event) {
 	return false;
 }
 
-uint32 OSystem_NULL::getMillis(bool skipRecord) {
+uint32 OSystem_NULL::getMillis() {
 	return 0;
 }
 

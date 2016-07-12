@@ -560,12 +560,12 @@ void Channel::pause(bool paused) {
 		_pauseLevel++;
 
 		if (_pauseLevel == 1)
-			_pauseStartTime = g_system->getMillis(true);
+			_pauseStartTime = g_system->getMillis();
 	} else if (_pauseLevel > 0) {
 		_pauseLevel--;
 
 		if (!_pauseLevel) {
-			_pauseTime = (g_system->getMillis(true) - _pauseStartTime);
+			_pauseTime = (g_system->getMillis() - _pauseStartTime);
 			_pauseStartTime = 0;
 		}
 	}
@@ -583,7 +583,7 @@ Common::Timestamp Channel::getElapsedTime() {
 	if (isPaused())
 		delta = _pauseStartTime - _mixerTimeStamp;
 	else
-		delta = g_system->getMillis(true) - _mixerTimeStamp - _pauseTime;
+		delta = g_system->getMillis() - _mixerTimeStamp - _pauseTime;
 
 	// Convert the number of samples into a time duration.
 
@@ -608,7 +608,7 @@ int Channel::mix(int16 *data, uint len) {
 	} else {
 		assert(_converter);
 		_samplesConsumed = _samplesDecoded;
-		_mixerTimeStamp = g_system->getMillis(true);
+		_mixerTimeStamp = g_system->getMillis();
 		_pauseTime = 0;
 		res = _converter->flow(*_stream, data, len, _volL, _volR);
 		_samplesDecoded += res;

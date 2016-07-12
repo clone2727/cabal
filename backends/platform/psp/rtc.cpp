@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -19,6 +19,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
  */
+
+// Based on the ScummVM (GPLv2+) file of the same name
 
 #include <time.h>
 #include <psptypes.h>
@@ -52,7 +54,7 @@ void PspRtc::init() {						// init our starting ticks
 
 // Note that after we fill up 32 bits ie 50 days we'll loop back to 0, which may cause
 // unpredictable results
-uint32 PspRtc::getMillis(bool skipRecord) {
+uint32 PspRtc::getMillis() {
 	uint32 ticks[2];
 
 	sceRtcGetCurrentTick((u64 *)ticks);		// can introduce weird thread delays

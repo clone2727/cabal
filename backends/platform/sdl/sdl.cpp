@@ -424,7 +424,7 @@ Common::String OSystem_SDL::getSystemLanguage() const {
 #endif // USE_DETECTLANG
 }
 
-uint32 OSystem_SDL::getMillis(bool skipRecord) {
+uint32 OSystem_SDL::getMillis() {
 	return SDL_GetTicks();
 }
 

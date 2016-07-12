@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -19,6 +19,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
  */
+
+// Based on the ScummVM (GPLv2+) file of the same name
 
 #include "common/scummsys.h"
 
@@ -87,7 +89,7 @@ void DefaultEventManager::init() {
 
 bool DefaultEventManager::pollEvent(Common::Event &event) {
 	// Skip recording of these events
-	uint32 time = g_system->getMillis(true);
+	uint32 time = g_system->getMillis();
 	bool result = false;
 
 	_dispatcher.dispatch();

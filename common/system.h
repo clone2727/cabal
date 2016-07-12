@@ -894,14 +894,8 @@ public:
 	/** @name Events and Time */
 	//@{
 
-	/** Get the number of milliseconds since the program was started.
-
-	    @param skipRecord   Skip recording of this value by event recorder.
-	    			This could be needed particularly when we are in
-				an on-screen GUI loop where player can pause
-				the recording.
-	*/
-	virtual uint32 getMillis(bool skipRecord = false) = 0;
+	/** Get the number of milliseconds since the program was started. */
+	virtual uint32 getMillis() = 0;
 
 	/** Delay/sleep for the specified amount of milliseconds. */
 	virtual void delayMillis(uint msecs) = 0;

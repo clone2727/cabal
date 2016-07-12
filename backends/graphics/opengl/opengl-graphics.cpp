@@ -388,7 +388,7 @@ void OpenGLGraphicsManager::updateScreen() {
 		Common::StackLock lock(_osdMutex);
 
 		// Update alpha value.
-		const int diff = g_system->getMillis(false) - _osdFadeStartTime;
+		const int diff = g_system->getMillis() - _osdFadeStartTime;
 		if (diff > 0) {
 			if (diff >= kOSDFadeOutDuration) {
 				// Back to full transparency.

@@ -345,7 +345,7 @@ bool OSystem_PSP::pollEvent(Common::Event &event) {
 	return _inputHandler.getAllInputs(event);
 }
 
-uint32 OSystem_PSP::getMillis(bool skipRecord) {
+uint32 OSystem_PSP::getMillis() {
 	return PspRtc::instance().getMillis();
 }
 

@@ -431,7 +431,7 @@ bool OSystem_Android::getFeatureState(Feature f) {
 	}
 }
 
-uint32 OSystem_Android::getMillis(bool skipRecord) {
+uint32 OSystem_Android::getMillis() {
 	timeval curTime;
 
 	gettimeofday(&curTime, 0);

@@ -697,7 +697,7 @@ void OSystem_PS2::displayMessageOnOSD(const char *msg) {
 	dbg_printf("displayMessageOnOSD: %s\n", msg);
 }
 
-uint32 OSystem_PS2::getMillis(bool skipRecord) {
+uint32 OSystem_PS2::getMillis() {
 	return msecCount;
 }
 

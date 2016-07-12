@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -20,13 +20,15 @@
  *
  */
 
+// Based on the ScummVM (GPLv2+) file of the same name
+
 #define RONIN_TIMER_ACCESS
 
 #include <common/scummsys.h>
 #include "dc.h"
 
 
-uint32 OSystem_Dreamcast::getMillis(bool skipRecord)
+uint32 OSystem_Dreamcast::getMillis()
 {
   static uint32 msecs=0;
   static unsigned int t0=0;

@@ -2277,7 +2277,7 @@ void VBlankHandler(void) {
 	//REG_IF = IRQ_VBLANK;
 }
 
-int getMillis(bool skipRecord) {
+int getMillis() {
 	return currentTimeMillis;
 //	return frameCount * FRAME_TIME;
 }

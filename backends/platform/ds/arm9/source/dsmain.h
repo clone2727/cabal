@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -19,6 +19,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
  */
+
+// Based on the ScummVM (GPLv2+) file of the same name
 
 #ifndef _DSMAIN_H
 #define _DSMAIN_H
@@ -88,7 +90,7 @@ void	setGamma(int gamma);
 
 // Timers
 void 	setTimerCallback(OSystem_DS::TimerProc proc, int interval);		// Setup a callback function at a regular interval
-int 	getMillis(bool skipRecord = false);								// Return the current runtime in milliseconds
+int 	getMillis();								// Return the current runtime in milliseconds
 void 	doTimerCallback();												// Call callback function if required
 
 // Sound

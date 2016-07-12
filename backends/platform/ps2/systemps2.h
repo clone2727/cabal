@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -19,6 +19,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
  */
+
+// Based on the ScummVM (GPLv2+) file of the same name
 
 #ifndef SYSTEMPS2_H
 #define SYSTEMPS2_H
@@ -84,7 +86,7 @@ public:
 	virtual void warpMouse(int x, int y);
 	virtual void setMouseCursor(const void *buf, uint w, uint h, int hotspot_x, int hotspot_y, uint32 keycolor, bool dontScale = false, const Graphics::PixelFormat *format = 0);
 
-	virtual uint32 getMillis(bool skipRecord = false);
+	virtual uint32 getMillis();
 	virtual void delayMillis(uint msecs);
 	virtual bool pollEvent(Common::Event &event);
 

@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -19,6 +19,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
  */
+
+// Based on the ScummVM (GPLv2+) file of the same name
 
 #ifndef TIZEN_SYSTEM_H
 #define TIZEN_SYSTEM_H
@@ -82,7 +84,7 @@ private:
 
 	void updateScreen();
 	bool pollEvent(Common::Event &event);
-	uint32 getMillis(bool skipRecord = false);
+	uint32 getMillis();
 	void delayMillis(uint msecs);
 	void getTimeAndDate(TimeDate &t) const;
 	void fatalError();

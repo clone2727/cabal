@@ -1,6 +1,6 @@
-/* ScummVM - Graphic Adventure Engine
+/* Cabal - Legacy Game Implementations
  *
- * ScummVM is the legal property of its developers, whose names
+ * Cabal is the legal property of its developers, whose names
  * are too numerous to list here. Please refer to the COPYRIGHT
  * file distributed with this source distribution.
  *
@@ -19,6 +19,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
  */
+
+// Based on the ScummVM (GPLv2+) file of the same name
 
 #include "common/events.h"
 #include "common/system.h"
@@ -295,10 +297,10 @@ void GuiManager::runLoop() {
 //		_theme->updateScreen();
 //		_system->updateScreen();
 
-		if (lastRedraw + waitTime < _system->getMillis(true)) {
+		if (lastRedraw + waitTime < _system->getMillis()) {
 			_theme->updateScreen();
 			_system->updateScreen();
-			lastRedraw = _system->getMillis(true);
+			lastRedraw = _system->getMillis();
 		}
 
 		Common::Event event;
@@ -333,14 +335,14 @@ void GuiManager::runLoop() {
 			}
 
 
-			if (lastRedraw + waitTime < _system->getMillis(true)) {
+			if (lastRedraw + waitTime < _system->getMillis()) {
 				_theme->updateScreen();
 				_system->updateScreen();
-				lastRedraw = _system->getMillis(true);
+				lastRedraw = _system->getMillis();
 			}
 		}
 
-		if (tooltipCheck && _lastMousePosition.time + kTooltipDelay < _system->getMillis(true)) {
+		if (tooltipCheck && _lastMousePosition.time + kTooltipDelay < _system->getMillis()) {
 			Widget *wdg = activeDialog->findWidget(_lastMousePosition.x, _lastMousePosition.y);
 			if (wdg && wdg->hasTooltip() && !(wdg->getFlags() & WIDGET_PRESSED)) {
 				Tooltip *tooltip = new Tooltip();
@@ -453,7 +455,7 @@ void GuiManager::setupCursor() {
 // very much. We could plug in a different cursor here if we like to.
 
 void GuiManager::animateCursor() {
-	int time = _system->getMillis(true);
+	int time = _system->getMillis();
 	if (time > _cursorAnimateTimer + kCursorAnimateDelay) {
 		for (int i = 0; i < 15; i++) {
 			if ((i < 6) || (i > 8)) {
@@ -515,7 +517,7 @@ void GuiManager::processEvent(const Common::Event &event, Dialog *const activeDi
 		if (mouse.x != _lastMousePosition.x || mouse.y != _lastMousePosition.y) {
 			_lastMousePosition.x = mouse.x;
 			_lastMousePosition.y = mouse.y;
-			_lastMousePosition.time = _system->getMillis(true);
+			_lastMousePosition.time = _system->getMillis();
 		}
 
 		break;
@@ -523,7 +525,7 @@ void GuiManager::processEvent(const Common::Event &event, Dialog *const activeDi
 	case Common::EVENT_LBUTTONDOWN:
 	case Common::EVENT_RBUTTONDOWN:
 		button = (event.type == Common::EVENT_LBUTTONDOWN ? 1 : 2);
-		time = _system->getMillis(true);
+		time = _system->getMillis();
 		if (_lastClick.count && (time < _lastClick.time + kDoubleClickDelay)
 			&& ABS(_lastClick.x - event.mouse.x) < 3
 			&& ABS(_lastClick.y - event.mouse.y) < 3) {
