@@ -95,7 +95,7 @@ void MPEGPSDecoder::readNextPacket() {
 
 	// Get the next frame time
 	// TODO: Use the MPEG-PS PTS timestamp
-	Common::Timestamp nextFrameTime(videoStream->getNextFrameStartTimestamp());
+	Common::Timestamp nextFrameTime(videoStream->getNextFrameStartTime());
 
 	// Add half a second to the time in case there's a delay
 	nextFrameTime = nextFrameTime.addMsecs(500);

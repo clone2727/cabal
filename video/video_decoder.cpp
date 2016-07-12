@@ -265,7 +265,7 @@ uint32 VideoDecoder::getTimeToNextFrame() const {
 		return 0;
 
 	uint32 currentTime = getTime();
-	uint32 nextFrameStartTime = _nextVideoTrack->getNextFrameStartTime();
+	uint32 nextFrameStartTime = _nextVideoTrack->getNextFrameStartTime().msecs();
 
 	if (_nextVideoTrack->isReversed()) {
 		// For reversed videos, we need to handle the time difference the opposite way.
@@ -284,7 +284,7 @@ uint32 VideoDecoder::getTimeToNextFrame() const {
 
 bool VideoDecoder::endOfVideo() const {
 	for (TrackList::const_iterator it = _tracks.begin(); it != _tracks.end(); it++)
-		if (!(*it)->endOfTrack() && ((*it)->getTrackType() != Track::kTrackTypeVideo || !_endTimeSet || ((VideoTrack *)*it)->getNextFrameStartTime() < (uint)_endTime.msecs()))
+		if (!(*it)->endOfTrack() && ((*it)->getTrackType() != Track::kTrackTypeVideo || !_endTimeSet || ((VideoTrack *)*it)->getNextFrameStartTime() < _endTime))
 			return false;
 
 	return true;
@@ -538,11 +538,11 @@ Common::Timestamp VideoDecoder::VideoTrack::getFrameTime(uint frame) const {
 	return Common::Timestamp().addFrames(-1);
 }
 
-uint32 VideoDecoder::FixedRateVideoTrack::getNextFrameStartTime() const {
+Common::Timestamp VideoDecoder::FixedRateVideoTrack::getNextFrameStartTime() const {
 	if (endOfTrack() || getCurFrame() < 0)
-		return 0;
+		return Common::Timestamp();
 
-	return getFrameTime(getCurFrame() + 1).msecs();
+	return getFrameTime(getCurFrame() + 1);
 }
 
 Common::Timestamp VideoDecoder::FixedRateVideoTrack::getFrameTime(uint frame) const {
@@ -838,12 +838,12 @@ bool VideoDecoder::endOfVideoTracks() const {
 
 VideoDecoder::VideoTrack *VideoDecoder::findNextVideoTrack() {
 	_nextVideoTrack = 0;
-	uint32 bestTime = 0xFFFFFFFF;
+	Common::Timestamp bestTime(0xFFFFFFFF);
 
 	for (TrackList::iterator it = _tracks.begin(); it != _tracks.end(); it++) {
 		if ((*it)->getTrackType() == Track::kTrackTypeVideo && !(*it)->endOfTrack()) {
 			VideoTrack *track = (VideoTrack *)*it;
-			uint32 time = track->getNextFrameStartTime();
+			Common::Timestamp time = track->getNextFrameStartTime();
 
 			if (time < bestTime) {
 				bestTime = time;
@@ -885,7 +885,7 @@ bool VideoDecoder::hasFramesLeft() const {
 	// This is only used for needsUpdate() atm so that setEndTime() works properly
 	// And unlike endOfVideoTracks(), this takes into account _endTime
 	for (TrackList::const_iterator it = _tracks.begin(); it != _tracks.end(); it++)
-		if ((*it)->getTrackType() == Track::kTrackTypeVideo && !(*it)->endOfTrack() && (!_endTimeSet || ((VideoTrack *)*it)->getNextFrameStartTime() < (uint)_endTime.msecs()))
+		if ((*it)->getTrackType() == Track::kTrackTypeVideo && !(*it)->endOfTrack() && (!_endTimeSet || ((VideoTrack *)*it)->getNextFrameStartTime() < _endTime))
 			return true;
 
 	return false;

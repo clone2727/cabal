@@ -70,7 +70,7 @@ private:
 		int getCurFrame() const { return _curFrame; }
 		int getFrameCount() const { return _frameCount; }
 		void setNextFrameStartTime(uint32 nextFrameStartTime) { _nextFrameStartTime = nextFrameStartTime; }
-		uint32 getNextFrameStartTime() const { return _nextFrameStartTime; }
+		Common::Timestamp getNextFrameStartTime() const { return _nextFrameStartTime; }
 		const Graphics::Surface *decodeNextFrame() { return _surface; }
 
 		void decodeFrame(Common::SeekableReadStream *stream, uint32 videoTimeStamp);

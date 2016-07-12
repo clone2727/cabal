@@ -136,7 +136,7 @@ private:
 		Graphics::PixelFormat getPixelFormat() const;
 		int getCurFrame() const { return _curFrame; }
 		int getFrameCount() const;
-		uint32 getNextFrameStartTime() const;
+		Common::Timestamp getNextFrameStartTime() const;
 		const Graphics::Surface *decodeNextFrame();
 		const byte *getPalette() const;
 		bool hasDirtyPalette() const { return _curPalette; }

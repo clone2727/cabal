@@ -405,9 +405,9 @@ int QuickTimeDecoder::VideoTrackHandler::getFrameCount() const {
 	return _parent->frameCount;
 }
 
-uint32 QuickTimeDecoder::VideoTrackHandler::getNextFrameStartTime() const {
+Common::Timestamp QuickTimeDecoder::VideoTrackHandler::getNextFrameStartTime() const {
 	if (endOfTrack())
-		return 0;
+		return Common::Timestamp();
 
 	Common::Timestamp frameTime(0, getRateAdjustedFrameTime(), _parent->timeScale);
 
@@ -416,15 +416,15 @@ uint32 QuickTimeDecoder::VideoTrackHandler::getNextFrameStartTime() const {
 	if (_reversed) {
 		Common::Timestamp editStartTime(0, _parent->editList[_curEdit].timeOffset, _decoder->_timeScale);
 		if (frameTime < editStartTime)
-			return editStartTime.msecs();
+			return editStartTime;
 	} else {
 		Common::Timestamp nextEditStartTime(0, _parent->editList[_curEdit].timeOffset + _parent->editList[_curEdit].trackDuration, _decoder->_timeScale);
 		if (frameTime > nextEditStartTime)
-			return nextEditStartTime.msecs();
+			return nextEditStartTime;
 	}
 
 	// Not past an edit boundary, so the frame time is what should be used
-	return frameTime.msecs();
+	return frameTime;
 }
 
 const Graphics::Surface *QuickTimeDecoder::VideoTrackHandler::decodeNextFrame() {

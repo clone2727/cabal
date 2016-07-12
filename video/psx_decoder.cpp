@@ -298,7 +298,7 @@ void PSXStreamDecoder::readNextPacket() {
 	_stream->seek(_audioTrackPos);
 
 	// Scan for audio track chunks up to 0.5 seconds after the next video frame start
-	Common::Timestamp audioMax = _videoTrack->getNextFrameStartTimestamp().addMsecs(500);
+	Common::Timestamp audioMax = _videoTrack->getNextFrameStartTime().addMsecs(500);
 	while (_audioTrackPos < (uint32)_stream->size() && (_videoTrack->endOfTrack() || _audioTrack->getQueuedAudioTime() < audioMax)) {
 		Common::ScopedPtr<Common::SeekableReadStream> sector(readSector());
 		_audioTrackPos = _stream->pos();

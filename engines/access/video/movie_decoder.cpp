@@ -504,7 +504,7 @@ void AccessVIDMovieDecoder::StreamVideoTrack::decodeFrame(Common::SeekableReadSt
 
 	// TODO: not sure, if additionalDelay is supposed to affect the follow-up frame or the current frame
 	// the videos, that I found, don't have it set
-	uint32 currentFrameStartTime = getNextFrameStartTime();
+	uint32 currentFrameStartTime = getNextFrameStartTime().msecs();
 	uint32 nextFrameStartTime = (_regularFrameDelay * _curFrame) * 1000 / 60;
 	if (additionalDelay) {
 		nextFrameStartTime += additionalDelay * 1000 / 60;

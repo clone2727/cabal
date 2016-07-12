@@ -88,9 +88,8 @@ private:
 		bool endOfTrack() const { return _endOfTrack; }
 		int getCurFrame() const { return _curFrame; }
 		int getFrameCount() const { return _frameCount; }
-		uint32 getNextFrameStartTime() const { return _nextFrameStartTime.msecs(); }
+		Common::Timestamp getNextFrameStartTime() const { return _nextFrameStartTime; }
 		const Graphics::Surface *decodeNextFrame();
-		const Common::Timestamp &getNextFrameStartTimestamp() const { return _nextFrameStartTime; }
 
 		void setEndOfTrack() { _endOfTrack = true; }
 		void decodeFrame(Common::SeekableReadStream &frame, uint sectorCount);

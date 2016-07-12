@@ -89,7 +89,7 @@ private:
 		uint16 getHeight() const { return _displaySurface.h; }
 		Graphics::PixelFormat getPixelFormat() const { return _displaySurface.format; }
 		int getCurFrame() const { return _curFrame; }
-		uint32 getNextFrameStartTime() const { return (uint32)(_nextFrameStartTime * 1000); }
+		Common::Timestamp getNextFrameStartTime() const { return (uint32)(_nextFrameStartTime * 1000); }
 		const Graphics::Surface *decodeNextFrame() { return &_displaySurface; }
 
 		bool decodePacket(ogg_packet &oggPacket);

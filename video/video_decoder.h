@@ -583,10 +583,9 @@ protected:
 		virtual int getFrameCount() const { return 0; }
 
 		/**
-		 * Get the start time of the next frame in milliseconds since
-		 * the start of the video
+		 * Get the start time of the next frame since the start of the video
 		 */
-		virtual uint32 getNextFrameStartTime() const = 0;
+		virtual Common::Timestamp getNextFrameStartTime() const = 0;
 
 		/**
 		 * Decode the next frame
@@ -647,7 +646,7 @@ protected:
 		FixedRateVideoTrack() {}
 		virtual ~FixedRateVideoTrack() {}
 
-		uint32 getNextFrameStartTime() const;
+		Common::Timestamp getNextFrameStartTime() const;
 		virtual Common::Timestamp getDuration() const;
 		Common::Timestamp getFrameTime(uint frame) const;
 

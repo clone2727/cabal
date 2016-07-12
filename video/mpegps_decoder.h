@@ -100,16 +100,8 @@ private:
 	public:
 		MPEGVideoStream(int startCode) : MPEGStream(startCode) {}
 
-		/**
-		 * Get the timestamp of the next frame
-		 */
-		virtual Common::Timestamp getNextFrameStartTimestamp() const = 0;
-
 		// MPEGStream API
 		StreamType getStreamType() const { return kStreamTypeVideo; }
-
-		// VideoTrack API
-		uint32 getNextFrameStartTime() const { return getNextFrameStartTimestamp().msecs(); }
 	};
 
 	// Base class for all MPEG audio streams
@@ -134,9 +126,7 @@ private:
 		Graphics::PixelFormat getPixelFormat() const;
 		int getCurFrame() const { return _curFrame; }
 		const Graphics::Surface *decodeNextFrame();
-
-		// MPEGVideoStream API
-		Common::Timestamp getNextFrameStartTimestamp() const { return _nextFrameStartTime; }
+		Common::Timestamp getNextFrameStartTime() const { return _nextFrameStartTime; }
 
 	protected:
 		bool decodePacket(Common::SeekableReadStream *packet);

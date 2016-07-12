@@ -288,7 +288,7 @@ void Scalpel3DOMovieDecoder::readNextPacket() {
 
 							// Calculate next frame time
 							// 3DO clock time for movies runs at 240Hh, that's why timestamps are based on 240.
-							uint32 currentFrameStartTime = _videoTrack->getNextFrameStartTime();
+							uint32 currentFrameStartTime = _videoTrack->getNextFrameStartTime().msecs();
 							uint32 nextFrameStartTime = videoTimeStamp * 1000 / 240;
 							assert(currentFrameStartTime <= nextFrameStartTime);
 							_videoTrack->setNextFrameStartTime(nextFrameStartTime);
